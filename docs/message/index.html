@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <style>
+        .bg-f2 {
+            background-color: #f8f9fa;
+        }
+
+        video {
+            width: 320px;
+            height: auto;
+        }
+
+        .videoRow {
+            margin-top: 30px;
+        }
+
+        #previewLabel {
+            display: block;
+            position: absolute;
+        }
+    </style>
+    <title>房间消息功能</title>
+<link href="../index.4cbf8547.css" rel="stylesheet"></head>
+
+<body class="bg-f2">
+
+<div class="container">
+
+    <div class="my-3 p-3 bg-white rounded box-shadow small">
+
+        <h6 class="border-bottom border-gray pb-2 mb-0">房间消息功能</h6>
+
+        <div class="row" style="margin-top:1%">
+
+            <div class="col-sm">
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="audioList"><strong
+                                class="text-gray-dark">音频设备</strong></label>
+                    </div>
+                    <select class="custom-select" id="audioList" style="width: 70%">
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm">
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="videoList"><strong
+                                class="text-gray-dark">视频设备</strong></label>
+                    </div>
+                    <select class="custom-select" id="videoList" style="width: 70%">
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm">
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="roomId"><strong class="text-gray-dark">房间号</strong></label>
+                    </div>
+                    <input type="email" class="form-control d-inline" id="roomId" style="width: 60%"
+                           aria-describedby="emailHelp" placeholder="请输入房间号">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <button type="button" id="createRoom" class="btn btn-primary btn-sm">创建房间(作为主播)</button>
+                <button type="button" id="openRoom" class="btn btn-primary btn-sm">进入房间(作为观众)</button>
+                <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm">退出</button>
+            </div>
+        </div>
+
+        <div class="row videoRow">
+            <div class="col-sm">
+                <label id="previewLabel" class="text-white"></label>
+                <video id="previewVideo" autoplay muted playsinline></video>
+            </div>
+            <div class="col-sm remoteVideo">
+                <!-- <video  autoplay muted playsinline></video> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="chatContainer">
+    <div class="chatBtn">
+        <i class="iconfont icon-xiaoxi1"></i>
+    </div>
+    <div class="chat-message-num">0</div>
+    <div class="chatBox" ref="chatBox">
+
+        <div class="chatBox-info">
+            <div class="chatBox-kuang" ref="chatBoxkuang">
+                <div class="chatBox-content">
+                    <div class="chatBox-content-demo" id="chatBox-content-demo">
+                    </div>
+                </div>
+                <div class="chatBox-send">
+                    <div class="div-textarea" contenteditable="true"></div>
+                    <div>
+                        <button id="chat-fasong" class="btn-default-styles"><i class="iconfont icon-fasong"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" id="showAlert"
+        style="display:none">alert
+</button>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="overflow: auto">
+                <strong class="text-gray-dark" id="exampleModalLabel"></strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" id="confirm" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../message/message.bundle.js"></script></body>
+</html>
