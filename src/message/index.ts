@@ -9,13 +9,11 @@ $(async () => {
     await checkAnRun();
 
     zg.on(
-        'recvRoomMsg',
+        'IMRecvBroadcastMessage',
         (
             chatData: Array<{
-                userID: string;
-                userName: string;
-                msgID: number;
-                msgContent: string;
+                fromUser: string;
+                message: string;
                 sendTime: number;
             }>,
         ) => {
@@ -24,7 +22,7 @@ $(async () => {
                     <div class="author-name"><small class="chat-date">${new Date().toLocaleString()}</small></div>
                     <div class="left">
                         <div class="chat-avatars"><img src="${require('./img/icon01.png')}" alt="头像"></div>
-                        <div class="chat-message">${chatData[0].msgContent}</div>
+                        <div class="chat-message">${chatData[0].message}</div>
                     </div>
                 </div>
                 `;
@@ -59,7 +57,7 @@ $(async () => {
             .html()
             .replace(/[\n\r]/g, '<br>');
         if (textContent) {
-            await zg.sendBroadcastMessage(1, textContent);
+            await zg.sendBroadcastMessage(textContent);
             console.warn('send Message success');
 
             $('.chatBox-content-demo').append(`

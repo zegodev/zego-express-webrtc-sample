@@ -286,3 +286,10 @@ async function push(publishOption?: webPublishOption) {
 }
 
 export { zg, publishStreamId, checkAnRun, useLocalStreamList, logout, enterRoom, push };
+
+window.addEventListener("popstate", function(e) {
+
+  alert('正在返回，等下会关闭微信窗口');
+
+}, false);
+

@@ -136,7 +136,7 @@ function initSDK() {
                 $('#memberList').append(
                     '<option value="' + streamList[i].userID + '">' + streamList[i].userName + '</option>',
                 );
-                $('.remoteVideo').append($('<video  autoplay muted playsinline></video>'));
+                $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
 
                 const remoteStream = await getRemoteByCodeType(useLocalStreamList[i]);
                 const video = $('.remoteVideo video:eq(' + i + ')')[0] as HTMLVideoElement;
