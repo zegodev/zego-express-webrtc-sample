@@ -28,8 +28,9 @@ $(async () => {
     $('#stopScreenShot').click(() => {
         if (screenPublished) {
             zg.stopPublishingStream(screenStreamId);
-            zg.destroyLocalStream(screeStream);
         }
+        zg.destroyLocalStream(screeStream);
+        previewScreenVideo.srcObject = null;
     });
 
     $('#leaveRoom').unbind('click');

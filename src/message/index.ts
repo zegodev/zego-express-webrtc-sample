@@ -59,7 +59,7 @@ $(async () => {
             .html()
             .replace(/[\n\r]/g, '<br>');
         if (textContent) {
-            await zg.sendRoomMsg(1, textContent);
+            await zg.sendBroadcastMessage(1, textContent);
             console.warn('send Message success');
 
             $('.chatBox-content-demo').append(`
