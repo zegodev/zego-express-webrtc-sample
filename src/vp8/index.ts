@@ -8,7 +8,7 @@ import { addListener } from 'cluster';
 
 new VConsole();
 let appId = 96527232;
-const server = 'wss://wsliveroom' + appId + '-api.zego.im:8282/ws'; //'wss://wssliveroom-test.zego.im/ws';
+const server ='wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appId + '-api.zego.im:8282/ws';
 const userId: string = 'sample' + new Date().getTime();
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];

@@ -8,9 +8,10 @@ import { userInfo } from 'os';
 new VConsole();
 let zg: ZegoClient;
 let appId = 1739272706;
-let server = 'wss://wsliveroom' + appId + '-api.zego.im:8282/ws'; //'wss://webliveroom-test.zego.im/ws';
+let server ='wss://webliveroom-test.zego.im/ws'; // 'wss://wsliveroom' + appId + '-api.zego.im:8282/ws';
 const userId: string = 'sample' + new Date().getTime();
 let cgiToken = '';
+let appSign = ''
 const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
@@ -242,7 +243,7 @@ async function login(roomId: string): Promise<boolean> {
         token = res.data;
         //测试用结束
         //Test code end
-    } else {
+    } else if(appSign){
         token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appId, id_name: userId });
     }
     return await zg.login(roomId, token);
