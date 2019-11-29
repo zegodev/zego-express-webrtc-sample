@@ -23,6 +23,7 @@ let localStream: MediaStream;
 zg = new ZegoClient(appId, server, userId);
 
 // 测试用代码，开发者请忽略
+// Test code, developers please ignore
 if (location.search) {
     const arrConfig = location.search.substr(1).split('&');
     arrConfig.forEach(function(item) {
@@ -50,6 +51,7 @@ if (location.search) {
     }
 }
 // 测试用代码 end
+// Test code end
 
 async function checkAnRun(checkScreen?: boolean) {
     console.log('sdk version is', zg.getCurrentVersion());
@@ -231,12 +233,15 @@ async function enumDevices() {
 
 async function login(roomId: string): Promise<boolean> {
     // 获取token需要客户自己实现，token是对登录房间的唯一验证
+    // Obtaining a token needs to be implemented by the customer. The token is the only verification for the login room.
     let token = '';
     //测试用，开发者请忽略
+    //Test code, developers please ignore
     if (cgiToken) {
         const res = await $.get(tokenUrl, { app_id: appId, id_name: userId, cgi_token: cgiToken });
         token = res.data;
         //测试用结束
+        //Test code end
     } else {
         token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appId, id_name: userId });
     }
@@ -258,6 +263,7 @@ async function logout() {
     console.info('leave room  and close stream');
 
     // 停止推流
+    // stop publishing
     if (isPreviewed) {
         zg.stopPublishingStream(publishStreamId);
         zg.destroyLocalStream(localStream);
@@ -265,15 +271,18 @@ async function logout() {
     }
 
     // 停止拉流
+    // stop playing
     for (let i = 0; i < useLocalStreamList.length; i++) {
         zg.stopPlayingStream(useLocalStreamList[i].streamID);
     }
 
     // 清空页面
+    // Clear page
     useLocalStreamList = [];
     $('.remoteVideo').html('');
 
     //退出登录
+    //logout
     zg.logout();
 }
 
@@ -287,9 +296,6 @@ async function push(publishOption?: webPublishOption) {
 
 export { zg, publishStreamId, checkAnRun, useLocalStreamList, logout, enterRoom, push };
 
-window.addEventListener("popstate", function(e) {
-
-  alert('正在返回，等下会关闭微信窗口');
-
-}, false);
-
+$(window).on('unload',function () {
+  logout();
+});

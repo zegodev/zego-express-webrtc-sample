@@ -314,3 +314,7 @@ function setConfig(param: { appId?: number }) {
 $(async () => {
     await checkAnRun();
 });
+
+$(window).on('unload',function () {
+  logout();
+});
