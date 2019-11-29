@@ -243,7 +243,7 @@ async function login(roomId: string): Promise<boolean> {
         token = res.data;
         //测试用结束
         //Test code end
-    } else if(appSign){
+    } else {
         token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appId, id_name: userId });
     }
     return await zg.login(roomId, token);
