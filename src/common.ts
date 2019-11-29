@@ -8,7 +8,7 @@ import { userInfo } from 'os';
 new VConsole();
 let zg: ZegoClient;
 let appId = 1739272706;
-let server ='wss://webliveroom-test.zego.im/ws'; // 'wss://wsliveroom' + appId + '-api.zego.im:8282/ws';
+let server = 'wss://wsliveroom' + appId + '-api.zego.im:8282/ws' //'wss://webliveroom-test.zego.im/ws';
 const userId: string = 'sample' + new Date().getTime();
 let cgiToken = '';
 let appSign = ''
@@ -19,9 +19,6 @@ let isPreviewed = false;
 const publishStreamId = 'webrtc' + new Date().getTime();
 
 let localStream: MediaStream;
-
-// eslint-disable-next-line prefer-const
-zg = new ZegoClient(appId, server, userId);
 
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
@@ -53,6 +50,9 @@ if (location.search) {
 }
 // 测试用代码 end
 // Test code end
+
+// eslint-disable-next-line prefer-const
+zg = new ZegoClient(appId, server, userId);
 
 async function checkAnRun(checkScreen?: boolean) {
     console.log('sdk version is', zg.getCurrentVersion());
@@ -239,8 +239,7 @@ async function login(roomId: string): Promise<boolean> {
     //测试用，开发者请忽略
     //Test code, developers please ignore
     if (cgiToken) {
-        const res = await $.get(tokenUrl, { app_id: appId, id_name: userId, cgi_token: cgiToken });
-        token = res.data;
+        token = await $.get(tokenUrl, { app_id: appId, id_name: userId, cgi_token: cgiToken });
         //测试用结束
         //Test code end
     } else {
