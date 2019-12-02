@@ -3,16 +3,16 @@ import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoClient } from 'webrtc-zego-express';
 import { StreamInfo, WebQualityStats, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
-import { userInfo } from 'os';
+import { getCgi } from './content'
 
 new VConsole();
+const userID: string = 'sample' + new Date().getTime();
+const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 let zg: ZegoClient;
-let appId = 1739272706;
-let server = 'wss://wsliveroom' + appId + '-api.zego.im:8282/ws' //'wss://webliveroom-test.zego.im/ws';
-const userId: string = 'sample' + new Date().getTime();
+let appID = 1739272706;
+let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 let cgiToken = '';
 let appSign = ''
-const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
 let isPreviewed = false;
@@ -22,37 +22,13 @@ let localStream: MediaStream;
 
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
-if (location.search) {
-    const arrConfig = location.search.substr(1).split('&');
-    arrConfig.forEach(function(item) {
-        const key = item.split('=')[0],
-            value = item.split('=')[1];
 
-        if (key == 'appid') {
-            appId = Number(value);
-        }
-
-        if (key == 'server') {
-            server = decodeURIComponent(value);
-        }
-
-        if (key == 'cgi_token') {
-            cgiToken = decodeURIComponent(value);
-        }
-    });
-
-    if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
-        $.get(cgiToken, rsp => {
-            cgiToken = rsp.data;
-            console.log(cgiToken);
-        });
-    }
-}
+({appID, server, cgiToken} = getCgi(appID, server, cgiToken, tokenUrl));
 // 测试用代码 end
 // Test code end
 
 // eslint-disable-next-line prefer-const
-zg = new ZegoClient(appId, server, userId);
+zg = new ZegoClient(appID, server, userID);
 
 async function checkAnRun(checkScreen?: boolean) {
     console.log('sdk version is', zg.getCurrentVersion());
@@ -91,8 +67,14 @@ async function start() {
     zg.config({ userUpdate: true });
 
     $('#createRoom').click(async () => {
-        const loginSuc = await enterRoom();
-        loginSuc && (await push());
+        let loginSuc = false;
+        try {
+          loginSuc = await enterRoom();
+          loginSuc && (await push());
+        } catch (error) {
+          console.error(error);
+        }
+
     });
 
     $('#openRoom').click(async () => {
@@ -159,19 +141,29 @@ function initSDK() {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
                 useLocalStreamList.push(streamList[i]);
+                let remoteStream: MediaStream;
 
                 $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                try {
+                  remoteStream = await zg.startPlayingStream(streamList[i].streamID);
+                } catch (error) {
+                  console.error(error);
+                  break;
+                }
 
-                const remoteStream = await zg.startPlayingStream(streamList[i].streamID);
                 const video = $('.remoteVideo video:last')[0] as HTMLVideoElement;
-                video.srcObject = remoteStream;
+                video.srcObject = remoteStream!;
                 video.muted = false;
             }
         } else if (type == 0) {
             for (let k = 0; k < useLocalStreamList.length; k++) {
                 for (let j = 0; j < streamList.length; j++) {
                     if (useLocalStreamList[k].streamID === streamList[j].streamID) {
-                        zg.stopPlayingStream(useLocalStreamList[k].streamID);
+                        try {
+                          zg.stopPlayingStream(useLocalStreamList[k].streamID);
+                        } catch (error) {
+                          console.error(error);
+                        }
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
@@ -239,11 +231,11 @@ async function login(roomId: string): Promise<boolean> {
     //测试用，开发者请忽略
     //Test code, developers please ignore
     if (cgiToken) {
-        token = await $.get(tokenUrl, { app_id: appId, id_name: userId, cgi_token: cgiToken });
-        //测试用结束
-        //Test code end
+        token = await $.get(tokenUrl, { app_id: appID, id_name: userID, cgi_token: cgiToken });
+    //测试用结束
+    //Test code end
     } else {
-        token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appId, id_name: userId });
+        token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appID, id_name: userID });
     }
     return await zg.login(roomId, token);
 }

@@ -4,22 +4,26 @@ import '../assets/bootstrap.min.css';
 import { ZegoClient } from 'webrtc-zego-express';
 import { StreamInfo, WebQualityStats, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
 import { ZegoVideoDecodeType } from 'webrtc-zego-express/types';
-import { addListener } from 'cluster';
+import { getCgi } from '../content';
 
 new VConsole();
-let appId = 96527232;
-const server ='wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appId + '-api.zego.im:8282/ws';
-const userId: string = 'sample' + new Date().getTime();
+const userID: string = 'sample' + new Date().getTime();
+const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
+const publishStreamId = 'webrtc' + new Date().getTime();
+const taskID = 'task-' + new Date().getTime();
+const mixStreamId = 'mix-' + publishStreamId;
+let appID = 96527232;
+let server ='wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws';
+let cgiToken = '';
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
 let isPreviewed = false;
-const publishStreamId = 'webrtc' + new Date().getTime();
 let localStream: MediaStream;
-const taskID = 'task-' + new Date().getTime();
-const mixStreamId = 'mix-' + publishStreamId;
 let videoDecodeType: ZegoVideoDecodeType | undefined = 'H264';
 
-const zg = new ZegoClient(appId, server, userId);
+({appID, server, cgiToken} = getCgi(appID, server, cgiToken, tokenUrl))
+
+const zg = new ZegoClient(appID, server, userID);
 
 async function checkAnRun(): Promise<boolean> {
     console.log('sdk version is', zg.getCurrentVersion());
@@ -241,7 +245,17 @@ async function mixStream() {
 
 async function login(roomId: string): Promise<boolean> {
     // 获取token需要客户自己实现，token是对登录房间的唯一验证
-    const token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appId, id_name: userId });
+    // Obtaining a token needs to be implemented by the customer. The token is the only verification for the login room.
+    let token = '';
+    //测试用，开发者请忽略
+    //Test code, developers please ignore
+    if (cgiToken) {
+        token = await $.get(tokenUrl, { app_id: appID, id_name: userID, cgi_token: cgiToken });
+    //测试用结束
+    //Test code end
+    } else {
+        token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appID, id_name: userID });
+    }
     return await zg.login(roomId, token);
 }
 
@@ -258,6 +272,7 @@ async function logout() {
     console.info('leave room  and close stream');
 
     // 停止推流
+    // stop publishing
     if (isPreviewed) {
         zg.stopPublishingStream(publishStreamId);
         zg.destroyLocalStream(localStream);
@@ -265,15 +280,18 @@ async function logout() {
     }
 
     // 停止拉流
+    // stop playing stream
     for (let i = 0; i < useLocalStreamList.length; i++) {
         zg.stopPlayingStream(useLocalStreamList[i].streamID);
     }
 
     // 清空页面
+    // clear page
     useLocalStreamList = [];
     $('.remoteVideo').html('');
 
     //退出登录
+    //logout
     zg.logout();
 }
 
@@ -307,8 +325,8 @@ async function push(publishOption?: webPublishOption) {
     console.log('publish stream' + publishStreamId, result);
 }
 
-function setConfig(param: { appId?: number }) {
-    param.appId && (appId = param.appId);
+function setConfig(param: { appID?: number }) {
+    param.appID && (appID = param.appID);
 }
 
 $(async () => {
