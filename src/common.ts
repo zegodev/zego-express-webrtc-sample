@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoClient } from 'webrtc-zego-express';
-import { StreamInfo, WebQualityStats, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
+import { StreamInfo, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
 import { getCgi } from './content';
 
 new VConsole();
@@ -12,7 +13,7 @@ let zg: ZegoClient;
 let appID = 1739272706;
 let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 let cgiToken = '';
-const appSign = '';
+//const appSign = '';
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
 let isPreviewed = false;
@@ -30,7 +31,7 @@ let localStream: MediaStream;
 // eslint-disable-next-line prefer-const
 zg = new ZegoClient(appID, server, userID);
 
-async function checkAnRun(checkScreen?: boolean) {
+async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
     console.log('sdk version is', zg.getCurrentVersion());
     const result: {
         webRTC: boolean;
@@ -59,9 +60,11 @@ async function checkAnRun(checkScreen?: boolean) {
         previewVideo = $('#previewVideo')[0] as HTMLVideoElement;
         start();
     }
+
+    return true;
 }
 
-async function start() {
+async function start(): Promise<void> {
     initSDK();
 
     zg.config({ userUpdate: true });
@@ -85,7 +88,7 @@ async function start() {
     });
 }
 
-async function enumDevices() {
+async function enumDevices(): Promise<any> {
     const audioInputList: string[] = [],
         videoInputList: string[] = [];
     const deviceInfo = await zg.enumDevices();
@@ -117,7 +120,7 @@ async function enumDevices() {
     $('#videoList').html(videoInputList.join(''));
 }
 
-function initSDK() {
+function initSDK(): void {
     enumDevices();
     zg.on('roomStateUpdate', (state, error: ERRO) => {
         console.log('roomStateUpdate', state, error.code, error.msg);
@@ -257,7 +260,7 @@ async function enterRoom(): Promise<boolean> {
     return true;
 }
 
-async function logout() {
+async function logout(): Promise<void> {
     console.info('leave room  and close stream');
 
     // 停止推流
@@ -284,7 +287,7 @@ async function logout() {
     zg.logout();
 }
 
-async function push(publishOption?: webPublishOption) {
+async function push(publishOption?: webPublishOption): Promise<void> {
     localStream = await zg.createLocalStream();
     previewVideo.srcObject = localStream;
     isPreviewed = true;

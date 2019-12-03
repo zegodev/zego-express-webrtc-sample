@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import VConsole from 'vconsole';
 import '../assets/bootstrap.min';
 import '../assets/bootstrap.min.css';
@@ -13,7 +14,7 @@ const publishStreamId = 'webrtc' + new Date().getTime();
 const taskID = 'task-' + new Date().getTime();
 const mixStreamId = 'mix-' + publishStreamId;
 let appID = 96527232;
-let server ='wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws';
+let server = 'wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws';
 let cgiToken = '';
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
@@ -21,7 +22,7 @@ let isPreviewed = false;
 let localStream: MediaStream;
 let videoDecodeType: ZegoVideoDecodeType | undefined = 'H264';
 
-({appID, server, cgiToken} = getCgi(appID, server, cgiToken, tokenUrl))
+({ appID, server, cgiToken } = getCgi(appID, server, cgiToken, tokenUrl));
 
 const zg = new ZegoClient(appID, server, userID);
 
@@ -251,8 +252,8 @@ async function login(roomId: string): Promise<boolean> {
     //Test code, developers please ignore
     if (cgiToken) {
         token = await $.get(tokenUrl, { app_id: appID, id_name: userID, cgi_token: cgiToken });
-    //测试用结束
-    //Test code end
+        //测试用结束
+        //Test code end
     } else {
         token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appID, id_name: userID });
     }
@@ -333,6 +334,6 @@ $(async () => {
     await checkAnRun();
 });
 
-$(window).on('unload',function () {
-  logout();
+$(window).on('unload', function() {
+    logout();
 });
