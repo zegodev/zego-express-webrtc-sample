@@ -3,7 +3,7 @@ import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoClient } from 'webrtc-zego-express';
 import { StreamInfo, WebQualityStats, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
-import { getCgi } from './content'
+import { getCgi } from './content';
 
 new VConsole();
 const userID: string = 'sample' + new Date().getTime();
@@ -12,7 +12,7 @@ let zg: ZegoClient;
 let appID = 1739272706;
 let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 let cgiToken = '';
-let appSign = ''
+const appSign = '';
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
 let isPreviewed = false;
@@ -23,7 +23,7 @@ let localStream: MediaStream;
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
 
-({appID, server, cgiToken} = getCgi(appID, server, cgiToken, tokenUrl));
+({ appID, server, cgiToken } = getCgi(appID, server, cgiToken, tokenUrl));
 // 测试用代码 end
 // Test code end
 
@@ -69,12 +69,11 @@ async function start() {
     $('#createRoom').click(async () => {
         let loginSuc = false;
         try {
-          loginSuc = await enterRoom();
-          loginSuc && (await push());
+            loginSuc = await enterRoom();
+            loginSuc && (await push());
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
-
     });
 
     $('#openRoom').click(async () => {
@@ -84,6 +83,38 @@ async function start() {
     $('#leaveRoom').click(function() {
         logout();
     });
+}
+
+async function enumDevices() {
+    const audioInputList: string[] = [],
+        videoInputList: string[] = [];
+    const deviceInfo = await zg.enumDevices();
+
+    deviceInfo &&
+        deviceInfo.microphones.map((item, index) => {
+            if (!item.label) {
+                item.label = 'microphone' + index;
+            }
+            audioInputList.push(' <option value="' + item.deviceID + '">' + item.label + '</option>');
+            console.log('microphone: ' + item.label);
+            return item;
+        });
+
+    deviceInfo &&
+        deviceInfo.cameras.map((item, index) => {
+            if (!item.label) {
+                item.label = 'camera' + index;
+            }
+            videoInputList.push(' <option value="' + item.deviceID + '">' + item.label + '</option>');
+            console.log('camera: ' + item.label);
+            return item;
+        });
+
+    audioInputList.push('<option value="0">禁止</option>');
+    videoInputList.push('<option value="0">禁止</option>');
+
+    $('#audioList').html(audioInputList.join(''));
+    $('#videoList').html(videoInputList.join(''));
 }
 
 function initSDK() {
@@ -145,10 +176,10 @@ function initSDK() {
 
                 $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
                 try {
-                  remoteStream = await zg.startPlayingStream(streamList[i].streamID);
+                    remoteStream = await zg.startPlayingStream(streamList[i].streamID);
                 } catch (error) {
-                  console.error(error);
-                  break;
+                    console.error(error);
+                    break;
                 }
 
                 const video = $('.remoteVideo video:last')[0] as HTMLVideoElement;
@@ -160,9 +191,9 @@ function initSDK() {
                 for (let j = 0; j < streamList.length; j++) {
                     if (useLocalStreamList[k].streamID === streamList[j].streamID) {
                         try {
-                          zg.stopPlayingStream(useLocalStreamList[k].streamID);
+                            zg.stopPlayingStream(useLocalStreamList[k].streamID);
                         } catch (error) {
-                          console.error(error);
+                            console.error(error);
                         }
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
@@ -192,38 +223,6 @@ function initSDK() {
     });
 }
 
-async function enumDevices() {
-    const audioInputList: string[] = [],
-        videoInputList: string[] = [];
-    const deviceInfo = await zg.enumDevices();
-
-    deviceInfo &&
-        deviceInfo.microphones.map((item, index) => {
-            if (!item.label) {
-                item.label = 'microphone' + index;
-            }
-            audioInputList.push(' <option value="' + item.deviceID + '">' + item.label + '</option>');
-            console.log('microphone: ' + item.label);
-            return item;
-        });
-
-    deviceInfo &&
-        deviceInfo.cameras.map((item, index) => {
-            if (!item.label) {
-                item.label = 'camera' + index;
-            }
-            videoInputList.push(' <option value="' + item.deviceID + '">' + item.label + '</option>');
-            console.log('camera: ' + item.label);
-            return item;
-        });
-
-    audioInputList.push('<option value="0">禁止</option>');
-    videoInputList.push('<option value="0">禁止</option>');
-
-    $('#audioList').html(audioInputList.join(''));
-    $('#videoList').html(videoInputList.join(''));
-}
-
 async function login(roomId: string): Promise<boolean> {
     // 获取token需要客户自己实现，token是对登录房间的唯一验证
     // Obtaining a token needs to be implemented by the customer. The token is the only verification for the login room.
@@ -231,11 +230,18 @@ async function login(roomId: string): Promise<boolean> {
     //测试用，开发者请忽略
     //Test code, developers please ignore
     if (cgiToken) {
-        token = await $.get(tokenUrl, { app_id: appID, id_name: userID, cgi_token: cgiToken });
-    //测试用结束
-    //Test code end
+        token = await $.get(tokenUrl, {
+            app_id: appID,
+            id_name: userID,
+            cgi_token: cgiToken,
+        });
+        //测试用结束
+        //Test code end
     } else {
-        token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appID, id_name: userID });
+        token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', {
+            app_id: appID,
+            id_name: userID,
+        });
     }
     return await zg.login(roomId, token);
 }
@@ -288,6 +294,6 @@ async function push(publishOption?: webPublishOption) {
 
 export { zg, publishStreamId, checkAnRun, useLocalStreamList, logout, enterRoom, push };
 
-$(window).on('unload',function () {
-  logout();
+$(window).on('unload', function() {
+    logout();
 });
