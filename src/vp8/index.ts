@@ -22,7 +22,13 @@ let isPreviewed = false;
 let localStream: MediaStream;
 let videoDecodeType: ZegoVideoDecodeType | undefined = 'H264';
 
-({ appID, server, cgiToken } = getCgi(appID, server, cgiToken, tokenUrl));
+({ appID, server, cgiToken } = getCgi(appID, server, cgiToken));
+if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
+    $.get(cgiToken, rsp => {
+        cgiToken = rsp.data;
+        console.log(cgiToken);
+    });
+}
 
 const zg = new ZegoClient(appID, server, userID);
 

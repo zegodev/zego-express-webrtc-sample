@@ -1,7 +1,7 @@
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 
-export function getCgi(appId: number, serverUrl: string, cgi: string, tokenUrl: string) {
+export function getCgi(appId: number, serverUrl: string, cgi: string) {
     // 测试用代码，开发者请忽略
     // Test code, developers please ignore
     let appID: number = appId;
@@ -24,12 +24,6 @@ export function getCgi(appId: number, serverUrl: string, cgi: string, tokenUrl: 
 
             if (key == 'cgi_token') {
                 cgiToken = decodeURIComponent(value);
-                if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
-                    $.get(cgiToken, rsp => {
-                        cgiToken = rsp.data;
-                        console.log(cgiToken);
-                    });
-                }
             }
         });
     }

@@ -9,6 +9,7 @@ import { getCgi } from './content';
 new VConsole();
 const userID: string = 'sample' + new Date().getTime();
 const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
+const publishStreamId = 'webrtc' + new Date().getTime();
 let zg: ZegoClient;
 let appID = 1739272706;
 let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
@@ -17,14 +18,19 @@ let cgiToken = '';
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
 let isPreviewed = false;
-const publishStreamId = 'webrtc' + new Date().getTime();
 
 let localStream: MediaStream;
 
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
 
-({ appID, server, cgiToken } = getCgi(appID, server, cgiToken, tokenUrl));
+({ appID, server, cgiToken } = getCgi(appID, server, cgiToken));
+if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
+    $.get(cgiToken, rsp => {
+        cgiToken = rsp.data;
+        console.log(cgiToken);
+    });
+}
 // 测试用代码 end
 // Test code end
 
