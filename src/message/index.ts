@@ -8,16 +8,8 @@ let msgCount = 0;
 $(async () => {
     await checkAnRun();
 
-    zg.on(
-        'IMRecvBroadcastMessage',
-        (
-            chatData: Array<{
-                fromUser: string;
-                message: string;
-                sendTime: number;
-            }>,
-        ) => {
-            const chatBox = `
+    zg.on('IMRecvBroadcastMessage', (chatData: Array<{ fromUser: string; message: string; sendTime: number }>) => {
+        const chatBox = `
                   <div class="clearfloat">
                     <div class="author-name"><small class="chat-date">${new Date().toLocaleString()}</small></div>
                     <div class="left">
@@ -27,18 +19,17 @@ $(async () => {
                 </div>
                 `;
 
-            $('.chatBox-content-demo').append(chatBox);
-            //发送后清空输入框
-            $('.div-textarea').html('');
-            //聊天框默认最底部
-            $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
+        $('.chatBox-content-demo').append(chatBox);
+        //发送后清空输入框
+        $('.div-textarea').html('');
+        //聊天框默认最底部
+        $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
 
-            msgCount++;
-            $('.chat-message-num').text(msgCount);
-            $('.chatBox').show();
-            $('.chatBox-kuang').show();
-        },
-    );
+        msgCount++;
+        $('.chat-message-num').text(msgCount);
+        $('.chatBox').show();
+        $('.chatBox-kuang').show();
+    });
 
     $('.chatBox').hide();
 
