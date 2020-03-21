@@ -36,7 +36,9 @@ async function checkAnRun(): Promise<boolean> {
     console.log('sdk version is', zg.getVersion());
     const result: {
         webRTC: boolean;
-        capture: boolean;
+        customCapture: boolean;
+        camera: boolean;
+        microphone: boolean;
         videoCodec: {
             H264: boolean;
             H265: boolean;
@@ -44,7 +46,7 @@ async function checkAnRun(): Promise<boolean> {
             VP9: boolean;
         };
         screenSharing: boolean;
-    } = (await zg.checkSystemRequirements()) as any;
+    } = await zg.checkSystemRequirements();
     videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
     $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
     !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
@@ -337,7 +339,7 @@ async function push(publishOption?: webPublishOption) {
     previewVideo.srcObject = localStream;
     isPreviewed = true;
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
-    console.log('publish stream' + publishStreamId, result);
+    console.log('publish stream' + publishStreamId, result, publishOption);
 }
 
 function setConfig(param: { appID?: number }) {

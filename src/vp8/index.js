@@ -77,7 +77,7 @@ function checkAnRun() {
                     console.log('sdk version is', zg.getVersion());
                     return [4 /*yield*/, zg.checkSystemRequirements()];
                 case 1:
-                    result = (_a.sent());
+                    result = _a.sent();
                     videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
                     $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
                     !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
@@ -474,7 +474,7 @@ function push(publishOption) {
                     previewVideo.srcObject = localStream;
                     isPreviewed = true;
                     result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
-                    console.log('publish stream' + publishStreamId, result);
+                    console.log('publish stream' + publishStreamId, result, publishOption);
                     return [2 /*return*/];
             }
         });
