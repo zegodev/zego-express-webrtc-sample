@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -34,157 +35,146 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
-var webrtc_zego_express_1 = require("webrtc-zego-express");
 require("../common");
-var zg;
-var appId = 1739272706;
-var server = 'wss://wsliveroom' + appId + '-api.zego.im:8282/ws';
-var userId = 'sample' + new Date().getTime();
-var previewVideo;
-var useLocalStreamList = [];
-// 检测浏览器是否支持
-$(function () { return __awaiter(_this, void 0, void 0, function () {
-    var result;
+require("popper.js");
+require("./css/chat.css");
+require("./font_Icon/iconfont.css");
+var common_1 = require("../common");
+var msgCount = 0;
+var localUserList = [];
+$(function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                console.log('sdk version is', webrtc_zego_express_1.ZegoClient.getCurrentVersion());
-                return [4 /*yield*/, webrtc_zego_express_1.ZegoClient.detectRTC()];
+            case 0: return [4 /*yield*/, common_1.checkAnRun()];
             case 1:
-                result = _a.sent();
-                if (!result.webRtc) {
-                    alert('browser is not support webrtc!!');
-                    return [2 /*return*/, false];
-                }
-                else if ((!result.videoDecodeType.H264 && !result.videoDecodeType.VP8)) {
-                    alert('browser is not support H264 and VP8');
-                    return [2 /*return*/, false];
-                }
-                else {
-                    previewVideo = $('#previewVideo')[0];
-                    initSDK();
-                }
+                _a.sent();
+                common_1.zg.on('IMRecvBroadcastMessage', function (_roomID, chatData) {
+                    console.log('IMRecvBroadcastMessage roomID ', _roomID);
+                    var chatBox = "\n                  <div class=\"clearfloat\">\n                    <div class=\"author-name\"><small class=\"chat-date\">" + new Date().toLocaleString() + "</small></div>\n                    <div class=\"left\">\n                        <div class=\"chat-avatars\"><img src=\"" + require('./img/icon01.png') + "\" alt=\"\u5934\u50CF\"></div>\n                        <div class=\"chat-message\">" + chatData[0].message + "</div>\n                    </div>\n                </div>\n                ";
+                    $('.chatBox-content-demo').append(chatBox);
+                    //发送后清空输入框
+                    $('.div-textarea').html('');
+                    //聊天框默认最底部
+                    $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
+                    msgCount++;
+                    $('.chat-message-num').text(msgCount);
+                    $('.chatBox').show();
+                    $('.chatBox-kuang').show();
+                });
+                common_1.zg.on('IMRecvBarrageMessage', function (_roomID, chatData) {
+                    console.log('IMRecvBarrageMessage roomID ', _roomID, chatData);
+                    $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + JSON.stringify(chatData) + ' | ' + _roomID);
+                    $('#showAlert').click();
+                });
+                common_1.zg.on('IMRecvCustomCommand', function (_roomID, fromUser, command) {
+                    console.log('IMRecvCustomCommand roomID ', _roomID, ' ', fromUser.userID, ' send ', command);
+                    $('#exampleModalLabel').text('IMRecvCustomCommand roomID ' + _roomID + ' ' + fromUser.userID + ' send ' + command);
+                    $('#showAlert').click();
+                });
+                common_1.zg.on('roomUserUpdate', function (roomID, updateType, userList) {
+                    console.warn("roomUserUpdate: room " + roomID + ", user " + (updateType === 'ADD' ? 'added' : 'left') + " ", JSON.stringify(userList));
+                    if (updateType === 'ADD') {
+                        localUserList.push.apply(localUserList, userList);
+                    }
+                    else if (updateType === 'DELETE') {
+                        userList.forEach(function (user) {
+                            localUserList = localUserList.filter(function (item) { return item.userID !== user.userID; });
+                        });
+                    }
+                    var userListHtml = '';
+                    localUserList.forEach(function (user) {
+                        user.userID !== common_1.userID && (userListHtml += "<option value= " + user.userID + ">" + user.userName + "</option>");
+                    });
+                    $('#memberList').html(userListHtml);
+                });
+                $('.chatBox').hide();
+                //打开/关闭聊天框
+                $('.chatBtn').click(function () {
+                    $('.chatBox').toggle();
+                    $('.chatBox-kuang').toggle();
+                    //聊天框默认最底部
+                    $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
+                });
+                // 发送信息
+                $('#chat-fasong').click(function () { return __awaiter(void 0, void 0, void 0, function () {
+                    var textContent, roomId, result;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                textContent = $('.div-textarea')
+                                    .html()
+                                    .replace(/[\n\r]/g, '<br>');
+                                if (!textContent) return [3 /*break*/, 2];
+                                roomId = $('#roomId').val();
+                                if (!roomId) {
+                                    alert('roomId is empty');
+                                    return [2 /*return*/, false];
+                                }
+                                return [4 /*yield*/, common_1.zg.sendBroadcastMessage(roomId, textContent)];
+                            case 1:
+                                result = _a.sent();
+                                console.log('', result);
+                                if (result.errorCode === 0) {
+                                    console.warn('send Message success');
+                                }
+                                else {
+                                    console.error('send Message fail ', result.errorCode);
+                                }
+                                $('.chatBox-content-demo').append("\n                                    <div class=\"clearfloat\">\n                                       <div class=\"author-name\">\n                                          <small class=\"chat-date\"> " + new Date().toLocaleString() + "</small>\n                                       </div>\n                                       <div class=\"right\">\n                                          <div class=\"chat-message\"> " + textContent + " </div>\n                                          <div class=\"chat-avatars\">\n                                              <img src=\"" + require('./img/icon02.png') + "\" alt=\"\u5934\u50CF\" />\n                                          </div>\n                                       </div>\n                                  </div>\n                        ");
+                                //发送后清空输入框
+                                $('.div-textarea').html('');
+                                //聊天框默认最底部
+                                $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
+                                _a.label = 2;
+                            case 2: return [2 /*return*/];
+                        }
+                    });
+                }); });
+                $('#sendCustomrMsg').click(function () { return __awaiter(void 0, void 0, void 0, function () {
+                    var roomId, result;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                roomId = $('#roomId').val();
+                                return [4 /*yield*/, common_1.zg.sendCustomCommand(roomId, 'test', [$('#memberList').val()])];
+                            case 1:
+                                result = _a.sent();
+                                if (result.errorCode === 0) {
+                                    console.warn('sendCustomCommand suc');
+                                }
+                                else {
+                                    console.error('sendCustomCommand err', result.errorCode);
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+                $('#BarrageMessage').click(function () { return __awaiter(void 0, void 0, void 0, function () {
+                    var roomId, result;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                roomId = $('#roomId').val();
+                                if (!roomId) {
+                                    alert('roomId is empty');
+                                    return [2 /*return*/, false];
+                                }
+                                return [4 /*yield*/, common_1.zg.sendBarrageMessage(roomId, 'BarrageMessage test')];
+                            case 1:
+                                result = _a.sent();
+                                console.log('', result);
+                                if (result.errorCode === 0) {
+                                    console.warn('send BarrageMessage success');
+                                }
+                                else {
+                                    console.error('send BarrageMessage fail ', result.errorCode);
+                                }
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
                 return [2 /*return*/];
         }
     });
 }); });
-function initSDK() {
-    var _this = this;
-    zg = new webrtc_zego_express_1.ZegoClient(appId, server, userId);
-    zg.on('roomStateUpdate', function (state, reason, roomid) {
-        console.log(state, reason, roomid);
-    });
-    zg.on('publishStateChange', function () {
-        var stateInfo = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            stateInfo[_i] = arguments[_i];
-        }
-        console.log(stateInfo);
-    });
-    zg.on('pullStateChange', function () {
-        var stateInfo = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            stateInfo[_i] = arguments[_i];
-        }
-        console.log(stateInfo);
-    });
-    zg.on('remoteStreamUpdated', function (type, streamList) { return __awaiter(_this, void 0, void 0, function () {
-        var i, remoteStream, k, j;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (!(type == 0)) return [3 /*break*/, 5];
-                    i = 0;
-                    _a.label = 1;
-                case 1:
-                    if (!(i < streamList.length)) return [3 /*break*/, 4];
-                    console.info(streamList[i].streamId + ' was added');
-                    useLocalStreamList.push(streamList[i]);
-                    $('#memberList').append('<option value="' + streamList[i].anchorIdName + '">' + streamList[i].anchorNickName + '</option>');
-                    $('.remoteVideo').append($('<video  autoplay muted playsinline></video>'));
-                    return [4 /*yield*/, zg.getRemoteStream(streamList[i].streamId)];
-                case 2:
-                    remoteStream = _a.sent();
-                    $('.remoteVideo video:last-child')[0].srcObject = remoteStream;
-                    _a.label = 3;
-                case 3:
-                    i++;
-                    return [3 /*break*/, 1];
-                case 4: return [3 /*break*/, 6];
-                case 5:
-                    if (type == 1) {
-                        for (k = 0; k < useLocalStreamList.length; k++) {
-                            for (j = 0; j < streamList.length; j++) {
-                                if (useLocalStreamList[k].streamId === streamList[j].streamId) {
-                                    zg.stopRemoteStream(useLocalStreamList[k].streamId);
-                                    console.info(useLocalStreamList[k].streamId + 'was devared');
-                                    useLocalStreamList.splice(k, 1);
-                                    $('.remoteVideo video:eq(' + k + ')').remove();
-                                    $('#memberList option:eq(' + k + ')').remove();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    _a.label = 6;
-                case 6: return [2 /*return*/];
-            }
-        });
-    }); });
-}
-function login(roomId, isPublish) {
-    return __awaiter(this, void 0, void 0, function () {
-        var token, streamInfos, index, remoteStream;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, $.get('https://wsliveroom-alpha.zego.im:8282/token', { 'app_id': appId, 'id_name': userId })];
-                case 1:
-                    token = _a.sent();
-                    return [4 /*yield*/, zg.login(roomId, token)];
-                case 2:
-                    streamInfos = _a.sent();
-                    if (!(streamInfos && streamInfos.length > 0)) return [3 /*break*/, 7];
-                    index = 0;
-                    _a.label = 3;
-                case 3:
-                    if (!(index < streamInfos.length)) return [3 /*break*/, 6];
-                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                    $('#memberList').append('<option value="' + streamInfos[index].anchorIdName + '">' + streamInfos[index].anchorNickName + '</option>');
-                    return [4 /*yield*/, zg.getRemoteStream(streamInfos[index].streamId)];
-                case 4:
-                    remoteStream = _a.sent();
-                    $('.remoteVideo video:eq(' + index + ')')[0].srcObject = remoteStream;
-                    _a.label = 5;
-                case 5:
-                    index++;
-                    return [3 /*break*/, 3];
-                case 6:
-                    useLocalStreamList = streamInfos;
-                    _a.label = 7;
-                case 7:
-                    if (!isPublish) return [3 /*break*/, 9];
-                    return [4 /*yield*/, push()];
-                case 8:
-                    _a.sent();
-                    _a.label = 9;
-                case 9: return [2 /*return*/];
-            }
-        });
-    });
-}
-function push() {
-    return __awaiter(this, void 0, void 0, function () {
-        var localStream;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, zg.createLocalStream()];
-                case 1:
-                    localStream = _a.sent();
-                    previewVideo.srcObject = localStream;
-                    return [2 /*return*/];
-            }
-        });
-    });
-}

@@ -2,15 +2,16 @@
 import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
-import { ZegoClient } from 'webrtc-zego-express';
+import { ZegoExpressEngine } from 'webrtc-zego-express';
 import { StreamInfo, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
 import { getCgi } from './content';
 
 new VConsole();
 const userID: string = 'sample' + new Date().getTime();
+const userName: string = 'sampleUser' + new Date().getTime();
 const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 const publishStreamId = 'webrtc' + new Date().getTime();
-let zg: ZegoClient;
+let zg: ZegoExpressEngine;
 let appID = 1739272706;
 let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 let cgiToken = '';
@@ -35,29 +36,31 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 // Test code end
 
 // eslint-disable-next-line prefer-const
-zg = new ZegoClient(appID, server, userID);
+zg = new ZegoExpressEngine(appID, server);
 
 async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
-    console.log('sdk version is', zg.getCurrentVersion());
+    console.log('sdk version is', zg.getVersion());
     const result: {
         webRTC: boolean;
-        capture: boolean;
-        videoDecodeType: {
+        customCapture: boolean;
+        camera: boolean;
+        microphone: boolean;
+        videoCodec: {
             H264: boolean;
             H265: boolean;
             VP8: boolean;
             VP9: boolean;
         };
         screenSharing: boolean;
-    } = (await zg.detectRTC()) as any;
+    } = await zg.checkSystemRequirements();
 
-    !result.videoDecodeType.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
-    !result.videoDecodeType.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
+    !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
+    !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
 
     if (!result.webRTC) {
         alert('browser is not support webrtc!!');
         return false;
-    } else if (!result.videoDecodeType.H264 && !result.videoDecodeType.VP8) {
+    } else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
         alert('browser is not support H264 and VP8');
         return false;
     } else if (checkScreen && !result.screenSharing) {
@@ -73,7 +76,13 @@ async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
 async function start(): Promise<void> {
     initSDK();
 
-    zg.config({ userUpdate: true });
+    zg.setLogConfig({
+        logLevel: 'debug',
+        remoteLogLevel: 'info',
+        logURL: '',
+    });
+    // zg.config({ userUpdate: true });
+    // zg.setDebugVerbose(true);
 
     $('#createRoom').click(async () => {
         let loginSuc = false;
@@ -101,21 +110,21 @@ async function enumDevices(): Promise<any> {
 
     deviceInfo &&
         deviceInfo.microphones.map((item, index) => {
-            if (!item.label) {
-                item.label = 'microphone' + index;
+            if (!item.deviceName) {
+                item.deviceName = 'microphone' + index;
             }
-            audioInputList.push(' <option value="' + item.deviceID + '">' + item.label + '</option>');
-            console.log('microphone: ' + item.label);
+            audioInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
+            console.log('microphone: ' + item.deviceName);
             return item;
         });
 
     deviceInfo &&
         deviceInfo.cameras.map((item, index) => {
-            if (!item.label) {
-                item.label = 'camera' + index;
+            if (!item.deviceName) {
+                item.deviceName = 'camera' + index;
             }
-            videoInputList.push(' <option value="' + item.deviceID + '">' + item.label + '</option>');
-            console.log('camera: ' + item.label);
+            videoInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
+            console.log('camera: ' + item.deviceName);
             return item;
         });
 
@@ -128,20 +137,24 @@ async function enumDevices(): Promise<any> {
 
 function initSDK(): void {
     enumDevices();
-    zg.on('roomStateUpdate', (state, error: ERRO) => {
-        console.log('roomStateUpdate', state, error.code, error.msg);
+    zg.on('roomStateUpdate', (roomID, state, errorCode, extendedData) => {
+        console.log('roomStateUpdate: ', roomID, state, errorCode, extendedData);
     });
-    zg.on('roomUserUpdate', (roomID, updateType, userInfo) => {
-        console.warn(`room ${roomID} user ${updateType ? 'added' : 'left'} `, JSON.stringify(userInfo));
+    zg.on('roomUserUpdate', (roomID, updateType, userList) => {
+        console.warn(
+            `roomUserUpdate: room ${roomID}, user ${updateType === 'ADD' ? 'added' : 'left'} `,
+            JSON.stringify(userList),
+        );
     });
-    zg.on('publishStateUpdate', stateInfo => {
-        if (stateInfo.type == 0) {
+    zg.on('publisherStateUpdate', result => {
+        console.log('publisherStateUpdate: ', result.streamID);
+        if (result.state == 'PUBLISHING') {
             console.info(' publish  success');
-        } else if (stateInfo.type == 2) {
+        } else if (result.state == 'PUBLISH_REQUESTING') {
             console.info(' publish  retry');
         } else {
-            console.error('publish error ' + stateInfo.error.msg);
-            const _msg = stateInfo.error.msg;
+            console.error('publish error ' + result.errorCode);
+            // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
             //         const code = stateInfo.error.msg.replace ('server session closed, reason: ', '');
             //         if (code === '21') {
@@ -152,17 +165,18 @@ function initSDK(): void {
             //                 _msg = 'sdp 解释错误';
             //         }
             // }
-            alert('推流失败,reason = ' + _msg);
+            // alert('推流失败,reason = ' + _msg);
         }
     });
-    zg.on('playStateUpdate', stateInfo => {
-        if (stateInfo.type == 0) {
+    zg.on('playerStateUpdate', result => {
+        console.log('playerStateUpdate', result.streamID);
+        if (result.state == 'PLAYING') {
             console.info(' play  success');
-        } else if (stateInfo.type == 2) {
+        } else if (result.state == 'PLAY_REQUESTING') {
             console.info(' play  retry');
         } else {
-            console.error('publish error ' + stateInfo.error.msg);
-            const _msg = stateInfo.error.msg;
+            console.error('publish error ' + result.errorCode);
+            // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
             //         const code = stateInfo.error.msg.replace ('server session closed, reason: ', '');
             //         if (code === '21') {
@@ -173,11 +187,12 @@ function initSDK(): void {
             //                 _msg = 'sdp 解释错误';
             //         }
             // }
-            alert('拉流失败,reason = ' + _msg);
+            // alert('拉流失败,reason = ' + _msg);
         }
     });
-    zg.on('roomStreamUpdate', async (type, streamList) => {
-        if (type == 1) {
+    zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
+        console.log('roomStreamUpdate roomID ', roomID, streamList);
+        if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
                 useLocalStreamList.push(streamList[i]);
@@ -195,7 +210,7 @@ function initSDK(): void {
                 video.srcObject = remoteStream!;
                 video.muted = false;
             }
-        } else if (type == 0) {
+        } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
                 for (let j = 0; j < streamList.length; j++) {
                     if (useLocalStreamList[k].streamID === streamList[j].streamID) {
@@ -219,16 +234,24 @@ function initSDK(): void {
         }
     });
 
-    zg.on('playQualityUpdate', async streamQuality => {
+    zg.on('playQualityUpdate', async (streamID, streamQuality) => {
         console.log(
-            `play#${streamQuality.streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
+            `play#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
         );
     });
 
-    zg.on('publishQualityUpdate', async streamQuality => {
+    zg.on('publishQualityUpdate', async (streamID, streamQuality) => {
         console.log(
-            `publish#${streamQuality.streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
+            `publish#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
         );
+    });
+
+    zg.on('remoteCameraStatusUpdate', (streamID, status) => {
+        console.warn(`${streamID} camera status ${status == 'OPEN' ? 'open' : 'close'}`);
+    });
+
+    zg.on('remoteMicStatusUpdate', (streamID, status) => {
+        console.warn(`${streamID} micro status ${status == 'OPEN' ? 'open' : 'close'}`);
     });
 }
 
@@ -252,7 +275,7 @@ async function login(roomId: string): Promise<boolean> {
             id_name: userID,
         });
     }
-    return await zg.login(roomId, token);
+    return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true });
 }
 
 async function enterRoom(): Promise<boolean> {
@@ -273,7 +296,7 @@ async function logout(): Promise<void> {
     // stop publishing
     if (isPreviewed) {
         zg.stopPublishingStream(publishStreamId);
-        zg.destroyLocalStream(localStream);
+        zg.destroyStream(localStream);
         isPreviewed = false;
     }
 
@@ -290,18 +313,29 @@ async function logout(): Promise<void> {
 
     //退出登录
     //logout
-    zg.logout();
+    const roomId: string = $('#roomId').val() as string;
+    zg.logoutRoom(roomId);
 }
 
 async function push(publishOption?: webPublishOption): Promise<void> {
-    localStream = await zg.createLocalStream();
+    localStream = await zg.createStream();
     previewVideo.srcObject = localStream;
     isPreviewed = true;
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
     console.log('publish stream' + publishStreamId, result);
 }
 
-export { zg, publishStreamId, checkAnRun, useLocalStreamList, logout, enterRoom, push };
+$('#toggleCamera').click(function() {
+    zg.mutePublishStreamVideo(previewVideo.srcObject as MediaStream, $(this).hasClass('disabled'));
+    $(this).toggleClass('disabled');
+});
+
+$('#toggleSpeaker').click(function() {
+    zg.mutePublishStreamAudio(previewVideo.srcObject as MediaStream, $(this).hasClass('disabled'));
+    $(this).toggleClass('disabled');
+});
+
+export { zg, publishStreamId, checkAnRun, userID, useLocalStreamList, logout, enterRoom, push };
 
 $(window).on('unload', function() {
     logout();

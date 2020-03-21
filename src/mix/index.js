@@ -44,77 +44,93 @@ var common_1 = require("../common");
 var utils_1 = require("../assets/utils");
 var flv_js_1 = __importDefault(require("flv.js"));
 $(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var taskId, mixStreamId, mixVideo, hlsUrl, flvPlayer;
+    var taskID, mixStreamID, mixVideo, hlsUrl, flvPlayer;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, common_1.checkAnRun()];
             case 1:
                 _a.sent();
-                taskId = 'task-' + new Date().getTime();
-                mixStreamId = 'mixwebrtc-' + new Date().getTime();
+                taskID = 'task-' + new Date().getTime();
+                mixStreamID = 'mixwebrtc-' + new Date().getTime();
                 mixVideo = $('#mixVideo')[0];
                 flvPlayer = null;
                 $('#mixStream').click(function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var streamList, result, flvUrl, err_1;
+                    var streamList, res, result, flvUrl, err_1;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0:
                                 _a.trys.push([0, 2, , 3]);
-                                streamList = [{
-                                        streamId: common_1.publishStreamId,
+                                streamList = [
+                                    {
+                                        streamID: common_1.publishStreamId,
+                                        contentType: '',
                                         layout: {
                                             top: 0,
                                             left: 0,
                                             bottom: 240,
                                             right: 320,
-                                        }
-                                    }];
+                                        },
+                                    },
+                                ];
                                 if (common_1.useLocalStreamList.length !== 0) {
                                     streamList.push({
-                                        streamId: common_1.useLocalStreamList[0].streamId,
+                                        streamID: common_1.useLocalStreamList[0].streamID,
+                                        contentType: '',
                                         layout: {
                                             top: 240,
                                             left: 0,
                                             bottom: 480,
                                             right: 320,
-                                        }
+                                        },
                                     });
                                 }
-                                return [4 /*yield*/, common_1.zg.startMixStream({ taskId: taskId, inputList: streamList, outputList: [{
-                                                streamId: mixStreamId,
+                                return [4 /*yield*/, common_1.zg.startMixerTask({
+                                        taskID: taskID,
+                                        inputList: streamList,
+                                        outputList: [
+                                            {
+                                                streamID: mixStreamID,
                                                 outputUrl: 'rtmp://test.aliyun.zego.im/zegodemo',
                                                 outputBitrate: 300 * 1000,
                                                 outputFps: 15,
                                                 outputWidth: 320,
-                                                outputHeight: 480
-                                            }] })];
+                                                outputHeight: 480,
+                                            },
+                                        ],
+                                    })];
                             case 1:
-                                result = (_a.sent())[0];
-                                if (navigator.userAgent.indexOf('iPhone') !== -1 && utils_1.getBrowser() == 'Safari' && result && result.hlsUrl) {
-                                    hlsUrl = result.hlsUrl.replace('http', 'https');
-                                    mixVideo.src = hlsUrl;
-                                }
-                                else if (result.flvUrl) {
-                                    flvUrl = result.flvUrl.replace('http', 'https');
-                                    console.log('mixStreamId: ' + mixStreamId);
-                                    console.log('mixStreamUrl:' + flvUrl);
-                                    alert('混流开始。。。');
-                                    if (flv_js_1.default.isSupported()) {
-                                        flvPlayer = flv_js_1.default.createPlayer({
-                                            type: 'flv',
-                                            url: flvUrl
-                                        });
-                                        flvPlayer.attachMediaElement(mixVideo);
-                                        flvPlayer.load();
+                                res = _a.sent();
+                                if (res.errorCode == 0) {
+                                    result = JSON.parse(res.extendedData).mixerOutputList;
+                                    if (navigator.userAgent.indexOf('iPhone') !== -1 &&
+                                        utils_1.getBrowser() == 'Safari' &&
+                                        result &&
+                                        result[0].hlsURL) {
+                                        hlsUrl = result[0].hlsURL.replace('http', 'https');
+                                        mixVideo.src = hlsUrl;
                                     }
+                                    else if (result && result[0].flvURL) {
+                                        flvUrl = result[0].flvURL.replace('http', 'https');
+                                        console.log('mixStreamId: ' + mixStreamID);
+                                        console.log('mixStreamUrl:' + flvUrl);
+                                        alert('混流开始。。。');
+                                        if (flv_js_1.default.isSupported()) {
+                                            flvPlayer = flv_js_1.default.createPlayer({
+                                                type: 'flv',
+                                                url: flvUrl,
+                                            });
+                                            flvPlayer.attachMediaElement(mixVideo);
+                                            flvPlayer.load();
+                                        }
+                                    }
+                                    mixVideo.muted = false;
                                 }
-                                mixVideo.muted = false;
                                 $('#mixVideo').css('display', '');
                                 return [3 /*break*/, 3];
                             case 2:
                                 err_1 = _a.sent();
                                 alert('混流失败。。。');
-                                console.log('err: ' + JSON.stringify(err_1));
+                                console.error('err: ', err_1);
                                 return [3 /*break*/, 3];
                             case 3: return [2 /*return*/];
                         }
@@ -126,7 +142,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                         switch (_a.label) {
                             case 0:
                                 _a.trys.push([0, 2, , 3]);
-                                return [4 /*yield*/, common_1.zg.stopMixStream(taskId)];
+                                return [4 /*yield*/, common_1.zg.stopMixStream(taskID)];
                             case 1:
                                 _a.sent();
                                 alert('停止混流成功。。。');
@@ -146,7 +162,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                         }
                     });
                 }); });
-                $("#leaveRoom").unbind("click");
+                $('#leaveRoom').unbind('click');
                 $('#leaveRoom').click(function () {
                     mixVideo.src = '';
                     $('#mixVideo').css('display', 'none');
