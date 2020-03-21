@@ -1,9 +1,15 @@
-import path from 'path';
-import filterFileList from './tools';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import webpack from 'webpack';
-import miniCssExtractPlugin from 'mini-css-extract-plugin';
-import internalIp from 'internal-ip';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const filterFileList = require('./tools');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const webpack = require('webpack');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const miniCssExtractPlugin = require('mini-css-extract-plugin');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const internalIp = require('internal-ip');
 const targetList = [];
 const entry = {};
 const htmlPlugins = [];
