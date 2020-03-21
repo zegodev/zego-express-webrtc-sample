@@ -5,6 +5,7 @@ import flvjs from 'flv.js';
 
 $(async () => {
     await checkAnRun();
+    $('');
     const taskID = 'task-' + new Date().getTime();
     const mixStreamID = 'mixwebrtc-' + new Date().getTime();
     const mixVideo = $('#mixVideo')[0] as HTMLVideoElement;
@@ -52,6 +53,7 @@ $(async () => {
                 ],
             });
             if (res.errorCode == 0) {
+                $('#stopMixStream').removeAttr('disabled');
                 const result = JSON.parse(res.extendedData).mixerOutputList;
                 if (
                     navigator.userAgent.indexOf('iPhone') !== -1 &&
@@ -94,6 +96,7 @@ $(async () => {
                 flvPlayer = null;
             }
             console.log('stopMixStream success: ');
+            $('#stopMixStream').attr('disabled', 'disabled');
             $('#mixVideo').css('display', 'none');
         } catch (err) {
             alert('停止混流失败。。。');

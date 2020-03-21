@@ -50,6 +50,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
             case 0: return [4 /*yield*/, common_1.checkAnRun()];
             case 1:
                 _a.sent();
+                $('');
                 taskID = 'task-' + new Date().getTime();
                 mixStreamID = 'mixwebrtc-' + new Date().getTime();
                 mixVideo = $('#mixVideo')[0];
@@ -101,6 +102,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                             case 1:
                                 res = _a.sent();
                                 if (res.errorCode == 0) {
+                                    $('#stopMixStream').removeAttr('disabled');
                                     result = JSON.parse(res.extendedData).mixerOutputList;
                                     if (navigator.userAgent.indexOf('iPhone') !== -1 &&
                                         utils_1.getBrowser() == 'Safari' &&
@@ -151,6 +153,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                                     flvPlayer = null;
                                 }
                                 console.log('stopMixStream success: ');
+                                $('#stopMixStream').attr('disabled', 'disabled');
                                 $('#mixVideo').css('display', 'none');
                                 return [3 /*break*/, 3];
                             case 2:
