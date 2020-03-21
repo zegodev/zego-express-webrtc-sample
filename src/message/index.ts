@@ -2,14 +2,19 @@ import '../common';
 import 'popper.js';
 import './css/chat.css';
 import './font_Icon/iconfont.css';
-import { checkAnRun, zg } from '../common';
+import { checkAnRun, zg, userID } from '../common';
+import { User } from 'webrtc-zego-express/sdk/common/zego.entity';
 
 let msgCount = 0;
+let localUserList: User[] = [];
 $(async () => {
     await checkAnRun();
 
-    zg.on('IMRecvBroadcastMessage', (chatData: Array<{ fromUser: string; message: string; sendTime: number }>) => {
-        const chatBox = `
+    zg.on(
+        'IMRecvBroadcastMessage',
+        (_roomID: string, chatData: Array<{ fromUser: User; message: string; sendTime: number }>) => {
+            console.log('IMRecvBroadcastMessage roomID ', _roomID);
+            const chatBox = `
                   <div class="clearfloat">
                     <div class="author-name"><small class="chat-date">${new Date().toLocaleString()}</small></div>
                     <div class="left">
@@ -19,18 +24,52 @@ $(async () => {
                 </div>
                 `;
 
-        $('.chatBox-content-demo').append(chatBox);
-        //发送后清空输入框
-        $('.div-textarea').html('');
-        //聊天框默认最底部
-        $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
+            $('.chatBox-content-demo').append(chatBox);
+            //发送后清空输入框
+            $('.div-textarea').html('');
+            //聊天框默认最底部
+            $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
 
-        msgCount++;
-        $('.chat-message-num').text(msgCount);
-        $('.chatBox').show();
-        $('.chatBox-kuang').show();
+            msgCount++;
+            $('.chat-message-num').text(msgCount);
+            $('.chatBox').show();
+            $('.chatBox-kuang').show();
+        },
+    );
+
+    zg.on(
+        'IMRecvBarrageMessage',
+        (_roomID: string, chatData: Array<{ fromUser: User; message: string; sendTime: number }>) => {
+            console.log('IMRecvBarrageMessage roomID ', _roomID, chatData);
+            $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + JSON.stringify(chatData) + ' | ' + _roomID);
+            $('#showAlert').click();
+        },
+    );
+    zg.on('IMRecvCustomCommand', (_roomID: string, fromUser: User, command: string) => {
+        console.log('IMRecvCustomCommand roomID ', _roomID, ' ', fromUser.userID, ' send ', command);
+        $('#exampleModalLabel').text(
+            'IMRecvCustomCommand roomID ' + _roomID + ' ' + fromUser.userID + ' send ' + command,
+        );
+        $('#showAlert').click();
     });
-
+    zg.on('roomUserUpdate', (roomID, updateType, userList) => {
+        console.warn(
+            `roomUserUpdate: room ${roomID}, user ${updateType === 'ADD' ? 'added' : 'left'} `,
+            JSON.stringify(userList),
+        );
+        if (updateType === 'ADD') {
+            localUserList.push(...userList);
+        } else if (updateType === 'DELETE') {
+            userList.forEach(user => {
+                localUserList = localUserList.filter(item => item.userID !== user.userID);
+            });
+        }
+        let userListHtml = '';
+        localUserList.forEach(user => {
+            user.userID !== userID && (userListHtml += `<option value= ${user.userID}>${user.userName}</option>`);
+        });
+        $('#memberList').html(userListHtml);
+    });
     $('.chatBox').hide();
 
     //打开/关闭聊天框
@@ -48,8 +87,18 @@ $(async () => {
             .html()
             .replace(/[\n\r]/g, '<br>');
         if (textContent) {
-            await zg.sendBroadcastMessage(textContent);
-            console.warn('send Message success');
+            const roomId: string = $('#roomId').val() as string;
+            if (!roomId) {
+                alert('roomId is empty');
+                return false;
+            }
+            const result = await zg.sendBroadcastMessage(roomId, textContent);
+            console.log('', result);
+            if (result.errorCode === 0) {
+                console.warn('send Message success');
+            } else {
+                console.error('send Message fail ', result.errorCode);
+            }
 
             $('.chatBox-content-demo').append(`
                                     <div class="clearfloat">
@@ -68,6 +117,31 @@ $(async () => {
             $('.div-textarea').html('');
             //聊天框默认最底部
             $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
+        }
+    });
+
+    $('#sendCustomrMsg').click(async () => {
+        const roomId: string = $('#roomId').val() as string;
+        const result = await zg.sendCustomCommand(roomId, 'test', [$('#memberList').val() as string]);
+        if (result.errorCode === 0) {
+            console.warn('sendCustomCommand suc');
+        } else {
+            console.error('sendCustomCommand err', result.errorCode);
+        }
+    });
+
+    $('#BarrageMessage').click(async () => {
+        const roomId: string = $('#roomId').val() as string;
+        if (!roomId) {
+            alert('roomId is empty');
+            return false;
+        }
+        const result = await zg.sendBarrageMessage(roomId, 'BarrageMessage test');
+        console.log('', result);
+        if (result.errorCode === 0) {
+            console.warn('send BarrageMessage success');
+        } else {
+            console.error('send BarrageMessage fail ', result.errorCode);
         }
     });
 });

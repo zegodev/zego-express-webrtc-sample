@@ -2,9 +2,9 @@
 import VConsole from 'vconsole';
 import '../assets/bootstrap.min';
 import '../assets/bootstrap.min.css';
-import { ZegoClient } from 'webrtc-zego-express';
+import { ZegoExpressEngine } from 'webrtc-zego-express';
 import { StreamInfo, WebQualityStats, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
-import { ZegoVideoDecodeType } from 'webrtc-zego-express/types';
+import { ZegoVideoCodec } from 'webrtc-zego-express/types';
 import { getCgi } from '../content';
 
 new VConsole();
@@ -20,7 +20,7 @@ let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
 let isPreviewed = false;
 let localStream: MediaStream;
-let videoDecodeType: ZegoVideoDecodeType | undefined = 'H264';
+let videoCodec: ZegoVideoCodec | undefined = 'H264';
 
 ({ appID, server, cgiToken } = getCgi(appID, server, cgiToken));
 if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
@@ -30,30 +30,30 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
     });
 }
 
-const zg = new ZegoClient(appID, server, userID);
+const zg = new ZegoExpressEngine(appID, server);
 
 async function checkAnRun(): Promise<boolean> {
-    console.log('sdk version is', zg.getCurrentVersion());
+    console.log('sdk version is', zg.getVersion());
     const result: {
         webRTC: boolean;
         capture: boolean;
-        videoDecodeType: {
+        videoCodec: {
             H264: boolean;
             H265: boolean;
             VP8: boolean;
             VP9: boolean;
         };
         screenSharing: boolean;
-    } = (await zg.detectRTC()) as any;
-    videoDecodeType = result.videoDecodeType.VP8 ? 'VP8' : result.videoDecodeType.H264 ? 'H264' : undefined;
-    $('#videoCodeType option:eq(0)').val(videoDecodeType ? videoDecodeType : '');
-    !result.videoDecodeType.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
-    !result.videoDecodeType.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
+    } = (await zg.checkSystemRequirements()) as any;
+    videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
+    $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
+    !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
+    !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
 
     if (!result.webRTC) {
         alert('browser is not support webrtc!!');
         return false;
-    } else if (!result.videoDecodeType.H264 && !result.videoDecodeType.VP8) {
+    } else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
         alert('browser is not support H264 and VP8');
         return false;
     } else {
@@ -68,20 +68,20 @@ async function start() {
     initSDK();
 
     $('#createRoom').click(async () => {
-        if ($('#videoDecodeType').val()) {
-            videoDecodeType = $('#videoDecodeType').val() as ZegoVideoDecodeType;
+        if ($('#videoCodec').val()) {
+            videoCodec = $('#videoCodec').val() as ZegoVideoCodec;
         }
         const extraInfo = JSON.stringify({
-            currentVideoCode: videoDecodeType,
+            currentVideoCode: videoCodec,
             mixStreamId,
         });
         const loginSuc = await enterRoom();
-        loginSuc && (await push({ extraInfo, videoDecodeType }));
+        loginSuc && (await push({ extraInfo, videoCodec: videoCodec }));
     });
 
     $('#openRoom').click(async () => {
-        if ($('#videoDecodeType').val()) {
-            videoDecodeType = $('#videoDecodeType').val() as ZegoVideoDecodeType;
+        if ($('#videoCodec').val()) {
+            videoCodec = $('#videoCodec').val() as ZegoVideoCodec;
         }
         await enterRoom();
     });
@@ -93,18 +93,19 @@ async function start() {
 
 function initSDK() {
     enumDevices();
-    zg.on('roomStateUpdate', (state: string, error: ERRO) => {
-        console.log('roomStateUpdate', state, error.code, error.msg);
+    zg.on('roomStateUpdate', (roomID: string, state: string, errorCode: number) => {
+        console.log('roomStateUpdate', roomID, state, errorCode);
     });
-    zg.on('publishStateUpdate', stateInfo => {
-        if (stateInfo.type == 0) {
+    zg.on('publisherStateUpdate', result => {
+        console.log(`publisherStateUpdate roomID:${result.streamID}`);
+        if (result.state == 'PUBLISHING') {
             console.info(' publish  success');
             mixStream();
-        } else if (stateInfo.type == 2) {
+        } else if (result.state == 'PUBLISH_REQUESTING') {
             console.info(' publish  retry');
         } else {
-            console.error('publish error ' + stateInfo.error.msg);
-            const _msg = stateInfo.error.msg;
+            console.error('publish error code ' + result.errorCode);
+            // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
             //         const code = stateInfo.error.msg.replace ('server session closed, reason: ', '');
             //         if (code === '21') {
@@ -115,17 +116,17 @@ function initSDK() {
             //                 _msg = 'sdp 解释错误';
             //         }
             // }
-            alert('推流失败,reason = ' + _msg);
+            // alert('推流失败,reason = ' + _msg);
         }
     });
-    zg.on('playStateUpdate', stateInfo => {
-        if (stateInfo.type == 0) {
+    zg.on('playerStateUpdate', result => {
+        if (result.state == 'PLAYING') {
             console.info(' play  success');
-        } else if (stateInfo.type == 2) {
+        } else if (result.state == 'PLAY_REQUESTING') {
             console.info(' play  retry');
         } else {
-            console.error('publish error ' + stateInfo.error.msg);
-            const _msg = stateInfo.error.msg;
+            console.error('publish error code ' + result.errorCode);
+            // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
             //         const code = stateInfo.error.msg.replace ('server session closed, reason: ', '');
             //         if (code === '21') {
@@ -136,16 +137,17 @@ function initSDK() {
             //                 _msg = 'sdp 解释错误';
             //         }
             // }
-            alert('拉流失败,reason = ' + _msg);
+            // alert('拉流失败,reason = ' + _msg);
         }
     });
-    zg.on('roomStreamUpdate', async (type, streamList) => {
-        if (type == 1) {
+    zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
+        console.log(`roomStreamUpdate roomID: ${roomID}`);
+        if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
                 useLocalStreamList.push(streamList[i] as StreamInfo);
                 $('#memberList').append(
-                    '<option value="' + streamList[i].userID + '">' + streamList[i].userName + '</option>',
+                    '<option value="' + streamList[i].user.userID + '">' + streamList[i].user.userName + '</option>',
                 );
                 $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
 
@@ -154,7 +156,7 @@ function initSDK() {
                 video.srcObject = remoteStream;
                 video.muted = false;
             }
-        } else if (type == 0) {
+        } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
                 for (let j = 0; j < streamList.length; j++) {
                     if (useLocalStreamList[k].streamID === streamList[j].streamID) {
@@ -174,15 +176,15 @@ function initSDK() {
             }
         }
     });
-    zg.on('playQualityUpdate', async streamQuality => {
+    zg.on('playQualityUpdate', async (streamID, streamQuality) => {
         console.log(
-            `play#${streamQuality.streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
+            `play#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
         );
     });
 
-    zg.on('publishQualityUpdate', async streamQuality => {
+    zg.on('publishQualityUpdate', async (streamID, streamQuality) => {
         console.log(
-            `publish#${streamQuality.streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
+            `publish#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
         );
     });
 }
@@ -194,21 +196,21 @@ async function enumDevices() {
 
     deviceInfo &&
         deviceInfo.microphones.map((item, index) => {
-            if (!item.label) {
-                item.label = 'microphone' + index;
+            if (!item.deviceName) {
+                item.deviceName = 'microphone' + index;
             }
-            audioInputList.push(' <option value="' + item.deviceID + '">' + item.label + '</option>');
-            console.log('microphone: ' + item.label);
+            audioInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
+            console.log('microphone: ' + item.deviceName);
             return item;
         });
 
     deviceInfo &&
         deviceInfo.cameras.map((item, index) => {
-            if (!item.label) {
-                item.label = 'camera' + index;
+            if (!item.deviceName) {
+                item.deviceName = 'camera' + index;
             }
-            videoInputList.push(' <option value="' + item.deviceID + '">' + item.label + '</option>');
-            console.log('camera: ' + item.label);
+            videoInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
+            console.log('camera: ' + item.deviceName);
             return item;
         });
 
@@ -231,7 +233,12 @@ async function mixStream() {
             },
         },
     ];
-    const [result] = await zg.startMixStream({
+    console.error('videoCodec', videoCodec);
+    const res = await zg.setMixerTaskConfig({
+        videoCodec: videoCodec === 'VP8' ? 'h264' : 'vp8',
+    });
+    console.log('setMixerTaskConfig ', res);
+    const result = await zg.startMixerTask({
         taskID,
         inputList: streamList,
         outputList: [
@@ -244,10 +251,8 @@ async function mixStream() {
                 outputHeight: 480,
             },
         ],
-        advance: {
-            videoCodec: videoDecodeType === 'VP8' ? 'h264' : 'vp8',
-        },
     });
+    console.log('startMixerTask ', result.errorCode);
 }
 
 async function login(roomId: string): Promise<boolean> {
@@ -263,7 +268,7 @@ async function login(roomId: string): Promise<boolean> {
     } else {
         token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appID, id_name: userID });
     }
-    return await zg.login(roomId, token);
+    return await zg.loginRoom(roomId, token, { userID, userName: userID });
 }
 
 async function enterRoom(): Promise<boolean> {
@@ -283,7 +288,7 @@ async function logout() {
     if (isPreviewed) {
         await zg.stopMixStream(taskID);
         zg.stopPublishingStream(publishStreamId);
-        zg.destroyLocalStream(localStream);
+        zg.destroyStream(localStream);
         isPreviewed = false;
     }
 
@@ -300,7 +305,8 @@ async function logout() {
 
     //退出登录
     //logout
-    zg.logout();
+    const roomId: string = $('#roomId').val() as string;
+    zg.logoutRoom(roomId);
 }
 
 async function getRemoteByCodeType(stream: StreamInfo): Promise<MediaStream | null> {
@@ -309,24 +315,25 @@ async function getRemoteByCodeType(stream: StreamInfo): Promise<MediaStream | nu
     let _stream: MediaStream | null = null;
     if (extraInfo) {
         const extraInfoObject: any = JSON.parse(extraInfo);
-        if (extraInfoObject.currentVideoCode !== videoDecodeType) {
+        console.error('v ', extraInfoObject, videoCodec);
+        if (extraInfoObject.currentVideoCode !== videoCodec) {
             streamId = extraInfoObject.mixStreamId;
-            extraInfoObject.currentVideoCode = videoDecodeType;
+            extraInfoObject.currentVideoCode = videoCodec;
             _stream = await new Promise((resolve, reject) => {
                 setTimeout(async () => {
-                    const $stream = await zg.startPlayingStream(streamId, { videoDecodeType });
+                    const $stream = await zg.startPlayingStream(streamId, { videoCodec: videoCodec });
                     resolve($stream);
                 }, 2000);
             });
         } else {
-            _stream = await zg.startPlayingStream(streamId, { videoDecodeType });
+            _stream = await zg.startPlayingStream(streamId, { videoCodec: videoCodec });
         }
     }
     return _stream;
 }
 
 async function push(publishOption?: webPublishOption) {
-    localStream = await zg.createLocalStream();
+    localStream = await zg.createStream();
     previewVideo.srcObject = localStream;
     isPreviewed = true;
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);

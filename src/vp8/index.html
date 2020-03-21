@@ -76,9 +76,9 @@
             <div class="col-sm">
                 <div class="input-group input-group-sm mb-3">
                     <div class="input-group-prepend">
-                        <label class="input-group-text" for="videoDecodeType"><strong class="text-gray-dark">视频编码</strong></label>
+                        <label class="input-group-text" for="videoCodec"><strong class="text-gray-dark">视频编码</strong></label>
                     </div>
-                    <select class="custom-select" id="videoDecodeType" style="width: 60%">
+                    <select class="custom-select" id="videoCodec" style="width: 60%">
                         <option value="">自动</option>
                         <option value="H264">H264</option>
                         <option value="VP8">VP8</option>
@@ -99,9 +99,9 @@
         </div>
         <div class="row">
             <div class="col-sm">
-                <button type="button" id="createRoom" class="btn btn-primary btn-sm">创建房间（主播）</button>
-                <button type="button" id="openRoom" class="btn btn-primary btn-sm">进入房间（观众）</button>
-                <button type="button" id="startLive" class="btn btn-primary btn-sm">发起连麦（观众）</button>
+                <button type="button" id="createRoom" class="btn btn-primary btn-sm">进入房间（推流）</button>
+                <button type="button" id="openRoom" class="btn btn-primary btn-sm">进入房间（不推流）</button>
+                <button type="button" id="startLive" class="btn btn-primary btn-sm">发起连麦（不推流）</button>
                 <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm">退出</button>
             </div>
         </div>

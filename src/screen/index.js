@@ -57,11 +57,11 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                         switch (_a.label) {
                             case 0:
                                 _a.trys.push([0, 2, , 3]);
-                                return [4 /*yield*/, common_1.zg.createLocalStream({ screen: {} })];
+                                return [4 /*yield*/, common_1.zg.createStream({ screen: true })];
                             case 1:
                                 screeStream = _a.sent();
                                 previewScreenVideo.srcObject = screeStream;
-                                publisRes = common_1.zg.publishLocalStream(screenStreamId, screeStream);
+                                publisRes = common_1.zg.startPublishingStream(screenStreamId, screeStream);
                                 screenPublished = publisRes;
                                 console.log('publish screeStream', publisRes);
                                 return [3 /*break*/, 3];
@@ -75,11 +75,12 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                 }); });
                 $('#stopScreenShot').click(function () {
                     if (screenPublished) {
-                        common_1.zg.stopPublishLocalStream(screenStreamId);
-                        common_1.zg.destroyLocalStream(screeStream);
+                        common_1.zg.stopPublishingStream(screenStreamId);
                     }
+                    common_1.zg.destroyStream(screeStream);
+                    previewScreenVideo.srcObject = null;
                 });
-                $("#leaveRoom").unbind("click");
+                $('#leaveRoom').unbind('click');
                 $('#leaveRoom').click(function () {
                     $('#stopScreenShot').click();
                     common_1.logout();

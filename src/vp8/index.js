@@ -38,43 +38,55 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable @typescript-eslint/no-use-before-define */
 var vconsole_1 = __importDefault(require("vconsole"));
 require("../assets/bootstrap.min");
 require("../assets/bootstrap.min.css");
 var webrtc_zego_express_1 = require("webrtc-zego-express");
+var content_1 = require("../content");
 new vconsole_1.default();
-var zg;
-var appId = 96527232;
-var server = 'wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appId + '-api.zego.im:8282/ws';
-var userId = 'sample' + new Date().getTime();
+var userID = 'sample' + new Date().getTime();
+var tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
+var publishStreamId = 'webrtc' + new Date().getTime();
+var taskID = 'task-' + new Date().getTime();
+var mixStreamId = 'mix-' + publishStreamId;
+var appID = 96527232;
+var server = 'wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws';
+var cgiToken = '';
 var previewVideo;
 var useLocalStreamList = [];
 var isPreviewed = false;
-var publishStreamId = 'webrtc' + new Date().getTime();
 var localStream;
-var taskId = 'task-' + new Date().getTime();
-var mixStreamId = 'mix-' + publishStreamId;
-var videoDecodeType = 'H264';
+var videoCodec = 'H264';
+(_a = content_1.getCgi(appID, server, cgiToken), appID = _a.appID, server = _a.server, cgiToken = _a.cgiToken);
+if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
+    $.get(cgiToken, function (rsp) {
+        cgiToken = rsp.data;
+        console.log(cgiToken);
+    });
+}
+var zg = new webrtc_zego_express_1.ZegoExpressEngine(appID, server);
 function checkAnRun() {
     return __awaiter(this, void 0, void 0, function () {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    console.log('sdk version is', webrtc_zego_express_1.ZegoClient.getCurrentVersion());
-                    return [4 /*yield*/, webrtc_zego_express_1.ZegoClient.detectRTC()];
+                    console.log('sdk version is', zg.getVersion());
+                    return [4 /*yield*/, zg.checkSystemRequirements()];
                 case 1:
-                    result = _a.sent();
-                    videoDecodeType = result.videoDecodeType.VP8 ? 'VP8' : (result.videoDecodeType.H264 ? 'H264' : undefined);
-                    $("#videoCodeType option:eq(0)").val(videoDecodeType ? videoDecodeType : '');
-                    !result.videoDecodeType.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
-                    !result.videoDecodeType.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
-                    if (!result.webRtc) {
+                    result = (_a.sent());
+                    videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
+                    $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
+                    !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
+                    !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
+                    if (!result.webRTC) {
                         alert('browser is not support webrtc!!');
                         return [2 /*return*/, false];
                     }
-                    else if ((!result.videoDecodeType.H264 && !result.videoDecodeType.VP8)) {
+                    else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
                         alert('browser is not support H264 and VP8');
                         return [2 /*return*/, false];
                     }
@@ -82,7 +94,7 @@ function checkAnRun() {
                         previewVideo = $('#previewVideo')[0];
                         start();
                     }
-                    return [2 /*return*/];
+                    return [2 /*return*/, true];
             }
         });
     });
@@ -97,19 +109,19 @@ function start() {
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0:
-                            if ($('#videoDecodeType').val()) {
-                                videoDecodeType = $('#videoDecodeType').val();
+                            if ($('#videoCodec').val()) {
+                                videoCodec = $('#videoCodec').val();
                             }
                             extraInfo = JSON.stringify({
-                                currentVideoCode: videoDecodeType,
-                                mixStreamId: mixStreamId
+                                currentVideoCode: videoCodec,
+                                mixStreamId: mixStreamId,
                             });
                             return [4 /*yield*/, enterRoom()];
                         case 1:
                             loginSuc = _b.sent();
                             _a = loginSuc;
                             if (!_a) return [3 /*break*/, 3];
-                            return [4 /*yield*/, push({ extraInfo: extraInfo, videoDecodeType: videoDecodeType })];
+                            return [4 /*yield*/, push({ extraInfo: extraInfo, videoCodec: videoCodec })];
                         case 2:
                             _a = (_b.sent());
                             _b.label = 3;
@@ -123,8 +135,8 @@ function start() {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            if ($('#videoDecodeType').val()) {
-                                videoDecodeType = $('#videoDecodeType').val();
+                            if ($('#videoCodec').val()) {
+                                videoCodec = $('#videoCodec').val();
                             }
                             return [4 /*yield*/, enterRoom()];
                         case 1:
@@ -142,22 +154,22 @@ function start() {
 }
 function initSDK() {
     var _this = this;
-    zg = new webrtc_zego_express_1.ZegoClient(appId, server, userId);
     enumDevices();
-    zg.on('roomStateUpdate', function (state, error) {
-        console.log('roomStateUpdate', state, error.code, error.msg);
+    zg.on('roomStateUpdate', function (roomID, state, errorCode) {
+        console.log('roomStateUpdate', roomID, state, errorCode);
     });
-    zg.on('publishStateChange', function (stateInfo) {
-        if (stateInfo.type == 0) {
+    zg.on('publisherStateUpdate', function (result) {
+        console.log("publisherStateUpdate roomID:" + result.streamID);
+        if (result.state == 'PUBLISHING') {
             console.info(' publish  success');
             mixStream();
         }
-        else if (stateInfo.type == 2) {
+        else if (result.state == 'PUBLISH_REQUESTING') {
             console.info(' publish  retry');
         }
         else {
-            console.error('publish error ' + stateInfo.error.msg);
-            var _msg = stateInfo.error.msg;
+            console.error('publish error code ' + result.errorCode);
+            // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
             //         const code = stateInfo.error.msg.replace ('server session closed, reason: ', '');
             //         if (code === '21') {
@@ -168,19 +180,19 @@ function initSDK() {
             //                 _msg = 'sdp 解释错误';
             //         }
             // }
-            alert('推流失败,reason = ' + _msg);
+            // alert('推流失败,reason = ' + _msg);
         }
     });
-    zg.on('pullStateChange', function (stateInfo) {
-        if (stateInfo.type == 0) {
+    zg.on('playerStateUpdate', function (result) {
+        if (result.state == 'PLAYING') {
             console.info(' play  success');
         }
-        else if (stateInfo.type == 2) {
+        else if (result.state == 'PLAY_REQUESTING') {
             console.info(' play  retry');
         }
         else {
-            console.error('publish error ' + stateInfo.error.msg);
-            var _msg = stateInfo.error.msg;
+            console.error('publish error code ' + result.errorCode);
+            // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
             //         const code = stateInfo.error.msg.replace ('server session closed, reason: ', '');
             //         if (code === '21') {
@@ -191,23 +203,24 @@ function initSDK() {
             //                 _msg = 'sdp 解释错误';
             //         }
             // }
-            alert('拉流失败,reason = ' + _msg);
+            // alert('拉流失败,reason = ' + _msg);
         }
     });
-    zg.on('remoteStreamUpdated', function (type, streamList) { return __awaiter(_this, void 0, void 0, function () {
+    zg.on('roomStreamUpdate', function (roomID, updateType, streamList) { return __awaiter(_this, void 0, void 0, function () {
         var i, remoteStream, video, k, j, extraInfoObject;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!(type == 0)) return [3 /*break*/, 5];
+                    console.log("roomStreamUpdate roomID: " + roomID);
+                    if (!(updateType == 'ADD')) return [3 /*break*/, 5];
                     i = 0;
                     _a.label = 1;
                 case 1:
                     if (!(i < streamList.length)) return [3 /*break*/, 4];
-                    console.info(streamList[i].streamId + ' was added');
+                    console.info(streamList[i].streamID + ' was added');
                     useLocalStreamList.push(streamList[i]);
-                    $('#memberList').append('<option value="' + streamList[i].userId + '">' + streamList[i].userName + '</option>');
-                    $('.remoteVideo').append($('<video  autoplay muted playsinline></video>'));
+                    $('#memberList').append('<option value="' + streamList[i].user.userID + '">' + streamList[i].user.userName + '</option>');
+                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
                     return [4 /*yield*/, getRemoteByCodeType(useLocalStreamList[i])];
                 case 2:
                     remoteStream = _a.sent();
@@ -220,14 +233,14 @@ function initSDK() {
                     return [3 /*break*/, 1];
                 case 4: return [3 /*break*/, 6];
                 case 5:
-                    if (type == 1) {
+                    if (updateType == 'DELETE') {
                         for (k = 0; k < useLocalStreamList.length; k++) {
                             for (j = 0; j < streamList.length; j++) {
-                                if (useLocalStreamList[k].streamId === streamList[j].streamId) {
+                                if (useLocalStreamList[k].streamID === streamList[j].streamID) {
                                     extraInfoObject = JSON.parse(useLocalStreamList[k].extraInfo);
-                                    zg.stopRemoteStream(useLocalStreamList[k].streamId);
-                                    extraInfoObject.mixStreamId && zg.stopRemoteStream(extraInfoObject.mixStreamId);
-                                    console.info(useLocalStreamList[k].streamId + 'was devared');
+                                    zg.stopPlayingStream(useLocalStreamList[k].streamID);
+                                    extraInfoObject.mixStreamId && zg.stopPlayingStream(extraInfoObject.mixStreamId);
+                                    console.info(useLocalStreamList[k].streamID + 'was devared');
                                     useLocalStreamList.splice(k, 1);
                                     $('.remoteVideo video:eq(' + k + ')').remove();
                                     $('#memberList option:eq(' + k + ')').remove();
@@ -241,9 +254,18 @@ function initSDK() {
             }
         });
     }); });
-    zg.getStats(5000, function (stats) {
-        console.log('stream quality', stats);
-    });
+    zg.on('playQualityUpdate', function (streamID, streamQuality) { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            console.log("play#" + streamID + " videoFPS: " + streamQuality.video.videoFPS + " videoBitrate: " + streamQuality.video.videoBitrate + " audioBitrate: " + streamQuality.audio.audioBitrate);
+            return [2 /*return*/];
+        });
+    }); });
+    zg.on('publishQualityUpdate', function (streamID, streamQuality) { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            console.log("publish#" + streamID + " videoFPS: " + streamQuality.video.videoFPS + " videoBitrate: " + streamQuality.video.videoBitrate + " audioBitrate: " + streamQuality.audio.audioBitrate);
+            return [2 /*return*/];
+        });
+    }); });
 }
 function enumDevices() {
     return __awaiter(this, void 0, void 0, function () {
@@ -255,22 +277,24 @@ function enumDevices() {
                     return [4 /*yield*/, zg.enumDevices()];
                 case 1:
                     deviceInfo = _a.sent();
-                    deviceInfo && deviceInfo.microphones.map(function (item, index) {
-                        if (!item.label) {
-                            item.label = 'microphone' + index;
-                        }
-                        audioInputList.push(' <option value="' + item.deviceId + '">' + item.label + '</option>');
-                        console.log('microphone: ' + item.label);
-                        return item;
-                    });
-                    deviceInfo && deviceInfo.cameras.map(function (item, index) {
-                        if (!item.label) {
-                            item.label = 'camera' + index;
-                        }
-                        videoInputList.push(' <option value="' + item.deviceId + '">' + item.label + '</option>');
-                        console.log('camera: ' + item.label);
-                        return item;
-                    });
+                    deviceInfo &&
+                        deviceInfo.microphones.map(function (item, index) {
+                            if (!item.deviceName) {
+                                item.deviceName = 'microphone' + index;
+                            }
+                            audioInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
+                            console.log('microphone: ' + item.deviceName);
+                            return item;
+                        });
+                    deviceInfo &&
+                        deviceInfo.cameras.map(function (item, index) {
+                            if (!item.deviceName) {
+                                item.deviceName = 'camera' + index;
+                            }
+                            videoInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
+                            console.log('camera: ' + item.deviceName);
+                            return item;
+                        });
                     audioInputList.push('<option value="0">禁止</option>');
                     videoInputList.push('<option value="0">禁止</option>');
                     $('#audioList').html(audioInputList.join(''));
@@ -282,36 +306,45 @@ function enumDevices() {
 }
 function mixStream() {
     return __awaiter(this, void 0, void 0, function () {
-        var streamList, result;
+        var streamList, res, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    streamList = [{
-                            streamId: publishStreamId,
+                    streamList = [
+                        {
+                            streamID: publishStreamId,
                             layout: {
                                 top: 0,
                                 left: 0,
                                 bottom: 480,
                                 right: 640,
-                            }
-                        }];
-                    return [4 /*yield*/, zg.startMixStream({
-                            taskId: taskId,
+                            },
+                        },
+                    ];
+                    console.error('videoCodec', videoCodec);
+                    return [4 /*yield*/, zg.setMixerTaskConfig({
+                            videoCodec: videoCodec === 'VP8' ? 'h264' : 'vp8',
+                        })];
+                case 1:
+                    res = _a.sent();
+                    console.log('setMixerTaskConfig ', res);
+                    return [4 /*yield*/, zg.startMixerTask({
+                            taskID: taskID,
                             inputList: streamList,
-                            outputList: [{
-                                    streamId: mixStreamId,
+                            outputList: [
+                                {
+                                    streamID: mixStreamId,
                                     outputUrl: '',
                                     outputBitrate: 300 * 1000,
                                     outputFps: 15,
                                     outputWidth: 640,
-                                    outputHeight: 480
-                                }],
-                            advance: {
-                                videoCodec: videoDecodeType === 'VP8' ? 'h264' : 'vp8'
-                            }
+                                    outputHeight: 480,
+                                },
+                            ],
                         })];
-                case 1:
-                    result = (_a.sent())[0];
+                case 2:
+                    result = _a.sent();
+                    console.log('startMixerTask ', result.errorCode);
                     return [2 /*return*/];
             }
         });
@@ -319,23 +352,29 @@ function mixStream() {
 }
 function login(roomId) {
     return __awaiter(this, void 0, void 0, function () {
-        var token, streamInfos;
+        var token;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, $.get('https://wsliveroom-alpha.zego.im:8282/token', { 'app_id': appId, 'id_name': userId })];
+                case 0:
+                    token = '';
+                    if (!cgiToken) return [3 /*break*/, 2];
+                    return [4 /*yield*/, $.get(tokenUrl, { app_id: appID, id_name: userID, cgi_token: cgiToken })];
                 case 1:
                     token = _a.sent();
-                    return [4 /*yield*/, zg.login(roomId, token)];
-                case 2:
-                    streamInfos = _a.sent();
-                    return [2 /*return*/, streamInfos];
+                    return [3 /*break*/, 4];
+                case 2: return [4 /*yield*/, $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appID, id_name: userID })];
+                case 3:
+                    token = _a.sent();
+                    _a.label = 4;
+                case 4: return [4 /*yield*/, zg.loginRoom(roomId, token, { userID: userID, userName: userID })];
+                case 5: return [2 /*return*/, _a.sent()];
             }
         });
     });
 }
 function enterRoom() {
     return __awaiter(this, void 0, void 0, function () {
-        var roomId, index, remoteStream, video;
+        var roomId;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -345,51 +384,40 @@ function enterRoom() {
                         return [2 /*return*/, false];
                     }
                     return [4 /*yield*/, login(roomId)];
-                case 1:
-                    useLocalStreamList = _a.sent();
-                    if (!(useLocalStreamList && useLocalStreamList.length > 0)) return [3 /*break*/, 5];
-                    index = 0;
-                    _a.label = 2;
-                case 2:
-                    if (!(index < useLocalStreamList.length)) return [3 /*break*/, 5];
-                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                    $('#memberList').append('<option value="' + useLocalStreamList[index].userId + '">' + useLocalStreamList[index].userName + '</option>');
-                    return [4 /*yield*/, getRemoteByCodeType(useLocalStreamList[index])];
-                case 3:
-                    remoteStream = _a.sent();
-                    video = $('.remoteVideo video:eq(' + index + ')')[0];
-                    video.srcObject = remoteStream;
-                    video.muted = false;
-                    _a.label = 4;
-                case 4:
-                    index++;
-                    return [3 /*break*/, 2];
-                case 5: return [2 /*return*/, true];
+                case 1: return [2 /*return*/, _a.sent()];
             }
         });
     });
 }
 function logout() {
     return __awaiter(this, void 0, void 0, function () {
-        var i;
+        var i, roomId;
         return __generator(this, function (_a) {
-            console.info('leave room  and close stream');
-            // 停止推流
-            if (isPreviewed) {
-                zg.stopPublishLocalStream(publishStreamId);
-                zg.destroyLocalStream(localStream);
-                isPreviewed = false;
+            switch (_a.label) {
+                case 0:
+                    console.info('leave room  and close stream');
+                    if (!isPreviewed) return [3 /*break*/, 2];
+                    return [4 /*yield*/, zg.stopMixStream(taskID)];
+                case 1:
+                    _a.sent();
+                    zg.stopPublishingStream(publishStreamId);
+                    zg.destroyStream(localStream);
+                    isPreviewed = false;
+                    _a.label = 2;
+                case 2:
+                    // 停止拉流
+                    // stop playing stream
+                    for (i = 0; i < useLocalStreamList.length; i++) {
+                        zg.stopPlayingStream(useLocalStreamList[i].streamID);
+                    }
+                    // 清空页面
+                    // clear page
+                    useLocalStreamList = [];
+                    $('.remoteVideo').html('');
+                    roomId = $('#roomId').val();
+                    zg.logoutRoom(roomId);
+                    return [2 /*return*/];
             }
-            // 停止拉流
-            for (i = 0; i < useLocalStreamList.length; i++) {
-                zg.stopRemoteStream(useLocalStreamList[i].streamId);
-            }
-            // 清空页面
-            useLocalStreamList = [];
-            $('.remoteVideo').html('');
-            //退出登录
-            zg.logout();
-            return [2 /*return*/];
         });
     });
 }
@@ -400,19 +428,21 @@ function getRemoteByCodeType(stream) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    extraInfo = stream.extraInfo, streamId = stream.streamId;
+                    extraInfo = stream.extraInfo;
+                    streamId = stream.streamID;
                     _stream = null;
                     if (!extraInfo) return [3 /*break*/, 4];
                     extraInfoObject = JSON.parse(extraInfo);
-                    if (!(extraInfoObject.currentVideoCode !== videoDecodeType)) return [3 /*break*/, 2];
+                    console.error('v ', extraInfoObject, videoCodec);
+                    if (!(extraInfoObject.currentVideoCode !== videoCodec)) return [3 /*break*/, 2];
                     streamId = extraInfoObject.mixStreamId;
-                    extraInfoObject.currentVideoCode = videoDecodeType;
+                    extraInfoObject.currentVideoCode = videoCodec;
                     return [4 /*yield*/, new Promise(function (resolve, reject) {
                             setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
                                 var $stream;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: return [4 /*yield*/, zg.getRemoteStream(streamId, { videoDecodeType: videoDecodeType })];
+                                        case 0: return [4 /*yield*/, zg.startPlayingStream(streamId, { videoCodec: videoCodec })];
                                         case 1:
                                             $stream = _a.sent();
                                             resolve($stream);
@@ -424,7 +454,7 @@ function getRemoteByCodeType(stream) {
                 case 1:
                     _stream = _a.sent();
                     return [3 /*break*/, 4];
-                case 2: return [4 /*yield*/, zg.getRemoteStream(streamId, { videoDecodeType: videoDecodeType })];
+                case 2: return [4 /*yield*/, zg.startPlayingStream(streamId, { videoCodec: videoCodec })];
                 case 3:
                     _stream = _a.sent();
                     _a.label = 4;
@@ -438,12 +468,12 @@ function push(publishOption) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, zg.createLocalStream()];
+                case 0: return [4 /*yield*/, zg.createStream()];
                 case 1:
                     localStream = _a.sent();
                     previewVideo.srcObject = localStream;
                     isPreviewed = true;
-                    result = zg.publishLocalStream(publishStreamId, localStream, publishOption);
+                    result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
                     console.log('publish stream' + publishStreamId, result);
                     return [2 /*return*/];
             }
@@ -451,7 +481,7 @@ function push(publishOption) {
     });
 }
 function setConfig(param) {
-    param.appId && (appId = param.appId);
+    param.appID && (appID = param.appID);
 }
 $(function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
@@ -463,3 +493,6 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
         }
     });
 }); });
+$(window).on('unload', function () {
+    logout();
+});

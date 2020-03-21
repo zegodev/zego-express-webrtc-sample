@@ -15,7 +15,7 @@ $(async () => {
 
     $('#screenShot').click(async () => {
         try {
-            screeStream = await zg.createLocalStream({ screen: true });
+            screeStream = await zg.createStream({ screen: true });
             previewScreenVideo.srcObject = screeStream;
             const publisRes: boolean = zg.startPublishingStream(screenStreamId, screeStream);
             screenPublished = publisRes;
@@ -29,7 +29,7 @@ $(async () => {
         if (screenPublished) {
             zg.stopPublishingStream(screenStreamId);
         }
-        zg.destroyLocalStream(screeStream);
+        zg.destroyStream(screeStream);
         previewScreenVideo.srcObject = null;
     });
 

@@ -15,6 +15,7 @@ $(async () => {
             const streamList = [
                 {
                     streamID: publishStreamId,
+                    contentType: '',
                     layout: {
                         top: 0,
                         left: 0,
@@ -26,6 +27,7 @@ $(async () => {
             if (useLocalStreamList.length !== 0) {
                 streamList.push({
                     streamID: useLocalStreamList[0].streamID,
+                    contentType: '',
                     layout: {
                         top: 240,
                         left: 0,
@@ -35,7 +37,7 @@ $(async () => {
                 });
             }
 
-            const [result] = await zg.startMixStream({
+            const res = await zg.startMixerTask({
                 taskID,
                 inputList: streamList,
                 outputList: [
@@ -49,29 +51,37 @@ $(async () => {
                     },
                 ],
             });
-
-            if (navigator.userAgent.indexOf('iPhone') !== -1 && getBrowser() == 'Safari' && result && result.hlsUrl) {
-                hlsUrl = result.hlsUrl.replace('http', 'https');
-                mixVideo.src = hlsUrl;
-            } else if (result.flvUrl) {
-                const flvUrl = result.flvUrl.replace('http', 'https');
-                console.log('mixStreamId: ' + mixStreamID);
-                console.log('mixStreamUrl:' + flvUrl);
-                alert('混流开始。。。');
-                if (flvjs.isSupported()) {
-                    flvPlayer = flvjs.createPlayer({
-                        type: 'flv',
-                        url: flvUrl,
-                    });
-                    flvPlayer.attachMediaElement(mixVideo);
-                    flvPlayer.load();
+            if (res.errorCode == 0) {
+                const result = JSON.parse(res.extendedData).mixerOutputList;
+                if (
+                    navigator.userAgent.indexOf('iPhone') !== -1 &&
+                    getBrowser() == 'Safari' &&
+                    result &&
+                    result[0].hlsURL
+                ) {
+                    hlsUrl = result[0].hlsURL.replace('http', 'https');
+                    mixVideo.src = hlsUrl;
+                } else if (result && result[0].flvURL) {
+                    const flvUrl = result[0].flvURL.replace('http', 'https');
+                    console.log('mixStreamId: ' + mixStreamID);
+                    console.log('mixStreamUrl:' + flvUrl);
+                    alert('混流开始。。。');
+                    if (flvjs.isSupported()) {
+                        flvPlayer = flvjs.createPlayer({
+                            type: 'flv',
+                            url: flvUrl,
+                        });
+                        flvPlayer.attachMediaElement(mixVideo);
+                        flvPlayer.load();
+                    }
                 }
+                mixVideo.muted = false;
             }
-            mixVideo.muted = false;
+
             $('#mixVideo').css('display', '');
         } catch (err) {
             alert('混流失败。。。');
-            console.log('err: ' + JSON.stringify(err));
+            console.error('err: ', err);
         }
     });
 
@@ -95,6 +105,7 @@ $(async () => {
     $('#leaveRoom').click(function() {
         mixVideo.src = '';
         $('#mixVideo').css('display', 'none');
+
         logout();
     });
 });
