@@ -56,8 +56,7 @@ exports.publishStreamId = publishStreamId;
 var zg;
 exports.zg = zg;
 var appID = 1739272706;
-// let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
-var server = 'wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
+var server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 var cgiToken = '';
 //const appSign = '';
 var previewVideo;
@@ -122,7 +121,7 @@ function start() {
                 logURL: '',
             });
             // zg.config({ userUpdate: true });
-            // zg.setDebugVerbose(true);
+            zg.setDebugVerbose(false);
             $('#createRoom').click(function () { return __awaiter(_this, void 0, void 0, function () {
                 var loginSuc, _a, error_1;
                 return __generator(this, function (_b) {
