@@ -335,7 +335,13 @@ async function getRemoteByCodeType(stream: StreamInfo): Promise<MediaStream | nu
 }
 
 async function push(publishOption?: webPublishOption) {
-    localStream = await zg.createStream();
+    console.warn('createStream', $('#audioList').val(), $('#videoList').val());
+    localStream = await zg.createStream({
+        camera: {
+            audioInput: $('#audioList').val() as string,
+            videoInput: $('#videoList').val() as string,
+        },
+    });
     previewVideo.srcObject = localStream;
     isPreviewed = true;
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
