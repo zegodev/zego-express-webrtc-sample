@@ -288,7 +288,7 @@ async function logout() {
     // 停止推流
     // stop publishing
     if (isPreviewed) {
-        await zg.stopMixStream(taskID);
+        await zg.stopMixerTask(taskID);
         zg.stopPublishingStream(publishStreamId);
         zg.destroyStream(localStream);
         isPreviewed = false;

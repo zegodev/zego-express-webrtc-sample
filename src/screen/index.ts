@@ -1,8 +1,12 @@
-import { checkAnRun, logout, publishStreamId, zg } from '../common';
+import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg } from '../common';
 
 $(async () => {
     await checkAnRun(true);
-
+    console.log('supportScreenSharing', supportScreenSharing);
+    if (!supportScreenSharing) {
+        $('#screenShot').attr('disabled', 'disabled');
+        $('#stopScreenShot').attr('disabled', 'disabled');
+    }
     const screenStreamId = publishStreamId + 'screen';
     const previewScreenVideo = $('#previewScreenVideo')[0] as HTMLVideoElement;
     let screenPublished = false;

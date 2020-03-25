@@ -19,6 +19,7 @@ let cgiToken = '';
 let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
 let isPreviewed = false;
+let supportScreenSharing = false;
 
 let localStream: MediaStream;
 
@@ -63,9 +64,9 @@ async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
     } else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
         alert('browser is not support H264 and VP8');
         return false;
-    } else if (checkScreen && !result.screenSharing) {
-        alert('browser is not support screenSharing');
     } else {
+        supportScreenSharing = result.screenSharing;
+        if (checkScreen && !supportScreenSharing) alert('browser is not support screenSharing');
         previewVideo = $('#previewVideo')[0] as HTMLVideoElement;
         start();
     }
@@ -335,7 +336,7 @@ $('#toggleSpeaker').click(function() {
     $(this).toggleClass('disabled');
 });
 
-export { zg, publishStreamId, checkAnRun, userID, useLocalStreamList, logout, enterRoom, push };
+export { zg, publishStreamId, checkAnRun, supportScreenSharing, userID, useLocalStreamList, logout, enterRoom, push };
 
 $(window).on('unload', function() {
     logout();

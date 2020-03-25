@@ -89,7 +89,7 @@ $(async () => {
 
     $('#stopMixStream').click(async () => {
         try {
-            await zg.stopMixStream(taskID);
+            await zg.stopMixerTask(taskID);
             alert('停止混流成功。。。');
             if (flvPlayer) {
                 flvPlayer.destroy();
