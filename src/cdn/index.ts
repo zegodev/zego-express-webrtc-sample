@@ -6,7 +6,7 @@ import flvjs from 'flv.js';
 $(async () => {
     await checkAnRun();
     $('#cdnAddPush').click(async () => {
-        const result = await zg.addPublishCDNURL(publishStreamId, '', $('#cdnPushUrl').val() + publishStreamId);
+        const result = await zg.addPublishCdnUrl(publishStreamId, '', $('#cdnPushUrl').val() + publishStreamId);
         if (result.errorCode == 0) {
             console.warn('add push target success');
         } else {
@@ -15,7 +15,7 @@ $(async () => {
     });
 
     $('#cdnDelPush').click(async () => {
-        const result = await zg.removePublishCDNURL(publishStreamId, '', $('#cdnPushUrl').val() + publishStreamId);
+        const result = await zg.removePublishCdnUrl(publishStreamId, '', $('#cdnPushUrl').val() + publishStreamId);
         if (result.errorCode == 0) {
             console.warn('del push target success');
         } else {
