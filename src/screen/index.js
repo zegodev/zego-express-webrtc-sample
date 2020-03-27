@@ -44,6 +44,11 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
             case 0: return [4 /*yield*/, common_1.checkAnRun(true)];
             case 1:
                 _a.sent();
+                console.log('supportScreenSharing', common_1.supportScreenSharing);
+                if (!common_1.supportScreenSharing) {
+                    $('#screenShot').attr('disabled', 'disabled');
+                    $('#stopScreenShot').attr('disabled', 'disabled');
+                }
                 screenStreamId = common_1.publishStreamId + 'screen';
                 previewScreenVideo = $('#previewScreenVideo')[0];
                 screenPublished = false;

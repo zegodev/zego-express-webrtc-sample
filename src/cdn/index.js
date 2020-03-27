@@ -48,7 +48,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                     var result;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, common_1.zg.addPublishCDNURL(common_1.publishStreamId, $('#cdnPushUrl').val() + common_1.publishStreamId)];
+                            case 0: return [4 /*yield*/, common_1.zg.addPublishCdnUrl(common_1.publishStreamId, '', $('#cdnPushUrl').val() + common_1.publishStreamId)];
                             case 1:
                                 result = _a.sent();
                                 if (result.errorCode == 0) {
@@ -65,7 +65,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                     var result;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, common_1.zg.removePublishCDNURL(common_1.publishStreamId, $('#cdnPushUrl').val() + common_1.publishStreamId)];
+                            case 0: return [4 /*yield*/, common_1.zg.removePublishCdnUrl(common_1.publishStreamId, '', $('#cdnPushUrl').val() + common_1.publishStreamId)];
                             case 1:
                                 result = _a.sent();
                                 if (result.errorCode == 0) {
@@ -73,23 +73,6 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                                 }
                                 else {
                                     console.warn('del push target fail ' + result.errorCode);
-                                }
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                $('#cdnClearPush').click(function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var result;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, common_1.zg.clearPublishCDNURL(common_1.publishStreamId, $('#cdnPushUrl').val() + common_1.publishStreamId)];
-                            case 1:
-                                result = _a.sent();
-                                if (result.errorCode == 0) {
-                                    console.warn('clear push target success');
-                                }
-                                else {
-                                    console.warn('clear push target fail ' + result.errorCode);
                                 }
                                 return [2 /*return*/];
                         }

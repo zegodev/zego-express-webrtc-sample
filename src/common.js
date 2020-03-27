@@ -63,6 +63,8 @@ var previewVideo;
 var useLocalStreamList = [];
 exports.useLocalStreamList = useLocalStreamList;
 var isPreviewed = false;
+var supportScreenSharing = false;
+exports.supportScreenSharing = supportScreenSharing;
 var localStream;
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
@@ -79,37 +81,47 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 exports.zg = zg = new webrtc_zego_express_1.ZegoExpressEngine(appID, server);
 function checkAnRun(checkScreen) {
     return __awaiter(this, void 0, void 0, function () {
-        var result;
+        var boolean;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log('sdk version is', zg.getVersion());
-                    return [4 /*yield*/, zg.checkSystemRequirements()];
-                case 1:
-                    result = _a.sent();
-                    !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
-                    !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
-                    if (!result.webRTC) {
-                        alert('browser is not support webrtc!!');
-                        return [2 /*return*/, false];
-                    }
-                    else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
-                        alert('browser is not support H264 and VP8');
-                        return [2 /*return*/, false];
-                    }
-                    else if (checkScreen && !result.screenSharing) {
-                        alert('browser is not support screenSharing');
-                    }
-                    else {
-                        previewVideo = $('#previewVideo')[0];
-                        start();
-                    }
-                    return [2 /*return*/, true];
+            console.log('sdk version is', zg.getVersion());
+            boolean = (void 0).result.webRTC;
+            customCapture: boolean;
+            camera: boolean;
+            microphone: boolean;
+            videoCodec: {
+                H264: boolean;
+                H265: boolean;
+                VP8: boolean;
+                VP9: boolean;
             }
+            ;
+            screenSharing: boolean;
+            return [2 /*return*/];
         });
     });
 }
 exports.checkAnRun = checkAnRun;
+extendedData;
+await zg.checkSystemRequirements();
+console.warn('checkSystemRequirements ', result);
+!result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
+!result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
+if (!result.webRTC) {
+    alert('browser is not support webrtc!!');
+    return false;
+}
+else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
+    alert('browser is not support H264 and VP8');
+    return false;
+}
+else {
+    exports.supportScreenSharing = supportScreenSharing = result.screenSharing;
+    if (checkScreen && !supportScreenSharing)
+        alert('browser is not support screenSharing');
+    previewVideo = $('#previewVideo')[0];
+    start();
+}
+return true;
 function start() {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
@@ -290,6 +302,7 @@ function initSDK() {
                     return [3 /*break*/, 7];
                 case 5:
                     video = $('.remoteVideo video:last')[0];
+                    console.warn('video', video);
                     video.srcObject = remoteStream;
                     video.muted = false;
                     _a.label = 6;
@@ -423,7 +436,14 @@ function push(publishOption) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, zg.createStream()];
+                case 0:
+                    console.warn('createStream', $('#audioList').val(), $('#videoList').val());
+                    return [4 /*yield*/, zg.createStream({
+                            camera: {
+                                audioInput: $('#audioList').val(),
+                                videoInput: $('#videoList').val(),
+                            },
+                        })];
                 case 1:
                     localStream = _a.sent();
                     previewVideo.srcObject = localStream;
