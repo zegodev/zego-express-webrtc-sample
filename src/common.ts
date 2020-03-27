@@ -54,11 +54,13 @@ async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
     } else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
         alert('browser is not support H264 and VP8');
         return false;
-    } else {
+    } else if (result.videoCodec.H264) {
         supportScreenSharing = result.screenSharing;
         if (checkScreen && !supportScreenSharing) alert('browser is not support screenSharing');
         previewVideo = $('#previewVideo')[0] as HTMLVideoElement;
         start();
+    } else {
+        alert('不支持H264，请前往混流转码测试');
     }
 
     return true;
