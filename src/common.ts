@@ -41,10 +41,9 @@ zg = new ZegoExpressEngine(appID, server);
 
 async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
     console.log('sdk version is', zg.getVersion());
-    const { result, extendedData } = await zg.checkSystemRequirements();
+    const result = await zg.checkSystemRequirements();
 
     console.warn('checkSystemRequirements ', result);
-    extendedData && console.error('extendedData', extendedData);
     !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
     !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
 
@@ -191,7 +190,6 @@ function initSDK(): void {
                 useLocalStreamList.push(streamList[i]);
                 let remoteStream: MediaStream;
 
-                $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
                 try {
                     remoteStream = await zg.startPlayingStream(streamList[i].streamID);
                 } catch (error) {
@@ -199,8 +197,9 @@ function initSDK(): void {
                     break;
                 }
 
+                $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
                 const video = $('.remoteVideo video:last')[0] as HTMLVideoElement;
-                console.warn('video', video);
+                console.warn('video', video, remoteStream);
                 video.srcObject = remoteStream!;
                 video.muted = false;
             }
