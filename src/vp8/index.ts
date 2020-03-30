@@ -34,19 +34,10 @@ const zg = new ZegoExpressEngine(appID, server);
 
 async function checkAnRun(): Promise<boolean> {
     console.log('sdk version is', zg.getVersion());
-    const result: {
-        webRTC: boolean;
-        customCapture: boolean;
-        camera: boolean;
-        microphone: boolean;
-        videoCodec: {
-            H264: boolean;
-            H265: boolean;
-            VP8: boolean;
-            VP9: boolean;
-        };
-        screenSharing: boolean;
-    } = await zg.checkSystemRequirements();
+    const { result, extendedData } = await zg.checkSystemRequirements();
+
+    console.warn('checkSystemRequirements ', result);
+    extendedData && console.error('extendedData', extendedData);
     videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
     $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
     !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');

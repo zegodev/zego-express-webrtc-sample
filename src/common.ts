@@ -41,20 +41,10 @@ zg = new ZegoExpressEngine(appID, server);
 
 async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
     console.log('sdk version is', zg.getVersion());
-    const result: {
-        webRTC: boolean;
-        customCapture: boolean;
-        camera: boolean;
-        microphone: boolean;
-        videoCodec: {
-            H264: boolean;
-            H265: boolean;
-            VP8: boolean;
-            VP9: boolean;
-        };
-        screenSharing: boolean;
-    } = await zg.checkSystemRequirements();
+    const { result, extendedData } = await zg.checkSystemRequirements();
 
+    console.warn('checkSystemRequirements ', result);
+    extendedData && console.error('extendedData', extendedData);
     !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
     !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
 
@@ -64,11 +54,13 @@ async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
     } else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
         alert('browser is not support H264 and VP8');
         return false;
-    } else {
+    } else if (result.videoCodec.H264) {
         supportScreenSharing = result.screenSharing;
         if (checkScreen && !supportScreenSharing) alert('browser is not support screenSharing');
         previewVideo = $('#previewVideo')[0] as HTMLVideoElement;
         start();
+    } else {
+        alert('不支持H264，请前往混流转码测试');
     }
 
     return true;
@@ -208,6 +200,7 @@ function initSDK(): void {
                 }
 
                 const video = $('.remoteVideo video:last')[0] as HTMLVideoElement;
+                console.warn('video', video);
                 video.srcObject = remoteStream!;
                 video.muted = false;
             }

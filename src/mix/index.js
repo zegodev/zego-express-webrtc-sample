@@ -144,7 +144,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                         switch (_a.label) {
                             case 0:
                                 _a.trys.push([0, 2, , 3]);
-                                return [4 /*yield*/, common_1.zg.stopMixStream(taskID)];
+                                return [4 /*yield*/, common_1.zg.stopMixerTask(taskID)];
                             case 1:
                                 _a.sent();
                                 alert('停止混流成功。。。');

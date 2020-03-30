@@ -397,7 +397,7 @@ function logout() {
                 case 0:
                     console.info('leave room  and close stream');
                     if (!isPreviewed) return [3 /*break*/, 2];
-                    return [4 /*yield*/, zg.stopMixStream(taskID)];
+                    return [4 /*yield*/, zg.stopMixerTask(taskID)];
                 case 1:
                     _a.sent();
                     zg.stopPublishingStream(publishStreamId);
@@ -468,7 +468,14 @@ function push(publishOption) {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, zg.createStream()];
+                case 0:
+                    console.warn('createStream', $('#audioList').val(), $('#videoList').val());
+                    return [4 /*yield*/, zg.createStream({
+                            camera: {
+                                audioInput: $('#audioList').val(),
+                                videoInput: $('#videoList').val(),
+                            },
+                        })];
                 case 1:
                     localStream = _a.sent();
                     previewVideo.srcObject = localStream;
