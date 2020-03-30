@@ -147,6 +147,9 @@ function initSDK() {
                 const video = $('.remoteVideo video:eq(' + i + ')')[0] as HTMLVideoElement;
                 video.srcObject = remoteStream;
                 video.muted = false;
+                setTimeout(() => {
+                    video.play();
+                }, 2000);
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
