@@ -42,15 +42,18 @@ $(async () => {
                 taskID,
                 inputList: streamList,
                 outputList: [
-                    {
-                        streamID: mixStreamID,
-                        outputUrl: 'rtmp://test.aliyun.zego.im/zegodemo',
-                        outputBitrate: 300 * 1000,
-                        outputFps: 15,
-                        outputWidth: 320,
-                        outputHeight: 480,
-                    },
+                    mixStreamID,
+                    // {
+                    //     target: mixStreamID,
+                    //     // target: 'rtmp://test.aliyun.zego.im/livestream/zegodemo',
+                    // },
                 ],
+                outputConfig: {
+                    outputBitrate: 300,
+                    outputFps: 15,
+                    outputWidth: 320,
+                    outputHeight: 480,
+                },
             });
             if (res.errorCode == 0) {
                 $('#stopMixStream').removeAttr('disabled');

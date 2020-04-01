@@ -238,14 +238,15 @@ async function mixStream() {
         inputList: streamList,
         outputList: [
             {
-                streamID: mixStreamId,
-                outputUrl: '',
-                outputBitrate: 300 * 1000,
-                outputFps: 15,
-                outputWidth: 640,
-                outputHeight: 480,
+                target: mixStreamId,
             },
         ],
+        outputConfig: {
+            outputBitrate: 300,
+            outputFps: 15,
+            outputWidth: 640,
+            outputHeight: 480,
+        },
     });
     console.log('startMixerTask ', result.errorCode);
 }
