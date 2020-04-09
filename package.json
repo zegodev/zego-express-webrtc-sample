@@ -20,7 +20,8 @@
     "flv.js": "^1.5.0",
     "http-server": "^0.11.1",
     "jquery": "^3.4.1",
-    "vconsole": "^3.3.4"
+    "vconsole": "^3.3.4",
+    "zego-express-engine-webrtc": "^1.2.1"
   },
   "devDependencies": {
     "@types/bootstrap": "^4.3.1",

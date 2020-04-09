@@ -2,8 +2,8 @@
 import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
-import { ZegoExpressEngine } from 'webrtc-zego-express';
-import { StreamInfo, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
+import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
+import { StreamInfo, webPublishOption, ERRO } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from './content';
 
 new VConsole();

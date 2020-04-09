@@ -2,10 +2,10 @@
 import VConsole from 'vconsole';
 import '../assets/bootstrap.min';
 import '../assets/bootstrap.min.css';
-import { ZegoExpressEngine } from 'webrtc-zego-express';
-import { StreamInfo, WebQualityStats, webPublishOption, ERRO } from 'webrtc-zego-express/sdk/common/zego.entity';
-import { ZegoVideoCodec } from 'webrtc-zego-express/types';
+import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
+import { StreamInfo, webPublishOption } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from '../content';
+import { ZegoVideoCodec } from 'zego-express-engine-webrtc/types';
 
 new VConsole();
 const userID: string = 'sample' + new Date().getTime();
