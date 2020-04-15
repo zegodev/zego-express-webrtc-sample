@@ -316,6 +316,8 @@ async function push(publishOption?: webPublishOption): Promise<void> {
         camera: {
             audioInput: $('#audioList').val() as string,
             videoInput: $('#videoList').val() as string,
+            video: $('#videoList').val() === '0' ? false : true,
+            audio: $('#audioList').val() === '0' ? false : true,
         },
     });
     previewVideo.srcObject = localStream;

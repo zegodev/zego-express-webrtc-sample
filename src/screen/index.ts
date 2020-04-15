@@ -14,12 +14,18 @@ $(async () => {
 
     // 点击系统停止共享
     zg.on('screenSharingEnded', () => {
+        console.warn('screen sharing end');
         $('#stopScreenShot').click();
     });
 
     $('#screenShot').click(async () => {
         try {
-            screeStream = await zg.createStream({ screen: true });
+            screeStream = await zg.createStream({
+                screen: {
+                    audio: true,
+                    videoQuality: 1,
+                },
+            });
             previewScreenVideo.srcObject = screeStream;
             const publisRes: boolean = zg.startPublishingStream(screenStreamId, screeStream);
             screenPublished = publisRes;
