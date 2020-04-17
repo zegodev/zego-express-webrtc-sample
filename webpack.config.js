@@ -47,8 +47,6 @@ targetList
         }
     });
 
-console.log(entry);
-
 module.exports = {
     entry,
     mode: 'development',
