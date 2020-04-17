@@ -19,20 +19,18 @@ module.exports = function filterFileList (rootName, result, targetDirNames, unRe
     //逐个读取文件夹下一层目录，并在读取到文件夹时递归，直到读取到文件为止
     for (let i = 0; i < paths.length; i++) {
         const _path = paths[i];
-
         const _stats = fs.lstatSync(path.resolve(rootName, _path));
-
-        if (_stats.size == 0) {
-            result.push(path.resolve(rootName, _path));
-            //return;
-        } else if (_stats.isDirectory()) {
+        //console.log(path.resolve(rootName, _path), _stats.isDirectory(), _stats.size == 0);
+        if (_stats.isDirectory()) {
             const subPaths = filterFileList(path.resolve(rootName, _path), result, targetDirNames, unReadDirNames);
             //console.log('sub_paths', sub_paths);
+        } else if (_stats.size == 0) {
+            result.push(path.resolve(rootName, _path));
         } else if (_stats.isFile) {
             //console.log('file_path', path.resolve(rootName, _path));
             result.push(path.resolve(rootName, _path));
         }
     }
-
+    //console.log(result);
     return result;
 };

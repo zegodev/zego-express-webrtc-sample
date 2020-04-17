@@ -18,7 +18,7 @@ entry['content'] = targetList.find(item => item.endsWith('content.ts'));
 targetList
     .filter(item => item.endsWith('index.ts'))
     .forEach(p => {
-        const regResult = /.+src\/(.+)\/index.ts$/.exec(p);
+        const regResult = /.+src[\/|\\](.+)[\/|\\]index.ts$/.exec(p);
         if (regResult && regResult[1]) {
             entry[regResult[1]] = regResult[0];
         }
@@ -46,6 +46,8 @@ targetList
             );
         }
     });
+
+console.log(entry);
 
 module.exports = {
     entry,
