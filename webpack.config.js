@@ -34,6 +34,7 @@ targetList
                     template: tepmlate,
                     chunks: [regResult[1]],
                     filename: regResult[1] + '/index.html',
+                    favicon: './src/favicon.ico',
                 }),
             );
         } else if (tepmlate.includes('src/index.html')) {
@@ -42,6 +43,7 @@ targetList
                     template: './src/index.html',
                     filename: 'index.html',
                     chunks: ['content'],
+                    favicon: './src/favicon.ico',
                 }),
             );
         }
