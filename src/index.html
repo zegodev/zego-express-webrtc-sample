@@ -61,10 +61,10 @@
         <div class="d-flex align-items-center p-3 my-3 text-white-50 bg-darkgrey rounded box-shadow"
             style="justify-content: space-between;">
             <div class="lh-100">
-                <h6 class="mb-0 text-white lh-100">视频互动及通讯功能Demo</h6>
+                <h6 class="mb-0 text-white lh-100 title">视频互动及通讯功能Demo</h6>
             </div>
             <div><a id="source" href="https://github.com/zegodev/zego-express-webrtc-sample" target="_blank"><span
-                        style="margin-right: 5px; color: #fff; text-decoration: none">源码</span><img
+                        style="margin-right: 5px; color: #fff; text-decoration: none" class="source">源码</span><img
                         src="https://zegodev.gitee.io/webrtcdemo-js/assets/github.png" alt="源码" title="源码"
                         class="iconfont"></a></div>
         </div>
@@ -73,49 +73,49 @@
             <div class="col-sm-2">
                 <button class="btn btn-primary btn-lg" style="width: 100%;margin-bottom: 5px"
                     onclick="scrollToPoint('#base')">
-                    <h6 class="mb-0 text-white lh-100">基础功能</h6>
+                    <h6 class="mb-0 text-white lh-100 base">基础功能</h6>
                 </button>
             </div>
 
             <div class="col-sm-2">
                 <button class="btn btn-primary btn-lg" style="width: 100%;margin-bottom: 5px"
                     onclick="scrollToPoint('#advanced')">
-                    <h6 class="mb-0 text-white lh-100">进阶功能</h6>
+                    <h6 class="mb-0 text-white lh-100 advanced">进阶功能</h6>
                 </button>
             </div>
 
             <div class="col-sm-2">
                 <button class="btn btn-primary btn-lg" style="width: 100%;margin-bottom: 5px"
                     onclick="scrollToPoint('#tool')">
-                    <h6 class="mb-0 text-white lh-100">辅助工具及组件</h6>
+                    <h6 class="mb-0 text-white lh-100 auxiliary">辅助工具及组件</h6>
                 </button>
             </div>
 
             <div class="col-sm-2">
                 <button class="btn btn-primary btn-lg" style="width: 100%;margin-bottom: 5px"
                     onclick="scrollToPoint('#demo')">
-                    <h6 class="mb-0 text-white lh-100">完整Demo</h6>
+                    <h6 class="mb-0 text-white lh-100 complete">完整Demo</h6>
                 </button>
             </div>
 
             <div class="col-sm-2">
                 <button class="btn btn-primary btn-lg" style="width: 100%;margin-bottom: 5px"
                     onclick="go('https://doc-zh.zego.im/zh/306.html')">
-                    <h6 class="mb-0 text-white lh-100">API文档</h6>
+                    <h6 class="mb-0 text-white lh-100 api">API文档</h6>
                 </button>
             </div>
 
             <div class="col-sm-2">
                 <button class="btn btn-primary btn-lg" style="width: 100%"
-                    onclick="go('https://github.com/zegodev/webrtcDemo-js/issues')">
-                    <h6 class="mb-0 text-white lh-100">
+                    onclick="go('https://github.com/zegodev/zego-express-webrtc-sample/issues')">
+                    <h6 class="mb-0 text-white lh-100 issues">
                         常见问题</h6>
                 </button>
             </div>
         </div>
 
         <div class="my-3 p-3 bg-white rounded box-shadow">
-            <h6 class="border-bottom border-gray pb-2 mb-0" id="base">基础功能</h6>
+            <h6 class="border-bottom border-gray pb-2 mb-0 base" id="base">基础功能</h6>
 
             <div class="media text-muted pt-3">
                 <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32"
@@ -124,10 +124,10 @@
                     data-holder-rendered="true" style="width: 32px; height: 32px;">
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <strong class="text-gray-dark">基础推拉流</strong>
-                        <a onclick="go('./base')" href="javascript:void (0)">前往</a>
+                        <strong class="text-gray-dark basicPushPull" >基础推拉流</strong>
+                        <a onclick="go('./base')" href="javascript:void (0)" class="jump">前往</a>
                     </div>
-                    <span class="d-block">推流,拉流</span>
+                    <span class="d-block basicPushPullContent">推流,拉流</span>
                 </div>
             </div>
 
@@ -138,10 +138,10 @@
                     data-holder-rendered="true" style="width: 32px; height: 32px;">
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <strong class="text-gray-dark">实时消息</strong>
-                        <a onclick="go('./message')" href="javascript:void (0)">前往</a>
+                        <strong class="text-gray-dark message" >实时消息</strong>
+                        <a onclick="go('./message')" href="javascript:void (0)" class="jump">前往</a>
                     </div>
-                    <span class="d-block">实时消息功能</span>
+                    <span class="d-block messageContent">实时消息功能</span>
                 </div>
             </div>
 
@@ -149,7 +149,7 @@
 
         <div class="my-3 p-3 bg-white rounded box-shadow">
 
-            <h6 class="border-bottom border-gray pb-2 mb-0" id="advanced">进阶功能</h6>
+            <h6 class="border-bottom border-gray pb-2 mb-0 advanced" id="advanced">进阶功能</h6>
 
             <!-- <div class="media text-muted pt-3">
                 <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32"
@@ -172,10 +172,10 @@
                     data-holder-rendered="true">
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <strong class="text-gray-dark">混流</strong>
-                        <a onclick="go('./mix')" href="javascript:void (0)">前往</a>
+                        <strong class="text-gray-dark mixStream">混流</strong>
+                        <a onclick="go('./mix')" href="javascript:void (0)" class="jump">前往</a>
                     </div>
-                    <span class="d-block">混流，转推到cdn,页面播放cdn地址流</span>
+                    <span class="d-block mixStreamContent">混流，转推到cdn,页面播放cdn地址流</span>
                 </div>
             </div>
 
@@ -186,10 +186,10 @@
                     data-holder-rendered="true">
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <strong class="text-gray-dark">推流进阶</strong>
-                        <a onclick="go('./screen')" href="javascript:void (0)">前往</a>
+                        <strong class="text-gray-dark screenSharing">推流进阶</strong>
+                        <a onclick="go('./screen')" href="javascript:void (0)" class="jump">前往</a>
                     </div>
-                    <span class="d-block">屏幕共享</span>
+                    <span class="d-block screenSharingContent">屏幕共享</span>
                 </div>
             </div>
 
@@ -200,16 +200,16 @@
                     data-holder-rendered="true" style="width: 32px; height: 32px;">
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <strong class="text-gray-dark">混流转码(微信浏览器-safari11互通)</strong>
-                        <a onclick="go('./vp8')" href="javascript:void (0)">前往</a>
+                        <strong class="text-gray-dark transcode">混流转码(微信浏览器-safari11互通)</strong>
+                        <a onclick="go('./vp8')" href="javascript:void (0)" class="jump">前往</a>
                     </div>
-                    <span class="d-block">微信浏览器不支持H264,safari11只支持h264，互通需要转码（测试中。。）</span>
+                    <span class="d-block transcodeContent">微信浏览器不支持H264,safari11只支持h264，互通需要转码（测试中。。）</span>
                 </div>
             </div>
         </div>
 
         <div class="my-3 p-3 bg-white rounded box-shadow">
-            <h6 class="border-bottom border-gray pb-2 mb-0" id="tool">辅助工具</h6>
+            <h6 class="border-bottom border-gray pb-2 mb-0 auxiliary" id="tool">辅助工具</h6>
             <div class="media text-muted pt-3">
                 <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32"
                     class="mr-2 rounded"
@@ -217,11 +217,11 @@
                     data-holder-rendered="true" style="width: 32px; height: 32px;">
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <strong class="text-gray-dark">webrtc检测</strong>
+                        <strong class="text-gray-dark detect">webrtc检测</strong>
                         <a onclick="go('https://zegodev.github.io/webrtcDemo-js/webrtccheck')"
-                            href="javascript:void (0)">前往</a>
+                            href="javascript:void (0)" class="jump">前往</a>
                     </div>
-                    <span class="d-block">用于测试页面是否支持webrtc，检测所支持分辨率及连通性检测</span>
+                    <span class="d-block detectContent">用于测试页面是否支持webrtc，检测所支持分辨率及连通性检测</span>
                 </div>
             </div>
 
@@ -232,14 +232,14 @@
                     data-holder-rendered="true" style="width: 32px; height: 32px;">
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
-                        <strong class="text-gray-dark">token检测</strong>
-                        <a href="http://sig-wstoken.zego.im:8181/tokenindex" target="_blank">前往</a>
+                        <strong class="text-gray-dark token">token检测</strong>
+                        <a href="http://sig-wstoken.zego.im:8181/tokenindex" target="_blank" class="jump">前往</a>
                     </div>
-                    <span class="d-block">检测token是否与后台生成的相同</span>
+                    <span class="d-block tokenContent">检测token是否与后台生成的相同</span>
                 </div>
             </div>
 
-            <div class="media text-muted pt-3">
+            <!-- <div class="media text-muted pt-3">
                 <img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32"
                     class="mr-2 rounded"
                     src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_1687db17d8c%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A2pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_1687db17d8c%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2212.296875%22%20y%3D%2216.9%22%3E32x32%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E"
@@ -248,16 +248,16 @@
                     <div class="d-flex justify-content-between align-items-center w-100">
                         <strong class="text-gray-dark">rtmp、hls、flv在线播放</strong>
                         <a onclick="go('https://zegodev.github.io/webrtcDemo-js/player')"
-                            href="javascript:void (0)">前往</a>
+                            href="javascript:void (0)" class="jump">前往</a>
                     </div>
                     <span class="d-block">用于测试rtmp、hls、flv的播放地址，若需比对三者延时，可通过屏幕共享捕捉此标签页并打开秒表</span>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <div class="my-3 p-3 bg-white rounded box-shadow">
 
-            <h6 class="border-bottom border-gray pb-2 mb-0" id="demo">完整体验</h6>
+            <h6 class="border-bottom border-gray pb-2 mb-0 complete" id="demo">完整体验</h6>
             <div class="media text-muted pt-3">
                 <img data-src="holder.js/32x32?theme=thumb&amp;bg=6f42c1&amp;fg=6f42c1&amp;size=1" alt="32x32"
                     class="mr-2 rounded"
@@ -266,7 +266,7 @@
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
                         <strong class="text-gray-dark">LiveDemo5</strong>
-                        <a href="https://livedemo.zego.im/" target="_blank">前往</a>
+                        <a href="https://livedemo.zego.im/" target="_blank" class="jump">前往</a>
                     </div>
                 </div>
             </div>
@@ -279,7 +279,7 @@
                 <div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
                     <div class="d-flex justify-content-between align-items-center w-100">
                         <strong class="text-gray-dark">VideoTalk</strong>
-                        <a href="https://videotalk.zego.im/" target="_blank">前往</a>
+                        <a href="https://videotalk.zego.im/" target="_blank" class="jump">前往</a>
                     </div>
                 </div>
             </div>
