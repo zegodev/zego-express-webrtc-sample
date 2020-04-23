@@ -42,6 +42,7 @@ targetList
                     template: './src/index.html',
                     filename: 'index.html',
                     chunks: ['content'],
+                    favicon: './src/favicon.ico',
                 }),
             );
         }
