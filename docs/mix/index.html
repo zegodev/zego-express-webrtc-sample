@@ -21,7 +21,7 @@
         position: absolute;
     }
   </style>
-  <title>混流</title>
+  <title class="mixStream">混流</title>
 <link href="../index.439a0432.css" rel="stylesheet"></head>
 
 <body class="bg-f2">
@@ -29,16 +29,16 @@
   <div class="container">
     <div class="my-3 p-3 bg-white rounded box-shadow small">
 
-      <h6 class="border-bottom border-gray pb-2 mb-0">混流</h6>
+      <h6 class="border-bottom border-gray pb-2 mb-0 mixStream">混流</h6>
 
       <div class="row" style="margin-top:1%">
 
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="audioList"><strong class="text-gray-dark">音频设备</strong></label>
+              <label class="input-group-text" for="audioList"><strong class="text-gray-dark audioDevices">音频设备</strong></label>
             </div>
-            <select class="custom-select" id="audioList" style="width: 60%">
+            <select class="custom-select" id="audioList" style="width: 50%">
             </select>
           </div>
         </div>
@@ -46,7 +46,7 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="videoList"><strong class="text-gray-dark">视频设备</strong></label>
+              <label class="input-group-text" for="videoList"><strong class="text-gray-dark videoDevices">视频设备</strong></label>
             </div>
             <select class="custom-select" id="videoList" style="width: 60%">
             </select>
@@ -56,7 +56,7 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="roomId"><strong class="text-gray-dark">房间号</strong></label>
+              <label class="input-group-text" for="roomId"><strong class="text-gray-dark roomid">房间号</strong></label>
             </div>
             <input type="email" class="form-control d-inline" id="roomId" style="width: 60%" aria-describedby="emailHelp"
               placeholder="请输入房间号">
@@ -66,10 +66,10 @@
 
       <div class="row">
         <div class="col-sm">
-          <button type="button" id="createRoom" class="btn btn-primary btn-sm">进入房间（推流）</button>
-          <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm">退出</button>
-          <button type="button" id="mixStream" class="btn btn-primary btn-sm">混流</button>
-          <button type="button" id="stopMixStream" disabled class="btn btn-primary btn-sm">停止混流</button>
+          <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
+          <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm enterRoomPlay">退出</button>
+          <button type="button" id="mixStream" class="btn btn-primary btn-sm mixStream">混流</button>
+          <button type="button" id="stopMixStream" disabled class="btn btn-primary btn-sm stopMixStream">停止混流</button>
         </div>
       </div>
 
