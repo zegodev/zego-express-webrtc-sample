@@ -82,6 +82,10 @@ $(async () => {
     });
 
     // 发送信息
+    $('.div-textarea').bind('keydown', e => {
+        e.keyCode == 13 && $('#chat-fasong').click() && e.preventDefault();
+    });
+
     $('#chat-fasong').click(async () => {
         const textContent = $('.div-textarea')
             .html()
