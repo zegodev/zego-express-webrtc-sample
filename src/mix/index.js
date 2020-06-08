@@ -89,15 +89,14 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                                         taskID: taskID,
                                         inputList: streamList,
                                         outputList: [
-                                            {
-                                                streamID: mixStreamID,
-                                                outputUrl: 'rtmp://test.aliyun.zego.im/zegodemo',
-                                                outputBitrate: 300 * 1000,
-                                                outputFps: 15,
-                                                outputWidth: 320,
-                                                outputHeight: 480,
-                                            },
+                                            mixStreamID,
                                         ],
+                                        outputConfig: {
+                                            outputBitrate: 300,
+                                            outputFPS: 15,
+                                            outputWidth: 320,
+                                            outputHeight: 480,
+                                        },
                                     })];
                             case 1:
                                 res = _a.sent();

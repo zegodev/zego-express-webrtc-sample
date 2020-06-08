@@ -50,7 +50,7 @@ $(async () => {
                 ],
                 outputConfig: {
                     outputBitrate: 300,
-                    outputFps: 15,
+                    outputFPS: 15,
                     outputWidth: 320,
                     outputHeight: 480,
                 },

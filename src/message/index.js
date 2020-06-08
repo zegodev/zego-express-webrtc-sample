@@ -97,6 +97,9 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                     $('#chatBox-content-demo').scrollTop($('#chatBox-content-demo')[0].scrollHeight);
                 });
                 // 发送信息
+                $('.div-textarea').bind('keydown', function (e) {
+                    e.keyCode == 13 && $('#chat-fasong').click() && e.preventDefault();
+                });
                 $('#chat-fasong').click(function () { return __awaiter(void 0, void 0, void 0, function () {
                     var textContent, roomId, result;
                     return __generator(this, function (_a) {

@@ -243,7 +243,7 @@ async function mixStream() {
         ],
         outputConfig: {
             outputBitrate: 300,
-            outputFps: 15,
+            outputFPS: 15,
             outputWidth: 640,
             outputHeight: 480,
         },
