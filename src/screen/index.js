@@ -54,6 +54,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                 screenPublished = false;
                 // 点击系统停止共享
                 common_1.zg.on('screenSharingEnded', function () {
+                    console.warn('screen sharing end');
                     $('#stopScreenShot').click();
                 });
                 $('#screenShot').click(function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -62,7 +63,12 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                         switch (_a.label) {
                             case 0:
                                 _a.trys.push([0, 2, , 3]);
-                                return [4 /*yield*/, common_1.zg.createStream({ screen: true })];
+                                return [4 /*yield*/, common_1.zg.createStream({
+                                        screen: {
+                                            audio: true,
+                                            videoQuality: 1,
+                                        },
+                                    })];
                             case 1:
                                 screeStream = _a.sent();
                                 previewScreenVideo.srcObject = screeStream;

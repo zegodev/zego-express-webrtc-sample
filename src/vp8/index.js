@@ -44,7 +44,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var vconsole_1 = __importDefault(require("vconsole"));
 require("../assets/bootstrap.min");
 require("../assets/bootstrap.min.css");
-var webrtc_zego_express_1 = require("webrtc-zego-express");
+var zego_express_engine_webrtc_1 = require("zego-express-engine-webrtc");
 var content_1 = require("../content");
 new vconsole_1.default();
 var userID = 'sample' + new Date().getTime();
@@ -67,7 +67,7 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
         console.log(cgiToken);
     });
 }
-var zg = new webrtc_zego_express_1.ZegoExpressEngine(appID, server);
+var zg = new zego_express_engine_webrtc_1.ZegoExpressEngine(appID, server);
 function checkAnRun() {
     return __awaiter(this, void 0, void 0, function () {
         var result;
@@ -78,6 +78,7 @@ function checkAnRun() {
                     return [4 /*yield*/, zg.checkSystemRequirements()];
                 case 1:
                     result = _a.sent();
+                    console.warn('checkSystemRequirements ', result);
                     videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
                     $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
                     !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
@@ -207,26 +208,41 @@ function initSDK() {
         }
     });
     zg.on('roomStreamUpdate', function (roomID, updateType, streamList) { return __awaiter(_this, void 0, void 0, function () {
-        var i, remoteStream, video, k, j, extraInfoObject;
+        var _loop_1, i, k, j, extraInfoObject;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     console.log("roomStreamUpdate roomID: " + roomID);
                     if (!(updateType == 'ADD')) return [3 /*break*/, 5];
+                    _loop_1 = function (i) {
+                        var remoteStream, video;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    console.info(streamList[i].streamID + ' was added');
+                                    useLocalStreamList.push(streamList[i]);
+                                    $('#memberList').append('<option value="' + streamList[i].user.userID + '">' + streamList[i].user.userName + '</option>');
+                                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                                    return [4 /*yield*/, getRemoteByCodeType(useLocalStreamList[i])];
+                                case 1:
+                                    remoteStream = _a.sent();
+                                    video = $('.remoteVideo video:eq(' + i + ')')[0];
+                                    video.srcObject = remoteStream;
+                                    video.muted = false;
+                                    setTimeout(function () {
+                                        video.play();
+                                    }, 2000);
+                                    return [2 /*return*/];
+                            }
+                        });
+                    };
                     i = 0;
                     _a.label = 1;
                 case 1:
                     if (!(i < streamList.length)) return [3 /*break*/, 4];
-                    console.info(streamList[i].streamID + ' was added');
-                    useLocalStreamList.push(streamList[i]);
-                    $('#memberList').append('<option value="' + streamList[i].user.userID + '">' + streamList[i].user.userName + '</option>');
-                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                    return [4 /*yield*/, getRemoteByCodeType(useLocalStreamList[i])];
+                    return [5 /*yield**/, _loop_1(i)];
                 case 2:
-                    remoteStream = _a.sent();
-                    video = $('.remoteVideo video:eq(' + i + ')')[0];
-                    video.srcObject = remoteStream;
-                    video.muted = false;
+                    _a.sent();
                     _a.label = 3;
                 case 3:
                     i++;
@@ -333,14 +349,15 @@ function mixStream() {
                             inputList: streamList,
                             outputList: [
                                 {
-                                    streamID: mixStreamId,
-                                    outputUrl: '',
-                                    outputBitrate: 300 * 1000,
-                                    outputFps: 15,
-                                    outputWidth: 640,
-                                    outputHeight: 480,
+                                    target: mixStreamId,
                                 },
                             ],
+                            outputConfig: {
+                                outputBitrate: 300,
+                                outputFPS: 15,
+                                outputWidth: 640,
+                                outputHeight: 480,
+                            },
                         })];
                 case 2:
                     result = _a.sent();

@@ -44,7 +44,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var vconsole_1 = __importDefault(require("vconsole"));
 require("./assets/bootstrap.min");
 require("./assets/bootstrap.min.css");
-var webrtc_zego_express_1 = require("webrtc-zego-express");
+var zego_express_engine_webrtc_1 = require("zego-express-engine-webrtc");
 var content_1 = require("./content");
 new vconsole_1.default();
 var userID = 'sample' + new Date().getTime();
@@ -78,50 +78,44 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 // 测试用代码 end
 // Test code end
 // eslint-disable-next-line prefer-const
-exports.zg = zg = new webrtc_zego_express_1.ZegoExpressEngine(appID, server);
+exports.zg = zg = new zego_express_engine_webrtc_1.ZegoExpressEngine(appID, server);
 function checkAnRun(checkScreen) {
     return __awaiter(this, void 0, void 0, function () {
-        var boolean;
+        var result;
         return __generator(this, function (_a) {
-            console.log('sdk version is', zg.getVersion());
-            boolean = (void 0).result.webRTC;
-            customCapture: boolean;
-            camera: boolean;
-            microphone: boolean;
-            videoCodec: {
-                H264: boolean;
-                H265: boolean;
-                VP8: boolean;
-                VP9: boolean;
+            switch (_a.label) {
+                case 0:
+                    console.log('sdk version is', zg.getVersion());
+                    return [4 /*yield*/, zg.checkSystemRequirements()];
+                case 1:
+                    result = _a.sent();
+                    console.warn('checkSystemRequirements ', result);
+                    !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
+                    !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
+                    if (!result.webRTC) {
+                        alert('browser is not support webrtc!!');
+                        return [2 /*return*/, false];
+                    }
+                    else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
+                        alert('browser is not support H264 and VP8');
+                        return [2 /*return*/, false];
+                    }
+                    else if (result.videoCodec.H264) {
+                        exports.supportScreenSharing = supportScreenSharing = result.screenSharing;
+                        if (checkScreen && !supportScreenSharing)
+                            alert('browser is not support screenSharing');
+                        previewVideo = $('#previewVideo')[0];
+                        start();
+                    }
+                    else {
+                        alert('不支持H264，请前往混流转码测试');
+                    }
+                    return [2 /*return*/, true];
             }
-            ;
-            screenSharing: boolean;
-            return [2 /*return*/];
         });
     });
 }
 exports.checkAnRun = checkAnRun;
-extendedData;
-await zg.checkSystemRequirements();
-console.warn('checkSystemRequirements ', result);
-!result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
-!result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
-if (!result.webRTC) {
-    alert('browser is not support webrtc!!');
-    return false;
-}
-else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
-    alert('browser is not support H264 and VP8');
-    return false;
-}
-else {
-    exports.supportScreenSharing = supportScreenSharing = result.screenSharing;
-    if (checkScreen && !supportScreenSharing)
-        alert('browser is not support screenSharing');
-    previewVideo = $('#previewVideo')[0];
-    start();
-}
-return true;
 function start() {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
@@ -288,7 +282,6 @@ function initSDK() {
                     console.info(streamList[i].streamID + ' was added');
                     useLocalStreamList.push(streamList[i]);
                     remoteStream = void 0;
-                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
                     _a.label = 2;
                 case 2:
                     _a.trys.push([2, 4, , 5]);
@@ -301,8 +294,9 @@ function initSDK() {
                     console.error(error_2);
                     return [3 /*break*/, 7];
                 case 5:
+                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
                     video = $('.remoteVideo video:last')[0];
-                    console.warn('video', video);
+                    console.warn('video', video, remoteStream);
                     video.srcObject = remoteStream;
                     video.muted = false;
                     _a.label = 6;
@@ -442,6 +436,8 @@ function push(publishOption) {
                             camera: {
                                 audioInput: $('#audioList').val(),
                                 videoInput: $('#videoList').val(),
+                                video: $('#videoList').val() === '0' ? false : true,
+                                audio: $('#audioList').val() === '0' ? false : true,
                             },
                         })];
                 case 1:
