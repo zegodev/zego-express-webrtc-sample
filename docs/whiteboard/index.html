@@ -24,7 +24,8 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="appID"><strong class="text-gray-dark">appID</strong></label>
             </div>
-            <input class="form-control d-inline" style="width: 75%;" type="text" id="appID" placeholder="请输入appID" />
+            <input class="form-control d-inline" value="1252712950" style="width: 75%;" type="text" id="appID"
+              placeholder="请输入appID" />
           </div>
         </div>
         <div class="col-sm">
@@ -32,7 +33,8 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="server"><strong class="text-gray-dark">server</strong></label>
             </div>
-            <input class="form-control d-inline" style="width: 75%;" type="text" id="server" placeholder="请输入server" />
+            <input class="form-control d-inline" value="wss://wsliveroom-alpha.zego.im:8282/ws" style="width: 75%;"
+              type="text" id="server" placeholder="请输入server" />
           </div>
         </div>
         <div class="col-sm">
@@ -50,7 +52,8 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="roomId"><strong class="text-gray-dark">roomID</strong></label>
             </div>
-            <input class="form-control d-inline" style="width: 75%;" type="text" id="roomID" placeholder="请输入roomID" />
+            <input class="form-control d-inline" value="141592653" style="width: 75%;" type="text" id="roomID"
+              placeholder="请输入roomID" />
           </div>
         </div>
         <div class="col-sm">
@@ -184,6 +187,26 @@
 <script>
   var zg,
     isLogin = false;
+  $("#idName").val(new Date().getTime() + '');
+
+  // 获取token
+  const tokenUrl = 'https://wsliveroom-alpha.zego.im:8282/token';
+  $.get(
+    tokenUrl,
+    {
+      app_id: $("#appID").val(),
+      id_name: $("#idName").val()
+    },
+    function (token) {
+      if (!token) {
+        alert('get token failed');
+      } else {
+        $("#token").val(token);
+        alert('get token success');
+      }
+    },
+    'text'
+  );
 
   // 监听sdk回调
   function listen() {
