@@ -327,12 +327,12 @@ async function push(publishOption?: webPublishOption): Promise<void> {
 }
 
 $('#toggleCamera').click(function() {
-    zg.mutePublishStreamVideo(previewVideo.srcObject as MediaStream, $(this).hasClass('disabled'));
+    zg.mutePublishStreamVideo(previewVideo.srcObject as MediaStream, !$(this).hasClass('disabled'));
     $(this).toggleClass('disabled');
 });
 
 $('#toggleSpeaker').click(function() {
-    zg.mutePublishStreamAudio(previewVideo.srcObject as MediaStream, $(this).hasClass('disabled'));
+    zg.mutePublishStreamAudio(previewVideo.srcObject as MediaStream, !$(this).hasClass('disabled'));
     $(this).toggleClass('disabled');
 });
 
