@@ -3,7 +3,7 @@ import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
-import { StreamInfo, webPublishOption, ERRO } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
+import { webPublishOption, Constraints } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from './content';
 
 new VConsole();
@@ -17,7 +17,7 @@ let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID +
 let cgiToken = '';
 //const appSign = '';
 let previewVideo: HTMLVideoElement;
-let useLocalStreamList: StreamInfo[] = [];
+let useLocalStreamList: any = [];
 let isPreviewed = false;
 let supportScreenSharing = false;
 
@@ -129,6 +129,7 @@ async function enumDevices(): Promise<any> {
 
 function initSDK(): void {
     enumDevices();
+
     zg.on('roomStateUpdate', (roomID, state, errorCode, extendedData) => {
         console.log('roomStateUpdate: ', roomID, state, errorCode, extendedData);
     });
@@ -219,7 +220,6 @@ function initSDK(): void {
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
                         $('#memberList option:eq(' + k + ')').remove();
-
                         break;
                     }
                 }
@@ -231,12 +231,14 @@ function initSDK(): void {
         console.log(
             `play#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
         );
+        console.log(`play#${streamID}`, streamQuality);
     });
 
     zg.on('publishQualityUpdate', async (streamID, streamQuality) => {
         console.log(
             `publish#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
         );
+        console.log(`publish#${streamID}`, streamQuality);
     });
 
     zg.on('remoteCameraStatusUpdate', (streamID, status) => {
@@ -310,16 +312,26 @@ async function logout(): Promise<void> {
     zg.logoutRoom(roomId);
 }
 
-async function push(publishOption?: webPublishOption): Promise<void> {
+async function publish(constraints?: Constraints): Promise<void> {
     console.warn('createStream', $('#audioList').val(), $('#videoList').val());
-    localStream = await zg.createStream({
+    console.warn('constraints', constraints);
+    const video =
+        constraints && constraints.camera && typeof constraints.camera.video === 'boolean'
+            ? constraints.camera.video
+            : undefined;
+
+    const _constraints = {
         camera: {
             audioInput: $('#audioList').val() as string,
             videoInput: $('#videoList').val() as string,
-            video: $('#videoList').val() === '0' ? false : true,
+            video: video !== undefined ? video : $('#videoList').val() === '0' ? false : true,
             audio: $('#audioList').val() === '0' ? false : true,
         },
-    });
+    };
+    push(_constraints);
+}
+async function push(constraints?: Constraints, publishOption?: webPublishOption): Promise<void> {
+    localStream = await zg.createStream(constraints);
     previewVideo.srcObject = localStream;
     isPreviewed = true;
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
@@ -336,7 +348,21 @@ $('#toggleSpeaker').click(function() {
     $(this).toggleClass('disabled');
 });
 
-export { zg, publishStreamId, checkAnRun, supportScreenSharing, userID, useLocalStreamList, logout, enterRoom, push };
+export {
+    zg,
+    appID,
+    publishStreamId,
+    checkAnRun,
+    supportScreenSharing,
+    userID,
+    useLocalStreamList,
+    logout,
+    enterRoom,
+    push,
+    publish,
+    previewVideo,
+    isPreviewed,
+};
 
 $(window).on('unload', function() {
     logout();
