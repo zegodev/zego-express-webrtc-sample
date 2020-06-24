@@ -1,6 +1,7 @@
 import { checkAnRun, enterRoom, publish, zg, useLocalStreamList } from '../common';
 
 $(async () => {
+    await checkAnRun();
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
@@ -48,8 +49,8 @@ $(async () => {
             }
         }
     });
-    await checkAnRun();
 
+    $('#createRoom').unbind('click');
     $('#createRoom').click(async () => {
         let loginSuc = false;
         try {

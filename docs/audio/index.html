@@ -21,7 +21,7 @@
             display: block;
         }
     </style>
-    <title>纯音频推拉流</title>
+    <title class="pureAudioContent">推拉纯音频流</title>
 <link href="../index.e33f6e43.css" rel="stylesheet"></head>
 <body class="bg-f2">
 
@@ -29,50 +29,49 @@
 
     <div class="my-3 p-3 bg-white rounded box-shadow small">
 
-      <h6 class="border-bottom border-gray pb-2 mb-0">纯音频推拉流</h6>
+      <h6 class="border-bottom border-gray pb-2 mb-0 pureAudioContent">推拉纯音频流</h6>
 
       <div class="row" style="margin-top:1%">
 
-          <div class="col-sm">
-              <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                  <label class="input-group-text" for="audioList"><strong class="text-gray-dark">音频设备</strong></label>
-                </div>
-                  <select  class="custom-select" id="audioList" style="width: 70%">
-                  </select>
-              </div>
-          </div>
-
-          <div class="col-sm">
-              <div class="input-group input-group-sm mb-3">
-                <div class="input-group-prepend">
-                  <label class="input-group-text" for="videoList"><strong class="text-gray-dark">视频设备</strong></label>
-                </div>
-                  <select  class="custom-select" id="videoList" style="width: 70%">
-                  </select>
-              </div>
-          </div>
-
-
-            <div class="col-sm">
-              <div class="input-group input-group-sm mb-3">
-                  <div class="input-group-prepend">
-                    <label class="input-group-text" for="roomId"><strong class="text-gray-dark">房间号</strong></label>
-                  </div>
-                  <input type="email" class="form-control d-inline" id="roomId" style="width: 75%"
-                  aria-describedby="emailHelp" placeholder="请输入房间号">
-              </div>
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="audioList"><strong class="text-gray-dark audioDevices">音频设备</strong></label>
             </div>
+            <select class="custom-select" id="audioList" style="width: 50%">
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="videoList"><strong class="text-gray-dark videoDevices">视频设备</strong></label>
+            </div>
+            <select class="custom-select" id="videoList" style="width: 50%">
+            </select>
+          </div>
+        </div>
+
+
+          <div class="col-sm">
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="roomId"><strong class="text-gray-dark roomid">房间号</strong></label>
+              </div>
+              <input type="email" class="form-control d-inline" id="roomId" style="width: 75%; max-width: 200px"
+                aria-describedby="emailHelp" placeholder="please enter room ID">
+            </div>
+          </div>
+
 
       </div>
 
       <div class="row">
         <div class="col-sm">
-          <button type="button" id="createRoom" class="btn btn-primary btn-sm">创建房间</button>
-          <button type="button" id="openRoom" class="btn btn-primary btn-sm">进入房间</button>
-          <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm">退出</button>
-          <button type="button" id="startRecordAudio" class="btn btn-primary btn-sm">点击开始录音</button>
-          <button type="button" id="stopRecordAudio" class="btn btn-primary btn-sm" disabled>停止并播放录音</button>
+          <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
+          <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间（不推流）</button>
+          <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
         </div>
       </div>
 

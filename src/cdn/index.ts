@@ -5,11 +5,13 @@ import { getBrowser } from '../assets/utils';
 import flvjs from 'flv.js';
 
 let flvPlayer: flvjs.Player | null = null;
+let cdnFlvPlayer: flvjs.Player | null = null;
 const ua = navigator.userAgent.toLowerCase();
 let isAndWechat = false;
 const videoElement: any = document.getElementById('test');
+const cdnVideoElement: any = document.getElementById('cdn');
 
-console.error('ua', ua);
+console.warn('ua', ua);
 // @ts-ignore
 if ((ua.indexOf('android') > -1 || ua.indexOf('linux') > -1) && ua.match(/MicroMessenger/i) == 'micromessenger') {
     console.warn('当前浏览器为微信浏览器');
@@ -24,7 +26,7 @@ function filterStreamList(streamList: any, streamId?: string) {
     const streamListUrl: any = [];
     let index = 0;
 
-    console.log(zg.stateCenter.streamList);
+    // console.log(zg.stateCenter.streamList);
 
     streamList.forEach((item: { stream_id: string }, ind: number) => {
         if (item.stream_id == streamId) index = ind;
@@ -42,6 +44,7 @@ function filterStreamList(streamList: any, streamId?: string) {
         }
     }
 
+    console.warn('flv', flv, hls, rtmp);
     const pro = window.location.protocol;
     const browser = getBrowser();
 
@@ -105,6 +108,7 @@ function playStream(streamList: any) {
         //videoElement.muted = false;
     } else if (useLocalStreamList.length !== 0) {
         const flvUrl = useLocalStreamList[0];
+        // const flvUrl = 'https://hdl-wsdemo.zego.im/livestream/test259.flv';
         if (streamList)
             if (flvjs.isSupported()) {
                 //若支持flv.js
@@ -129,6 +133,7 @@ $(async () => {
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', (roomID: string, updateType: 'ADD' | 'DELETE', streamList: any): void => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
+        // console.log('l', zg.stateCenter.streamList);
         if (updateType == 'ADD') {
             useLocalStreamList.push(filterStreamList(streamList));
             playStream(streamList);
@@ -150,7 +155,7 @@ $(async () => {
         const result = await zg.addPublishCdnUrl(
             publishStreamId,
             md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + '1ec3f85cb2f21370264eb371c8c65ca3'),
-            'rtmp://wsdemo.zego.im/livestream/test123',
+            'rtmp://wsdemo.zego.im/livestream/test259',
         );
         if (result.errorCode == 0) {
             console.warn('add push target success');
@@ -163,7 +168,7 @@ $(async () => {
         const result = await zg.removePublishCdnUrl(
             publishStreamId,
             md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + '1ec3f85cb2f21370264eb371c8c65ca3'),
-            'rtmp://wsdemo.zego.im/livestream/test123',
+            'rtmp://wsdemo.zego.im/livestream/test259',
         );
         if (result.errorCode == 0) {
             console.warn('del push target success');
@@ -172,6 +177,33 @@ $(async () => {
         }
     });
 
+    $('#cdnPlay').click(() => {
+        const browser = getBrowser();
+        // if (browser == 'Safari' && !isAndWechat) {
+        //     cdnVideoElement.src = 'https://hls-wsdemo.zego.im/livestream/test259/playlist.m3u8';
+        //     cdnVideoElement.load();
+        //     cdnVideoElement.muted = false;
+        // } else
+        if (flvjs.isSupported()) {
+            //若支持flv.js
+            cdnFlvPlayer = flvjs.createPlayer({
+                type: 'flv',
+                isLive: true,
+                url: 'https://hdl-wsdemo.zego.im/livestream/test259.flv',
+                hasAudio: true,
+            });
+            cdnFlvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
+                console.error('LOADING_COMPLETE');
+                cdnFlvPlayer!.play();
+            });
+            cdnFlvPlayer.attachMediaElement(cdnVideoElement);
+            cdnFlvPlayer.load();
+            cdnVideoElement.muted = false;
+        }
+    });
+    $('#playCDN').click(() => {
+        flvPlayer && flvPlayer.play();
+    });
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {
         if (typeof flvPlayer !== 'undefined') {

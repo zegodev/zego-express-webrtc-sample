@@ -25,14 +25,14 @@
             position: absolute;
         }
     </style>
-    <title>混音功能</title>
+    <title class="mixAudio">混音</title>
 <link href="../index.e33f6e43.css" rel="stylesheet"></head>
 <body class="bg-f2">
 <div class="container">
 
     <div class="my-3 p-3 bg-white rounded box-shadow small">
 
-        <h6 class="border-bottom border-gray pb-2 mb-0">混音功能</h6>
+        <h6 class="border-bottom border-gray pb-2 mb-0 mixAudio">混音</h6>
 
         <div class="row" style="margin-top:1%">
 
@@ -40,9 +40,9 @@
                 <div class="input-group input-group-sm mb-3">
                     <div class="input-group-prepend">
                         <label class="input-group-text" for="audioList"><strong
-                                class="text-gray-dark">音频设备</strong></label>
+                                class="text-gray-dark audioDevices">音频设备</strong></label>
                     </div>
-                    <select class="custom-select" id="audioList" style="width: 70%">
+                    <select class="custom-select" id="audioList" style="width: 50%">
                     </select>
                 </div>
             </div>
@@ -51,9 +51,9 @@
                 <div class="input-group input-group-sm mb-3">
                     <div class="input-group-prepend">
                         <label class="input-group-text" for="videoList"><strong
-                                class="text-gray-dark">视频设备</strong></label>
+                                class="text-gray-dark videoDevices">视频设备</strong></label>
                     </div>
-                    <select class="custom-select" id="videoList" style="width: 70%">
+                    <select class="custom-select" id="videoList" style="width: 50%">
                     </select>
                 </div>
             </div>
@@ -62,10 +62,10 @@
             <div class="col-sm">
                 <div class="input-group input-group-sm mb-3">
                     <div class="input-group-prepend">
-                        <label class="input-group-text" for="roomId"><strong class="text-gray-dark">房间号</strong></label>
+                        <label class="input-group-text" for="roomId"><strong class="text-gray-dark roomid">房间号</strong></label>
                     </div>
                     <input type="email" class="form-control d-inline" id="roomId" style="width: 75%"
-                           aria-describedby="emailHelp" placeholder="请输入房间号">
+                           aria-describedby="emailHelp" placeholder="please enter room ID">
                 </div>
             </div>
 
@@ -73,15 +73,15 @@
 
         <div class="row">
             <div class="col-sm">
-                <button type="button" id="createRoom" class="btn btn-primary btn-sm">创建房间</button>
-                <button type="button" id="openRoom" class="btn btn-primary btn-sm">进入房间</button>
-                <button type="button" id="leaveMixRoom" class="btn btn-secondary btn-sm">退出</button>
+                <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">创建房间</button>
+                <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间</button>
+                <button type="button" id="leaveMixRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
 
-                <button type="button" id="MixAudio" class="btn btn-primary btn-sm">混音</button>
-                <button type="button" id="stopMixAudio" class="btn btn-primary btn-sm">停止混音</button>
-                <button type="button" id="mixingBuffer" class="btn btn-primary btn-sm">实时混音</button>
-                <button type="button" id="stopMixingBuffer" class="btn btn-primary btn-sm">停止实时混音</button>
-                音效音量 <input type="range" id="volume" min="0" max="100" value="100">
+                <button type="button" id="MixAudio" class="btn btn-primary btn-sm mixAudio">混音</button>
+                <button type="button" id="stopMixAudio" class="btn btn-primary btn-sm stopMixAudio">停止混音</button>
+                <button type="button" id="mixingBuffer" class="btn btn-primary btn-sm realTimeMix">实时混音</button>
+                <button type="button" id="stopMixingBuffer" class="btn btn-primary btn-sm stopRealTimeMix">停止实时混音</button>
+                <!-- 音效音量 <input type="range" id="volume" min="0" max="100" value="100"> -->
                 
             </div>
         </div>

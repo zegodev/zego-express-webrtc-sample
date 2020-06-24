@@ -1,7 +1,8 @@
-import { checkAnRun, zg, publishStreamId } from '../common';
+import { checkAnRun, zg, publishStreamId, logout } from '../common';
 
 $(async () => {
-    checkAnRun();
+    let isMixingAudio = false;
+    await checkAnRun();
     $('#MixAudio').click(() => {
         const result = zg.startMixingAudio(publishStreamId, [
             $('#extenerVideo1')[0] as HTMLMediaElement,
@@ -26,6 +27,7 @@ $(async () => {
                     if (err) {
                         console.error(err);
                     } else {
+                        isMixingAudio = true;
                         console.warn('real time effect success');
                     }
                 });
@@ -37,5 +39,12 @@ $(async () => {
 
     $('#stopMixingBuffer').click(function() {
         zg.stopMixingBuffer(publishStreamId, '1');
+    });
+
+    $('#leaveMixRoom').click(function() {
+        isMixingAudio && zg.stopMixingAudio(publishStreamId);
+        isMixingAudio && zg.stopMixingBuffer(publishStreamId, '1');
+        isMixingAudio = false;
+        logout();
     });
 });
