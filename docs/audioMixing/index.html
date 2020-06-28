@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <style>
+        .bg-f2 {
+            background-color: #f8f9fa;
+        }
+
+        video {
+            width: 320px;
+            height: auto;
+        }
+
+        .videoRow {
+            margin-top: 30px;
+        }
+
+        #previewLabel {
+            display: block;
+            position: absolute;
+        }
+    </style>
+    <title class="mixAudio">混音</title>
+<link href="../index.e33f6e43.css" rel="stylesheet"></head>
+<body class="bg-f2">
+<div class="container">
+
+    <div class="my-3 p-3 bg-white rounded box-shadow small">
+
+        <h6 class="border-bottom border-gray pb-2 mb-0 mixAudio">混音</h6>
+
+        <div class="row" style="margin-top:1%">
+
+            <div class="col-sm">
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="audioList"><strong
+                                class="text-gray-dark audioDevices">音频设备</strong></label>
+                    </div>
+                    <select class="custom-select" id="audioList" style="width: 50%">
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm">
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="videoList"><strong
+                                class="text-gray-dark videoDevices">视频设备</strong></label>
+                    </div>
+                    <select class="custom-select" id="videoList" style="width: 50%">
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="col-sm">
+                <div class="input-group input-group-sm mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="roomId"><strong class="text-gray-dark roomid">房间号</strong></label>
+                    </div>
+                    <input type="email" class="form-control d-inline" id="roomId" style="width: 75%"
+                           aria-describedby="emailHelp" placeholder="please enter room ID">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">创建房间</button>
+                <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间</button>
+                <button type="button" id="leaveMixRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
+
+                <button type="button" id="MixAudio" class="btn btn-primary btn-sm mixAudio">混音</button>
+                <button type="button" id="stopMixAudio" class="btn btn-primary btn-sm stopMixAudio">停止混音</button>
+                <button type="button" id="mixingBuffer" class="btn btn-primary btn-sm realTimeMix">实时混音</button>
+                <button type="button" id="stopMixingBuffer" class="btn btn-primary btn-sm stopRealTimeMix">停止实时混音</button>
+                <!-- 音效音量 <input type="range" id="volume" min="0" max="100" value="100"> -->
+                
+            </div>
+        </div>
+
+        <div class="col-sm">
+            <audio id="extenerVideo1" src="https://storage.zego.im/demo/tonight.m4a" muted playsinline controls loop crossOrigin="anonymous"></audio>
+            <audio id="extenerVideo2" src="https://storage.zego.im/demo/oldman.m4a" muted playsinline controls loop crossOrigin="anonymous"></audio>
+        </div>
+        <div class="row videoRow">
+            <div class="col-sm">
+                <label id="previewLabel" class="text-white"></label>
+                <video id="previewVideo" autoplay muted playsinline controls></video>
+            </div>
+            <div class="col-sm remoteVideo">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript" src="../audioMixing/audioMixing.bundle.js"></script></body>
+
+</html>

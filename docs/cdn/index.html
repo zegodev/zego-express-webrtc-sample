@@ -21,7 +21,7 @@
             }
         </style>
         <title>CDN</title>
-    <link href="../index.439a0432.css" rel="stylesheet"></head>
+    <link href="../index.e33f6e43.css" rel="stylesheet"></head>
 
     <body class="bg-f2">
         <div class="container">
@@ -36,7 +36,7 @@
                                     ><strong class="text-gray-dark audioDevices">音频设备</strong></label
                                 >
                             </div>
-                            <select class="custom-select" id="audioList" style="width: 60%"> </select>
+                            <select class="custom-select" id="audioList" style="width: 50%"> </select>
                         </div>
                     </div>
 
@@ -64,42 +64,57 @@
                                 id="roomId"
                                 style="width: 60%"
                                 aria-describedby="emailHelp"
-                                placeholder="请输入房间号"
+                                placeholder="please enter room ID"
                             />
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm col-3">
-                      <div class="form-group">
+                      <!-- <div class="form-group">
                           <label for="videoList">自定义转推cdn</label>
                           <input type="email" class="form-control d-inline" id="cdnPushUrl" aria-describedby="emailHelp"
                               placeholder="cdn地址" value="rtmp://publish-aliyun.dc.zego.im/livestream/">
-                      </div>
+                      </div> -->
                   </div>
                 </div>
 
                 <div class="row">
                     <div class="col-sm">
-                        <button type="button" id="createRoom" class="btn btn-primary btn-sm">进入房间（推流）</button>
-                        <button type="button" id="openRoom" class="btn btn-primary btn-sm">进入房间（不推流）</button>
-                        <button type="button" id="cdnAddPush" class="btn btn-primary btn-sm">增加转推cdn</button>
-                        <button type="button" id="cdnDelPush" class="btn btn-primary btn-sm">删除转推cdn</button>
-                        <button type="button" id="cdnClearPush" class="btn btn-primary btn-sm">清空转推cdn</button>
-                        <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm">退出</button>
+                        <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
+                        <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间（不推流）</button>
+                        <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
+                        <button type="button" id="playCDN" class="btn btn-secondary btn-sm clickPlay">点击播放</button>
+                        <button type="button" id="cdnAddPush" class="btn btn-primary btn-sm addCdn">增加转推cdn</button>
+                        <button type="button" id="cdnDelPush" class="btn btn-primary btn-sm removeCdn">删除转推cdn</button>
+                        <button type="button" id="cdnPlay" class="btn btn-primary btn-sm cdnPlay">播放cdn</button>
                     </div>
                 </div>
 
                 <div class="row videoRow">
                     <div class="col-sm">
-                        <label id="previewLabel"></label>
-                        <video id="previewVideo" autoplay muted playsinline controls></video>
-                        <video id="mixVideo" autoplay muted playsinline controls style="display:none"></video>
+                      <label id="previewLabel" class="text-white"></label>
+                      <video id="previewVideo" autoplay muted playsinline></video>
                     </div>
                     <div class="col-sm remoteVideo">
-                        <!--<video  autoplay muted playsinline></video>-->
+                      <label class="text-white" style="display: block; position: absolute; z-index: 999;">test</label>
+                      <video id="test" autoplay muted preload="auto"
+                      x-webkit-airplay="true"
+                      x5-video-player-type="h5-page"
+                      webkit-playsinline="true"
+                      controls
+                      playsinline></video>
                     </div>
-                </div>
+                    <div class="col-sm remoteVideo">
+                        <label class="text-white" style="display: block; position: absolute; z-index: 999;">test</label>
+                        <video id="cdn" autoplay muted preload="auto"
+                        x-webkit-airplay="true"
+                        x5-video-player-type="h5-page"
+                        webkit-playsinline="true"
+                        controls
+                        playsinline></video>
+                      </div>
+                  </div>
             </div>
         </div>
     <script type="text/javascript" src="../cdn/cdn.bundle.js"></script></body>

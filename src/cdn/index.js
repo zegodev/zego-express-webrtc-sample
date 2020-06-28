@@ -35,20 +35,162 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 require("../common");
+var md5_1 = __importDefault(require("md5"));
 var common_1 = require("../common");
+var utils_1 = require("../assets/utils");
+var flv_js_1 = __importDefault(require("flv.js"));
+var flvPlayer = null;
+var ua = navigator.userAgent.toLowerCase();
+var isAndWechat = false;
+var videoElement = document.getElementById('test');
+console.error('ua', ua);
+// @ts-ignore
+if ((ua.indexOf('android') > -1 || ua.indexOf('linux') > -1) && ua.match(/MicroMessenger/i) == 'micromessenger') {
+    console.warn('当前浏览器为微信浏览器');
+    isAndWechat = true;
+}
+function filterStreamList(streamList, streamId) {
+    var flv = {};
+    var hls = {};
+    var rtmp = {};
+    var streamListUrl = [];
+    var index = 0;
+    console.log(common_1.zg.stateCenter.streamList);
+    streamList.forEach(function (item, ind) {
+        if (item.stream_id == streamId)
+            index = ind;
+    });
+    for (var key in streamList[index]) {
+        if (key == 'urlsFLV' || key == 'urlsHttpsFLV') {
+            flv[key] = streamList[index][key];
+        }
+        if (key == 'urlsHLS' || key == 'urlsHttpsHLS') {
+            hls[key] = streamList[index][key];
+        }
+        if (key == 'urlsRTMP') {
+            rtmp[key] = streamList[index][key];
+        }
+    }
+    var pro = window.location.protocol;
+    var browser = utils_1.getBrowser();
+    if (browser == 'Safari' && !isAndWechat) {
+        for (var key in hls) {
+            if (hls[key]) {
+                if (hls[key].indexOf(pro) !== -1)
+                    streamListUrl.push(hls[key]);
+                else if (pro == 'https:' && hls[key].indexOf('https') === -1) {
+                    streamListUrl.push(hls[key].replace('http', 'https'));
+                }
+            }
+        }
+    }
+    else if (pro == 'http:') {
+        for (var key in flv) {
+            if (flv[key]) {
+                if (flv[key].indexOf('http') !== -1 || flv[key].indexOf('https') !== -1)
+                    streamListUrl.push(flv[key]);
+            }
+        }
+    }
+    else if (pro == 'https:') {
+        for (var key in flv) {
+            if (flv[key]) {
+                if (flv[key].indexOf('https') === -1)
+                    streamListUrl.push(flv[key].replace('http', 'https'));
+                else if (flv[key].indexOf(pro) !== -1) {
+                    streamListUrl.push(flv[key]);
+                }
+            }
+        }
+    }
+    else if (pro == 'rtmp:') {
+        for (var key in rtmp) {
+            if (rtmp[key]) {
+                if (rtmp[key].indexOf(pro) !== -1)
+                    streamListUrl.push(rtmp[key]);
+            }
+        }
+    }
+    return streamListUrl.filter(function (ele, index, self) {
+        return self.indexOf(ele) == index;
+    });
+}
+function playStream(streamList) {
+    var browser = utils_1.getBrowser();
+    var hasAudio = true;
+    var playType;
+    if (streamList) {
+        if (streamList[0] && streamList[0].extra_info && streamList[0].extra_info.length !== 0) {
+            try {
+                playType = JSON.parse(streamList[0].extra_info).playType;
+            }
+            catch (err) {
+                alert(err);
+            }
+        }
+    }
+    playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+    if (browser == 'Safari' && !isAndWechat && common_1.useLocalStreamList.length !== 0) {
+        videoElement.src = common_1.useLocalStreamList[0];
+        //videoElement.load();
+        //videoElement.muted = false;
+    }
+    else if (common_1.useLocalStreamList.length !== 0) {
+        var flvUrl = common_1.useLocalStreamList[0];
+        if (streamList)
+            if (flv_js_1.default.isSupported()) {
+                //若支持flv.js
+                flvPlayer = flv_js_1.default.createPlayer({
+                    type: 'flv',
+                    isLive: true,
+                    url: flvUrl,
+                    hasAudio: hasAudio,
+                });
+                flvPlayer.on(flv_js_1.default.Events.LOADING_COMPLETE, function () {
+                    console.error('LOADING_COMPLETE');
+                    flvPlayer.play();
+                });
+                flvPlayer.attachMediaElement(videoElement);
+                flvPlayer.load();
+                videoElement.muted = false;
+            }
+    }
+}
 $(function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, common_1.checkAnRun()];
             case 1:
                 _a.sent();
+                common_1.zg.off('roomStreamUpdate');
+                common_1.zg.on('roomStreamUpdate', function (roomID, updateType, streamList) {
+                    console.log('roomStreamUpdate roomID ', roomID, streamList);
+                    if (updateType == 'ADD') {
+                        common_1.useLocalStreamList.push(filterStreamList(streamList));
+                        playStream(streamList);
+                    }
+                    else if (updateType == 'DELETE') {
+                        for (var k = 0; k < common_1.useLocalStreamList.length; k++) {
+                            for (var j = 0; j < streamList.length; j++) {
+                                if (common_1.useLocalStreamList[k].streamID === streamList[j].streamID) {
+                                    console.info(common_1.useLocalStreamList[k].streamID + 'was devared');
+                                    common_1.useLocalStreamList.splice(k--, 1);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                });
                 $('#cdnAddPush').click(function () { return __awaiter(void 0, void 0, void 0, function () {
                     var result;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, common_1.zg.addPublishCdnUrl(common_1.publishStreamId, '', $('#cdnPushUrl').val() + common_1.publishStreamId)];
+                            case 0: return [4 /*yield*/, common_1.zg.addPublishCdnUrl(common_1.publishStreamId, md5_1.default(common_1.appID + Math.ceil(new Date().getTime() / 1000).toString() + '1ec3f85cb2f21370264eb371c8c65ca3'), 'rtmp://wsdemo.zego.im/livestream/test123')];
                             case 1:
                                 result = _a.sent();
                                 if (result.errorCode == 0) {
@@ -65,7 +207,7 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                     var result;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, common_1.zg.removePublishCdnUrl(common_1.publishStreamId, '', $('#cdnPushUrl').val() + common_1.publishStreamId)];
+                            case 0: return [4 /*yield*/, common_1.zg.removePublishCdnUrl(common_1.publishStreamId, md5_1.default(common_1.appID + Math.ceil(new Date().getTime() / 1000).toString() + '1ec3f85cb2f21370264eb371c8c65ca3'), 'rtmp://wsdemo.zego.im/livestream/test123')];
                             case 1:
                                 result = _a.sent();
                                 if (result.errorCode == 0) {
@@ -78,6 +220,19 @@ $(function () { return __awaiter(void 0, void 0, void 0, function () {
                         }
                     });
                 }); });
+                $('#leaveRoom').unbind('click');
+                $('#leaveRoom').click(function () {
+                    if (typeof flvPlayer !== 'undefined') {
+                        if (flvPlayer != null) {
+                            flvPlayer.pause();
+                            flvPlayer.unload();
+                            flvPlayer.detachMediaElement();
+                            flvPlayer.destroy();
+                            flvPlayer = null;
+                        }
+                    }
+                    common_1.logout();
+                });
                 return [2 /*return*/];
         }
     });
