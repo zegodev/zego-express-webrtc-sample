@@ -69,12 +69,13 @@ async function start(): Promise<void> {
     initSDK();
 
     zg.setLogConfig({
-        logLevel: 'debug',
+        logLevel: 'info',
         remoteLogLevel: 'info',
         logURL: '',
     });
     // zg.config({ userUpdate: true });
     zg.setDebugVerbose(false);
+    zg.setSoundLevelDelegate(true, 300);
 
     $('#createRoom').click(async () => {
         let loginSuc = false;
@@ -92,6 +93,15 @@ async function start(): Promise<void> {
 
     $('#leaveRoom').click(function() {
         logout();
+    });
+
+    $('#stopPlaySound').click(() => {
+        zg.setSoundLevelDelegate(false);
+    });
+
+    $('#resumePlaySound').click(() => {
+        zg.setSoundLevelDelegate(false);
+        zg.setSoundLevelDelegate(true);
     });
 }
 
@@ -248,6 +258,13 @@ function initSDK(): void {
     zg.on('remoteMicStatusUpdate', (streamID, status) => {
         console.warn(`${streamID} micro status ${status == 'OPEN' ? 'open' : 'close'}`);
     });
+
+    zg.on('soundLevelUpdate', (streamList: Array<{ streamID: string; soundLevel: number; type: string }>) => {
+        console.log('soundLevelUpdate', streamList);
+        streamList.forEach(stream => {
+            stream.type == 'push' && $('#soundLevel').html(Math.round(stream.soundLevel) + '');
+        });
+    });
 }
 
 async function login(roomId: string): Promise<boolean> {
@@ -293,6 +310,7 @@ async function logout(): Promise<void> {
         zg.stopPublishingStream(publishStreamId);
         zg.destroyStream(localStream);
         isPreviewed = false;
+        !$('.sound').hasClass('d-none') && $('.sound').addClass('d-none');
     }
 
     // 停止拉流
@@ -334,6 +352,7 @@ async function push(constraints?: Constraints, publishOption?: webPublishOption)
     localStream = await zg.createStream(constraints);
     previewVideo.srcObject = localStream;
     isPreviewed = true;
+    $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
     console.log('publish stream' + publishStreamId, result);
 }

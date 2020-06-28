@@ -90,12 +90,15 @@
           <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间（不推流）</button>
           <button type="button" id="toggleCamera" class="btn btn-primary btn-sm enableCamera">启用/关闭摄像头</button>
           <button type="button" id="toggleSpeaker" class="btn btn-primary btn-sm enableMicrophone">启用/关闭麦克风</button>
+          <button type="button" id="stopPlaySound" class="btn btn-primary btn-sm unenableSound">停止获取音浪</button>
+          <button type="button" id="resumePlaySound" class="btn btn-primary btn-sm resumeSound">恢复获取音浪</button>
           <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
         </div>
       </div>
 
       <div class="row videoRow">
         <div class="col-sm">
+          <h5 class="sound d-none">当前音量： <span id="soundLevel">0</span></h5>
           <label id="previewLabel" class="text-white"></label>
           <video id="previewVideo" autoplay muted playsinline></video>
         </div>
