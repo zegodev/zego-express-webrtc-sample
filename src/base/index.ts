@@ -1,5 +1,6 @@
 import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout } from '../common';
 import { webPlayOption } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
+import { getBrowser } from '../assets/utils';
 
 let playOption: webPlayOption = {};
 // --test begin
@@ -37,8 +38,8 @@ $(async () => {
         console.log('publish stream' + publishStreamID, result);
     });
     // --- test end
-    $('leaveRoom').unbind('click');
-    $('leaveRoom').click(() => {
+    $('#leaveRoom').unbind('click');
+    $('#leaveRoom').click(() => {
         if (previewed) {
             zg.stopPublishingStream(publishStreamID);
             zg.destroyStream(previewStream);
@@ -76,9 +77,17 @@ $(async () => {
                     break;
                 }
 
-                $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                const video = $('.remoteVideo video:last')[0] as HTMLVideoElement;
-                console.warn('video', video, remoteStream);
+                let video;
+                if (getBrowser() == 'Safari' && playOption.video === false) {
+                    $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
+                    video = $('.remoteVideo audio:last')[0] as HTMLAudioElement;
+                    console.warn('audio', video, remoteStream);
+                } else {
+                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                    video = $('.remoteVideo video:last')[0] as HTMLVideoElement;
+                    console.warn('video', video, remoteStream);
+                }
+
                 video.srcObject = remoteStream!;
                 video.muted = false;
             }

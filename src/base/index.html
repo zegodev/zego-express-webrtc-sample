@@ -85,7 +85,7 @@
       <div class="row">
         <div class="col-sm">
           <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
-          <button type="button" id="enterRoom" class="btn btn-primary btn-sm">进入房间</button>
+          <button type="button" id="enterRoom" class="btn btn-primary btn-sm">进房预览</button>
           <button type="button" id="publish" class="btn btn-primary btn-sm">推流</button>
           <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间（不推流）</button>
           <button type="button" id="toggleCamera" class="btn btn-primary btn-sm enableCamera">启用/关闭摄像头</button>
@@ -98,7 +98,7 @@
 
       <div class="row videoRow">
         <div class="col-sm">
-          <h5 class="sound d-none">当前音量： <span id="soundLevel">0</span></h5>
+          <h5 class="sound d-none"><span class="soundText">当前音量：</span> <span id="soundLevel">0</span></h5>
           <label id="previewLabel" class="text-white"></label>
           <video id="previewVideo" autoplay muted playsinline></video>
         </div>

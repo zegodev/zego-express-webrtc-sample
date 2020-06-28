@@ -54,6 +54,15 @@
           </div>
         </div>
 
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="screenList"><strong class="text-gray-dark shareScreen">共享屏幕</strong></label>
+            </div>
+            <select class="custom-select" id="screenList" style="width: 60%">
+            </select>
+          </div>
+        </div>
 
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
@@ -80,8 +89,12 @@
         <div class="col-sm">
           <label id="previewLabel" class="text-white"></label>
           <video id="previewVideo" autoplay muted playsinline></video>
-          <video id="previewScreenVideo"autoplay muted playsinline></video>
+          <!-- <video id="previewScreenVideo"autoplay muted playsinline></video> -->
+          <div class="previewScreenVideo">
+
+          </div>
         </div>
+        
         <div class="col-sm remoteVideo">
           <!--<video  autoplay muted playsinline></video>-->
         </div>

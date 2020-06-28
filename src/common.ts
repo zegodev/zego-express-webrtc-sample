@@ -75,13 +75,13 @@ async function start(): Promise<void> {
     });
     // zg.config({ userUpdate: true });
     zg.setDebugVerbose(false);
-    zg.setSoundLevelDelegate(true, 300);
+    zg.setSoundLevelDelegate(true, 1000);
 
     $('#createRoom').click(async () => {
         let loginSuc = false;
         try {
             loginSuc = await enterRoom();
-            loginSuc && (await push());
+            loginSuc && (await publish());
         } catch (error) {
             console.error(error);
         }
@@ -260,9 +260,9 @@ function initSDK(): void {
     });
 
     zg.on('soundLevelUpdate', (streamList: Array<{ streamID: string; soundLevel: number; type: string }>) => {
-        console.log('soundLevelUpdate', streamList);
         streamList.forEach(stream => {
             stream.type == 'push' && $('#soundLevel').html(Math.round(stream.soundLevel) + '');
+            console.warn(`${stream.type} ${stream.streamID}, soundLevel: ${stream.soundLevel}`);
         });
     });
 }
