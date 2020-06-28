@@ -1,10 +1,51 @@
-import { checkAnRun, zg, useLocalStreamList, enterRoom } from '../common';
+import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout } from '../common';
 import { webPlayOption } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 
 let playOption: webPlayOption = {};
+// --test begin
+let previewStream: MediaStream;
+let previewed = false;
+const publishStreamID = 'web-' + new Date().getTime();
+// ---test end
+
 $(async () => {
     await checkAnRun();
 
+    // --- test begin
+    $('#enterRoom').click(async () => {
+        let loginSuc = false;
+        try {
+            loginSuc = await enterRoom();
+            if (loginSuc) {
+                previewStream = await zg.createStream({
+                    camera: {
+                        audioInput: $('#audioList').val() as string,
+                        videoInput: $('#videoList').val() as string,
+                        video: $('#videoList').val() === '0' ? false : true,
+                        audio: $('#audioList').val() === '0' ? false : true,
+                    },
+                });
+                previewVideo.srcObject = previewStream;
+                previewed = true;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    });
+    $('#publish').click(() => {
+        const result = zg.startPublishingStream(publishStreamID, previewStream);
+        console.log('publish stream' + publishStreamID, result);
+    });
+    // --- test end
+    $('leaveRoom').unbind('click');
+    $('leaveRoom').click(() => {
+        if (previewed) {
+            zg.stopPublishingStream(publishStreamID);
+            zg.destroyStream(previewStream);
+            previewed = false;
+        }
+        logout();
+    });
     $('#openRoom').unbind('click');
     $('#openRoom').click(async () => {
         playOption = {};
