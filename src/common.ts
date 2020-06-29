@@ -310,6 +310,7 @@ async function logout(): Promise<void> {
         zg.stopPublishingStream(publishStreamId);
         zg.destroyStream(localStream);
         isPreviewed = false;
+        previewVideo.srcObject = null;
         !$('.sound').hasClass('d-none') && $('.sound').addClass('d-none');
     }
 

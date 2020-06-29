@@ -44,6 +44,7 @@ $(async () => {
             zg.stopPublishingStream(publishStreamID);
             zg.destroyStream(previewStream);
             previewed = false;
+            previewVideo.srcObject = null;
         }
         logout();
     });
