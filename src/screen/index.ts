@@ -7,16 +7,26 @@ $(async () => {
         $('#screenShot').attr('disabled', 'disabled');
         $('#stopScreenShot').attr('disabled', 'disabled');
     }
-    const screenStreamList: { streamId: string; stream: MediaStream }[] = [];
-    // const screenStreamId = publishStreamId + 'screen';
-    // const previewScreenVideo = $('#previewScreenVideo')[0] as HTMLVideoElement;
-    // const screenPublished = false;
-    // let screeStream: MediaStream;
+    let screenStreamList: { streamId: string; stream: MediaStream }[] = [];
+    let screenCount = 0;
+
+    const stopScreenShot = (screenStream: { streamId: string; stream: MediaStream }): void => {
+        zg.stopPublishingStream(screenStream.streamId);
+        $(`#screenList option[value='${screenStream.streamId}']`).remove();
+
+        zg.destroyStream(screenStream.stream);
+        console.log($(`#${screenStream.streamId}`));
+        ($(`#${screenStream.streamId}`)[0] as HTMLVideoElement).srcObject = null;
+        $(`#${screenStream.streamId}`).remove();
+        screenStreamList = screenStreamList.filter(item => item !== screenStream);
+        console.log(`screenStreamList `, screenStreamList);
+    };
 
     // 点击系统停止共享
-    zg.on('screenSharingEnded', () => {
+    zg.on('screenSharingEnded', (stream: MediaStream): void => {
         console.warn('screen sharing end');
-        $('#stopScreenShot').click();
+        const _stopScreenStream = screenStreamList.find(screenStream => screenStream.stream == stream);
+        _stopScreenStream && stopScreenShot(_stopScreenStream);
     });
 
     $('#screenShot').click(async () => {
@@ -27,8 +37,7 @@ $(async () => {
                     videoQuality: 1,
                 },
             });
-            // previewScreenVideo.srcObject = screeStream;
-            const screenStreamId = publishStreamId + 'screen' + screenStreamList.length;
+            const screenStreamId = publishStreamId + 'screen' + screenCount++;
             $('.previewScreenVideo').append(
                 $(`<video id="${screenStreamId}" autoplay muted playsinline controls></video>`),
             );
@@ -55,26 +64,14 @@ $(async () => {
         console.log('stopScreenShot', _stopScreenStreamId);
         const _stopScreenStream = screenStreamList.find(stream => stream.streamId == _stopScreenStreamId);
         if (!_stopScreenStream) return;
-        // if (screenPublished) {
-        zg.stopPublishingStream(_stopScreenStreamId);
-        $(`#screenList option[value='${_stopScreenStreamId}']`).remove();
-        // }
-
-        zg.destroyStream(_stopScreenStream.stream);
-        console.log($(`#${_stopScreenStreamId}`));
-        ($(`#${_stopScreenStreamId}`)[0] as HTMLVideoElement).srcObject = null;
-        $(`#${_stopScreenStreamId}`).remove();
-        // previewScreenVideo.srcObject = null;
+        stopScreenShot(_stopScreenStream);
     });
 
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {
         // $('#stopScreenShot').click();
         screenStreamList.forEach(item => {
-            zg.stopPublishingStream(item.streamId);
-            zg.destroyStream(item.stream);
-            $(`#screenList option[value='${item.streamId}']`).remove();
-            $(`#${item.streamId}`).remove();
+            stopScreenShot(item);
         });
         logout();
     });

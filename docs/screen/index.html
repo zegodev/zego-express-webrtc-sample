@@ -39,7 +39,7 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="audioList"><strong class="text-gray-dark audioDevices">音频设备</strong></label>
             </div>
-            <select class="custom-select" id="audioList" style="width: 50%">
+            <select class="custom-select" id="audioList" style="width: 50%; max-width: 200px;">
             </select>
           </div>
         </div>
@@ -49,7 +49,7 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="videoList"><strong class="text-gray-dark videoDevices">视频设备</strong></label>
             </div>
-            <select class="custom-select" id="videoList" style="width: 60%">
+            <select class="custom-select" id="videoList" style="width: 50%; max-width: 200px;">
             </select>
           </div>
         </div>
@@ -59,17 +59,18 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="screenList"><strong class="text-gray-dark shareScreen">共享屏幕</strong></label>
             </div>
-            <select class="custom-select" id="screenList" style="width: 60%">
+            <select class="custom-select" id="screenList" style="width: 50%; max-width: 200px;">
             </select>
           </div>
         </div>
-
+      </div>
+      <div class="row">
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
               <label class="input-group-text" for="roomId"><strong class="text-gray-dark roomid">房间号</strong></label>
             </div>
-            <input type="email" class="form-control d-inline" id="roomId" style="width: 60%" aria-describedby="emailHelp"
+            <input type="email" class="form-control d-inline" id="roomId" style="width: 60%; max-width: 200px;" aria-describedby="emailHelp"
               placeholder="please enter room ID">
           </div>
         </div>
