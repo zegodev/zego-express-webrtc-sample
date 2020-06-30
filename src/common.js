@@ -56,22 +56,19 @@ exports.publishStreamId = publishStreamId;
 var zg;
 exports.zg = zg;
 var appID = 1739272706;
-exports.appID = appID;
 var server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 var cgiToken = '';
 //const appSign = '';
 var previewVideo;
-exports.previewVideo = previewVideo;
 var useLocalStreamList = [];
 exports.useLocalStreamList = useLocalStreamList;
 var isPreviewed = false;
-exports.isPreviewed = isPreviewed;
 var supportScreenSharing = false;
 exports.supportScreenSharing = supportScreenSharing;
 var localStream;
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
-(_a = content_1.getCgi(appID, server, cgiToken), exports.appID = appID = _a.appID, server = _a.server, cgiToken = _a.cgiToken);
+(_a = content_1.getCgi(appID, server, cgiToken), appID = _a.appID, server = _a.server, cgiToken = _a.cgiToken);
 if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
     $.get(cgiToken, function (rsp) {
         cgiToken = rsp.data;
@@ -107,7 +104,7 @@ function checkAnRun(checkScreen) {
                         exports.supportScreenSharing = supportScreenSharing = result.screenSharing;
                         if (checkScreen && !supportScreenSharing)
                             alert('browser is not support screenSharing');
-                        exports.previewVideo = previewVideo = $('#previewVideo')[0];
+                        previewVideo = $('#previewVideo')[0];
                         start();
                     }
                     else {
@@ -335,14 +332,12 @@ function initSDK() {
     zg.on('playQualityUpdate', function (streamID, streamQuality) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             console.log("play#" + streamID + " videoFPS: " + streamQuality.video.videoFPS + " videoBitrate: " + streamQuality.video.videoBitrate + " audioBitrate: " + streamQuality.audio.audioBitrate);
-            console.log("play#" + streamID, streamQuality);
             return [2 /*return*/];
         });
     }); });
     zg.on('publishQualityUpdate', function (streamID, streamQuality) { return __awaiter(_this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             console.log("publish#" + streamID + " videoFPS: " + streamQuality.video.videoFPS + " videoBitrate: " + streamQuality.video.videoBitrate + " audioBitrate: " + streamQuality.audio.audioBitrate);
-            console.log("publish#" + streamID, streamQuality);
             return [2 /*return*/];
         });
     }); });
@@ -412,7 +407,7 @@ function logout() {
             if (isPreviewed) {
                 zg.stopPublishingStream(publishStreamId);
                 zg.destroyStream(localStream);
-                exports.isPreviewed = isPreviewed = false;
+                isPreviewed = false;
             }
             // 停止拉流
             // stop playing
@@ -430,39 +425,25 @@ function logout() {
     });
 }
 exports.logout = logout;
-function publish(constraints) {
-    return __awaiter(this, void 0, void 0, function () {
-        var video, _constraints;
-        return __generator(this, function (_a) {
-            console.warn('createStream', $('#audioList').val(), $('#videoList').val());
-            console.warn('constraints', constraints);
-            video = constraints && constraints.camera && typeof constraints.camera.video === 'boolean'
-                ? constraints.camera.video
-                : undefined;
-            _constraints = {
-                camera: {
-                    audioInput: $('#audioList').val(),
-                    videoInput: $('#videoList').val(),
-                    video: video !== undefined ? video : $('#videoList').val() === '0' ? false : true,
-                    audio: $('#audioList').val() === '0' ? false : true,
-                },
-            };
-            push(_constraints);
-            return [2 /*return*/];
-        });
-    });
-}
-exports.publish = publish;
-function push(constraints, publishOption) {
+function push(publishOption) {
     return __awaiter(this, void 0, void 0, function () {
         var result;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, zg.createStream(constraints)];
+                case 0:
+                    console.warn('createStream', $('#audioList').val(), $('#videoList').val());
+                    return [4 /*yield*/, zg.createStream({
+                            camera: {
+                                audioInput: $('#audioList').val(),
+                                videoInput: $('#videoList').val(),
+                                video: $('#videoList').val() === '0' ? false : true,
+                                audio: $('#audioList').val() === '0' ? false : true,
+                            },
+                        })];
                 case 1:
                     localStream = _a.sent();
                     previewVideo.srcObject = localStream;
-                    exports.isPreviewed = isPreviewed = true;
+                    isPreviewed = true;
                     result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
                     console.log('publish stream' + publishStreamId, result);
                     return [2 /*return*/];
@@ -472,11 +453,11 @@ function push(constraints, publishOption) {
 }
 exports.push = push;
 $('#toggleCamera').click(function () {
-    zg.mutePublishStreamVideo(previewVideo.srcObject, !$(this).hasClass('disabled'));
+    zg.mutePublishStreamVideo(previewVideo.srcObject, $(this).hasClass('disabled'));
     $(this).toggleClass('disabled');
 });
 $('#toggleSpeaker').click(function () {
-    zg.mutePublishStreamAudio(previewVideo.srcObject, !$(this).hasClass('disabled'));
+    zg.mutePublishStreamAudio(previewVideo.srcObject, $(this).hasClass('disabled'));
     $(this).toggleClass('disabled');
 });
 $(window).on('unload', function () {
