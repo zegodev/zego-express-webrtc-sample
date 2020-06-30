@@ -54,7 +54,10 @@ $(async () => {
         const _selectMode = $('#playMode option:selected').val();
         console.warn('playMode', _selectMode, playOption);
         if (_selectMode) {
-            if (_selectMode == 'video') {
+            if (_selectMode == 'all') {
+                playOption.video = true;
+                playOption.audio = true;
+            } else if (_selectMode == 'video') {
                 playOption.audio = false;
             } else if (_selectMode == 'audio') {
                 playOption.video = false;

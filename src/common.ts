@@ -347,6 +347,7 @@ async function publish(constraints?: Constraints): Promise<void> {
             audio: $('#audioList').val() === '0' ? false : true,
         },
     };
+    !_constraints.camera.video && (previewVideo.controls = true);
     push(_constraints);
 }
 async function push(constraints?: Constraints, publishOption?: webPublishOption): Promise<void> {
