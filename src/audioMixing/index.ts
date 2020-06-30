@@ -12,10 +12,7 @@ $(async () => {
     });
 
     $('#stopMixAudio').click(() => {
-        zg.stopMixingAudio(publishStreamId, [
-            $('#extenerVideo1')[0] as HTMLMediaElement,
-            $('#extenerVideo2')[0] as HTMLMediaElement,
-        ]);
+        zg.stopMixingAudio(publishStreamId);
     });
 
     $('#mixingBuffer').click(function() {
