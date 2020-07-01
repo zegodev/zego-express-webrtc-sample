@@ -298,6 +298,8 @@ async function enterRoom(): Promise<boolean> {
     }
     await login(roomId);
 
+    $('.remoteVideo').html('');
+
     return true;
 }
 
