@@ -20,6 +20,7 @@ let previewVideo: HTMLVideoElement;
 let useLocalStreamList: any = [];
 let isPreviewed = false;
 let supportScreenSharing = false;
+let loginRoom = false;
 
 let localStream: MediaStream;
 
@@ -298,6 +299,8 @@ async function enterRoom(): Promise<boolean> {
     }
     await login(roomId);
 
+    loginRoom = true;
+
     $('.remoteVideo').html('');
 
     return true;
@@ -331,6 +334,7 @@ async function logout(): Promise<void> {
     //logout
     const roomId: string = $('#roomId').val() as string;
     zg.logoutRoom(roomId);
+    loginRoom = false;
 }
 
 async function publish(constraints?: Constraints): Promise<void> {
@@ -385,6 +389,7 @@ export {
     publish,
     previewVideo,
     isPreviewed,
+    loginRoom,
 };
 
 $(window).on('unload', function() {

@@ -1,4 +1,4 @@
-import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg } from '../common';
+import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg, loginRoom } from '../common';
 
 $(async () => {
     await checkAnRun(true);
@@ -30,6 +30,10 @@ $(async () => {
     });
 
     $('#screenShot').click(async () => {
+        if (!loginRoom) {
+            alert('请先登录房间');
+            return;
+        }
         try {
             const screenStream = await zg.createStream({
                 screen: {
