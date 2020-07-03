@@ -20,6 +20,7 @@ let previewVideo: HTMLVideoElement;
 let useLocalStreamList: any = [];
 let isPreviewed = false;
 let supportScreenSharing = false;
+let loginRoom = false;
 
 let localStream: MediaStream;
 
@@ -69,18 +70,19 @@ async function start(): Promise<void> {
     initSDK();
 
     zg.setLogConfig({
-        logLevel: 'debug',
+        logLevel: 'info',
         remoteLogLevel: 'info',
         logURL: '',
     });
     // zg.config({ userUpdate: true });
     zg.setDebugVerbose(false);
+    zg.setSoundLevelDelegate(true, 1000);
 
     $('#createRoom').click(async () => {
         let loginSuc = false;
         try {
             loginSuc = await enterRoom();
-            loginSuc && (await push());
+            loginSuc && (await publish());
         } catch (error) {
             console.error(error);
         }
@@ -92,6 +94,15 @@ async function start(): Promise<void> {
 
     $('#leaveRoom').click(function() {
         logout();
+    });
+
+    $('#stopPlaySound').click(() => {
+        zg.setSoundLevelDelegate(false);
+    });
+
+    $('#resumePlaySound').click(() => {
+        zg.setSoundLevelDelegate(false);
+        zg.setSoundLevelDelegate(true);
     });
 }
 
@@ -248,6 +259,13 @@ function initSDK(): void {
     zg.on('remoteMicStatusUpdate', (streamID, status) => {
         console.warn(`${streamID} micro status ${status == 'OPEN' ? 'open' : 'close'}`);
     });
+
+    zg.on('soundLevelUpdate', (streamList: Array<{ streamID: string; soundLevel: number; type: string }>) => {
+        streamList.forEach(stream => {
+            stream.type == 'push' && $('#soundLevel').html(Math.round(stream.soundLevel) + '');
+            console.warn(`${stream.type} ${stream.streamID}, soundLevel: ${stream.soundLevel}`);
+        });
+    });
 }
 
 async function login(roomId: string): Promise<boolean> {
@@ -281,6 +299,10 @@ async function enterRoom(): Promise<boolean> {
     }
     await login(roomId);
 
+    loginRoom = true;
+
+    $('.remoteVideo').html('');
+
     return true;
 }
 
@@ -293,6 +315,8 @@ async function logout(): Promise<void> {
         zg.stopPublishingStream(publishStreamId);
         zg.destroyStream(localStream);
         isPreviewed = false;
+        previewVideo.srcObject = null;
+        !$('.sound').hasClass('d-none') && $('.sound').addClass('d-none');
     }
 
     // 停止拉流
@@ -310,6 +334,7 @@ async function logout(): Promise<void> {
     //logout
     const roomId: string = $('#roomId').val() as string;
     zg.logoutRoom(roomId);
+    loginRoom = false;
 }
 
 async function publish(constraints?: Constraints): Promise<void> {
@@ -328,12 +353,14 @@ async function publish(constraints?: Constraints): Promise<void> {
             audio: $('#audioList').val() === '0' ? false : true,
         },
     };
+    !_constraints.camera.video && (previewVideo.controls = true);
     push(_constraints);
 }
 async function push(constraints?: Constraints, publishOption?: webPublishOption): Promise<void> {
     localStream = await zg.createStream(constraints);
     previewVideo.srcObject = localStream;
     isPreviewed = true;
+    $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
     console.log('publish stream' + publishStreamId, result);
 }
@@ -362,6 +389,7 @@ export {
     publish,
     previewVideo,
     isPreviewed,
+    loginRoom,
 };
 
 $(window).on('unload', function() {

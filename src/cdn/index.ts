@@ -1,4 +1,5 @@
 import '../common';
+//@ts-ignore
 import md5 from 'md5';
 import { checkAnRun, logout, publishStreamId, zg, appID, useLocalStreamList } from '../common';
 import { getBrowser } from '../assets/utils';
@@ -154,7 +155,8 @@ $(async () => {
     $('#cdnAddPush').click(async () => {
         const result = await zg.addPublishCdnUrl(
             publishStreamId,
-            md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + '1ec3f85cb2f21370264eb371c8c65ca3'),
+            //The calculation of the signature is recommended to be placed in the background server
+            md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
             'rtmp://wsdemo.zego.im/livestream/test259',
         );
         if (result.errorCode == 0) {
@@ -167,7 +169,8 @@ $(async () => {
     $('#cdnDelPush').click(async () => {
         const result = await zg.removePublishCdnUrl(
             publishStreamId,
-            md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + '1ec3f85cb2f21370264eb371c8c65ca3'),
+            //The calculation of the signature is recommended to be placed in the background server
+            md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
             'rtmp://wsdemo.zego.im/livestream/test259',
         );
         if (result.errorCode == 0) {
@@ -217,5 +220,15 @@ $(async () => {
         }
 
         logout();
+    });
+
+    $('#secret').change(() => {
+        if ($('#secret').val() == '') {
+            ($('#cdnAddPush')[0] as any).disabled = true;
+            ($('#cdnDelPush')[0] as any).disabled = true;
+        } else {
+            ($('#cdnAddPush')[0] as any).disabled = false;
+            ($('#cdnDelPush')[0] as any).disabled = true;
+        }
     });
 });
