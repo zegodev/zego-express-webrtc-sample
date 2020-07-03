@@ -221,4 +221,14 @@ $(async () => {
 
         logout();
     });
+
+    $('#secret').change(() => {
+        if ($('#secret').val() == '') {
+            ($('#cdnAddPush')[0] as any).disabled = true;
+            ($('#cdnDelPush')[0] as any).disabled = true;
+        } else {
+            ($('#cdnAddPush')[0] as any).disabled = false;
+            ($('#cdnDelPush')[0] as any).disabled = true;
+        }
+    });
 });
