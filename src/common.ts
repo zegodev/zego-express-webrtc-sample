@@ -13,7 +13,7 @@ const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 const publishStreamId = 'webrtc' + new Date().getTime();
 let zg: ZegoExpressEngine;
 let appID = 1739272706;
-let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
+let server: string | Array<string> = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 let cgiToken = '';
 //const appSign = '';
 let previewVideo: HTMLVideoElement;
@@ -34,6 +34,7 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
         console.log(cgiToken);
     });
 }
+
 // 测试用代码 end
 // Test code end
 
