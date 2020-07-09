@@ -70,6 +70,9 @@ $(async () => {
         });
         $('#memberList').html(userListHtml);
     });
+    zg.on('roomExtraInfoUpdate', (roomID, type, data) => {
+        console.warn(`roomExtraInfoUpdate: room ${roomID} `, type, data);
+    });
     $('.chatBox').hide();
 
     //打开/关闭聊天框
@@ -146,6 +149,16 @@ $(async () => {
             console.warn('send BarrageMessage success');
         } else {
             console.error('send BarrageMessage fail ', result.errorCode);
+        }
+    });
+
+    $('#ReliableMessage').click(async () => {
+        const roomId: string = $('#roomId').val() as string;
+        const result = await zg.setRoomExtraInfo(roomId, '2', 'ReliableMessage test');
+        if (result.errorCode === 0) {
+            console.warn('setRoomExtraInfo suc');
+        } else {
+            console.error('setRoomExtraInfo err', result.errorCode);
         }
     });
 });

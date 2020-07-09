@@ -151,7 +151,7 @@ function initSDK(): void {
         );
     });
     zg.on('publisherStateUpdate', result => {
-        console.log('publisherStateUpdate: ', result.streamID);
+        console.log('publisherStateUpdate: ', result.streamID, result.state);
         if (result.state == 'PUBLISHING') {
             console.info(' publish  success');
         } else if (result.state == 'PUBLISH_REQUESTING') {
@@ -173,7 +173,7 @@ function initSDK(): void {
         }
     });
     zg.on('playerStateUpdate', result => {
-        console.log('playerStateUpdate', result.streamID);
+        console.log('playerStateUpdate', result.streamID, result.state);
         if (result.state == 'PLAYING') {
             console.info(' play  success');
         } else if (result.state == 'PLAY_REQUESTING') {
