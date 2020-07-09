@@ -76,7 +76,7 @@ async function start(): Promise<void> {
         logURL: '',
     });
     // zg.config({ userUpdate: true });
-    zg.setDebugVerbose(false);
+    // zg.setDebugVerbose(false);
     zg.setSoundLevelDelegate(true, 1000);
 
     $('#createRoom').click(async () => {
