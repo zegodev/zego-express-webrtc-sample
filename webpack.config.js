@@ -123,7 +123,7 @@ module.exports = {
     ],
     devServer: {
         contentBase: './docs',
-        port: 9091,
+        port: 9092,
         host: internalIp.v4.sync(),
         https: true,
     },

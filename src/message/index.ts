@@ -72,6 +72,8 @@ $(async () => {
     });
     zg.on('roomExtraInfoUpdate', (roomID, type, data) => {
         console.warn(`roomExtraInfoUpdate: room ${roomID} `, type, data);
+        $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + type + ' | ' + data);
+        $('#showAlert').click();
     });
     $('.chatBox').hide();
 
