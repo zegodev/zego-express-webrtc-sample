@@ -13,7 +13,7 @@ const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 const publishStreamId = 'webrtc' + new Date().getTime();
 let zg: ZegoExpressEngine;
 let appID = 1739272706;
-let server: string | Array<string> = 'wss://wsliveroom-alpha.zego.im:8282/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
+let server: string | Array<string> = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 let cgiToken = '';
 //const appSign = '';
 let previewVideo: HTMLVideoElement;
