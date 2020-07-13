@@ -330,6 +330,7 @@ async function logout(): Promise<void> {
     // Clear page
     useLocalStreamList = [];
     $('.remoteVideo').html('');
+    $('#memberList').html('');
 
     //退出登录
     //logout
