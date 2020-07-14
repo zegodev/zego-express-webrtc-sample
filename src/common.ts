@@ -323,7 +323,7 @@ async function logout(): Promise<void> {
     // 停止拉流
     // stop playing
     for (let i = 0; i < useLocalStreamList.length; i++) {
-        zg.stopPlayingStream(useLocalStreamList[i].streamID);
+        useLocalStreamList[i].streamID && zg.stopPlayingStream(useLocalStreamList[i].streamID);
     }
 
     // 清空页面

@@ -286,6 +286,7 @@ async function logout() {
         zg.stopPublishingStream(publishStreamId);
         zg.destroyStream(localStream);
         isPreviewed = false;
+        previewVideo.srcObject = null;
     }
 
     // 停止拉流
