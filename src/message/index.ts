@@ -2,7 +2,7 @@ import '../common';
 import 'popper.js';
 import './css/chat.css';
 import './font_Icon/iconfont.css';
-import { checkAnRun, zg, userID } from '../common';
+import { checkAnRun, zg, userID, logout } from '../common';
 import { User } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 
 let msgCount = 0;
@@ -70,11 +70,11 @@ $(async () => {
         });
         $('#memberList').html(userListHtml);
     });
-    zg.on('roomExtraInfoUpdate', (roomID, type, data) => {
-        console.warn(`roomExtraInfoUpdate: room ${roomID} `, type, data);
-        $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + type + ' | ' + data);
-        $('#showAlert').click();
-    });
+    // zg.on('roomExtraInfoUpdate', (roomID, type, data) => {
+    //     console.warn(`roomExtraInfoUpdate: room ${roomID} `, type, data);
+    //     $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + type + ' | ' + data);
+    //     $('#showAlert').click();
+    // });
     $('.chatBox').hide();
 
     //打开/关闭聊天框
@@ -154,13 +154,19 @@ $(async () => {
         }
     });
 
-    $('#ReliableMessage').click(async () => {
-        const roomId: string = $('#roomId').val() as string;
-        const result = await zg.setRoomExtraInfo(roomId, '2', 'ReliableMessage test');
-        if (result.errorCode === 0) {
-            console.warn('setRoomExtraInfo suc');
-        } else {
-            console.error('setRoomExtraInfo err', result.errorCode);
-        }
+    // $('#ReliableMessage').click(async () => {
+    //     const roomId: string = $('#roomId').val() as string;
+    //     const result = await zg.setRoomExtraInfo(roomId, '2', 'ReliableMessage test');
+    //     if (result.errorCode === 0) {
+    //         console.warn('setRoomExtraInfo suc');
+    //     } else {
+    //         console.error('setRoomExtraInfo err', result.errorCode);
+    //     }
+    // });
+    $('#leaveRoom').unbind('click');
+    $('#leaveRoom').click(function() {
+        localUserList = [];
+
+        logout();
     });
 });
