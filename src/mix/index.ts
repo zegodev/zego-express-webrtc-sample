@@ -109,6 +109,10 @@ $(async () => {
 
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {
+        if (flvPlayer) {
+            flvPlayer.destroy();
+            flvPlayer = null;
+        }
         mixVideo.src = '';
         $('#mixVideo').css('display', 'none');
 

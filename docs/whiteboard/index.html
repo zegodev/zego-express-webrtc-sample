@@ -33,7 +33,7 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="server"><strong class="text-gray-dark">server</strong></label>
             </div>
-            <input class="form-control d-inline" value="wss://wsliveroom-alpha.zego.im:8282/ws" style="width: 75%;"
+            <input class="form-control d-inline" value="wss://webliveroom-test.zego.im/ws" style="width: 75%;"
               type="text" id="server" placeholder="请输入server" />
           </div>
         </div>
@@ -52,8 +52,7 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="roomId"><strong class="text-gray-dark">roomID</strong></label>
             </div>
-            <input class="form-control d-inline" value="141592653" style="width: 75%;" type="text" id="roomID"
-              placeholder="请输入roomID" />
+            <input class="form-control d-inline" style="width: 75%;" type="text" id="roomID" placeholder="请输入roomID" />
           </div>
         </div>
         <div class="col-sm">
@@ -224,7 +223,7 @@
     });
     zg.on(
       "viewScroll",
-      (whiteboardID, horizontalPercent, verticalPercent) => {
+      (whiteboardID, horizontalPercent, verticalPercent, page) => {
         console.log("on viewScroll");
         console.log(whiteboardID);
         console.log(horizontalPercent);
@@ -251,7 +250,7 @@
   }
 
   function leaveRoom() {
-    console.alert("leave room");
+    alert("leave room");
     isLogin = false;
     zg.logoutRoom();
   }
