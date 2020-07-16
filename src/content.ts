@@ -27,7 +27,7 @@ export function getCgi(appId: number, serverUrl: string, cgi: string) {
     // 测试用代码，开发者请忽略
     // Test code, developers please ignore
     let appID: number = appId;
-    let server: string = serverUrl;
+    let server: string | Array<string> = serverUrl;
     let cgiToken: string = cgi;
     if (location.search) {
         const arrConfig = location.search.substr(1).split('&');
@@ -41,7 +41,15 @@ export function getCgi(appId: number, serverUrl: string, cgi: string) {
             }
 
             if (key == 'server') {
-                server = decodeURIComponent(value);
+                const _server = decodeURIComponent(value);
+                console.warn('server', _server);
+                const _serArr = _server.split('|');
+                if (_serArr.length > 1) {
+                    server = _serArr;
+                } else {
+                    server = _server;
+                }
+                console.warn('server', server);
             }
 
             if (key == 'cgi_token') {

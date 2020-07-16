@@ -1,4 +1,4 @@
-import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg } from '../common';
+import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg, loginRoom } from '../common';
 
 $(async () => {
     await checkAnRun(true);
@@ -7,28 +7,56 @@ $(async () => {
         $('#screenShot').attr('disabled', 'disabled');
         $('#stopScreenShot').attr('disabled', 'disabled');
     }
-    const screenStreamId = publishStreamId + 'screen';
-    const previewScreenVideo = $('#previewScreenVideo')[0] as HTMLVideoElement;
-    let screenPublished = false;
-    let screeStream: MediaStream;
+    let screenStreamList: { streamId: string; stream: MediaStream }[] = [];
+    let screenCount = 0;
+
+    const stopScreenShot = (screenStream: { streamId: string; stream: MediaStream }): void => {
+        zg.stopPublishingStream(screenStream.streamId);
+        $(`#screenList option[value='${screenStream.streamId}']`).remove();
+
+        zg.destroyStream(screenStream.stream);
+        console.log($(`#${screenStream.streamId}`));
+        ($(`#${screenStream.streamId}`)[0] as HTMLVideoElement).srcObject = null;
+        $(`#${screenStream.streamId}`).remove();
+        screenStreamList = screenStreamList.filter(item => item !== screenStream);
+        console.log(`screenStreamList `, screenStreamList);
+    };
 
     // 点击系统停止共享
-    zg.on('screenSharingEnded', () => {
+    zg.on('screenSharingEnded', (stream: MediaStream): void => {
         console.warn('screen sharing end');
-        $('#stopScreenShot').click();
+        const _stopScreenStream = screenStreamList.find(screenStream => screenStream.stream == stream);
+        _stopScreenStream && stopScreenShot(_stopScreenStream);
     });
 
     $('#screenShot').click(async () => {
+        if (!loginRoom) {
+            alert('请先登录房间');
+            return;
+        }
         try {
-            screeStream = await zg.createStream({
+            const screenStream = await zg.createStream({
                 screen: {
                     audio: true,
                     videoQuality: 1,
                 },
             });
-            previewScreenVideo.srcObject = screeStream;
-            const publisRes: boolean = zg.startPublishingStream(screenStreamId, screeStream);
-            screenPublished = publisRes;
+            const screenStreamId = publishStreamId + 'screen' + screenCount++;
+            $('.previewScreenVideo').append(
+                $(`<video id="${screenStreamId}" autoplay muted playsinline controls></video>`),
+            );
+            const video = $('.previewScreenVideo video:last')[0] as HTMLVideoElement;
+            console.warn('video', video, screenStream);
+            video.srcObject = screenStream!;
+
+            const publisRes: boolean = zg.startPublishingStream(screenStreamId, screenStream);
+            publisRes &&
+                screenStreamList.push({
+                    streamId: screenStreamId,
+                    stream: screenStream,
+                });
+            $('#screenList').append('<option value="' + screenStreamId + '">' + screenStreamId + '</option>');
+            // screenPublished = publisRes;
             console.log('publish screeStream', publisRes);
         } catch (e) {
             console.error('screenShot', e);
@@ -36,16 +64,19 @@ $(async () => {
     });
 
     $('#stopScreenShot').click(() => {
-        if (screenPublished) {
-            zg.stopPublishingStream(screenStreamId);
-        }
-        zg.destroyStream(screeStream);
-        previewScreenVideo.srcObject = null;
+        const _stopScreenStreamId = $('#screenList').val() as string;
+        console.log('stopScreenShot', _stopScreenStreamId);
+        const _stopScreenStream = screenStreamList.find(stream => stream.streamId == _stopScreenStreamId);
+        if (!_stopScreenStream) return;
+        stopScreenShot(_stopScreenStream);
     });
 
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {
-        $('#stopScreenShot').click();
+        // $('#stopScreenShot').click();
+        screenStreamList.forEach(item => {
+            stopScreenShot(item);
+        });
         logout();
     });
 });
