@@ -1,174 +1,99 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var _a;
-Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable @typescript-eslint/no-use-before-define */
-var vconsole_1 = __importDefault(require("vconsole"));
-require("../assets/bootstrap.min");
-require("../assets/bootstrap.min.css");
-var zego_express_engine_webrtc_1 = require("zego-express-engine-webrtc");
-var content_1 = require("../content");
-new vconsole_1.default();
-var userID = 'sample' + new Date().getTime();
-var tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
-var publishStreamId = 'webrtc' + new Date().getTime();
-var taskID = 'task-' + new Date().getTime();
-var mixStreamId = 'mix-' + publishStreamId;
-var appID = 96527232;
-var server = 'wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws';
-var cgiToken = '';
-var previewVideo;
-var useLocalStreamList = [];
-var isPreviewed = false;
-var localStream;
-var videoCodec = 'H264';
-(_a = content_1.getCgi(appID, server, cgiToken), appID = _a.appID, server = _a.server, cgiToken = _a.cgiToken);
+import VConsole from 'vconsole';
+import '../assets/bootstrap.min';
+import '../assets/bootstrap.min.css';
+import { ZegoExpressEngine } from 'zego-express-engine-webrtc'; 
+import { getCgi } from '../content'; 
+
+new VConsole();
+const userID = 'sample' + new Date().getTime();
+const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
+const publishStreamId = 'webrtc' + new Date().getTime();
+const taskID = 'task-' + new Date().getTime();
+const mixStreamId = 'mix-' + publishStreamId;
+let appID = 96527232;
+let server = 'wss://wssliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws';
+let cgiToken = '';
+let previewVideo;
+let useLocalStreamList = [];
+let isPreviewed = false;
+let localStream;
+let videoCodec = 'H264';
+
+({ appID, server, cgiToken } = getCgi(appID, server, cgiToken));
 if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
-    $.get(cgiToken, function (rsp) {
+    $.get(cgiToken, rsp => {
         cgiToken = rsp.data;
         console.log(cgiToken);
     });
 }
-var zg = new zego_express_engine_webrtc_1.ZegoExpressEngine(appID, server);
-function checkAnRun() {
-    return __awaiter(this, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log('sdk version is', zg.getVersion());
-                    return [4 /*yield*/, zg.checkSystemRequirements()];
-                case 1:
-                    result = _a.sent();
-                    console.warn('checkSystemRequirements ', result);
-                    videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
-                    $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
-                    !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
-                    !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
-                    if (!result.webRTC) {
-                        alert('browser is not support webrtc!!');
-                        return [2 /*return*/, false];
-                    }
-                    else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
-                        alert('browser is not support H264 and VP8');
-                        return [2 /*return*/, false];
-                    }
-                    else {
-                        previewVideo = $('#previewVideo')[0];
-                        start();
-                    }
-                    return [2 /*return*/, true];
-            }
+
+const zg = new ZegoExpressEngine(appID, server);
+
+async function checkAnRun() {
+    console.log('sdk version is', zg.getVersion());
+    const result = await zg.checkSystemRequirements();
+
+    console.warn('checkSystemRequirements ', result);
+    videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
+    $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
+    !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
+    !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
+
+    if (!result.webRTC) {
+        alert('browser is not support webrtc!!');
+        return false;
+    } else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
+        alert('browser is not support H264 and VP8');
+        return false;
+    } else {
+        previewVideo = $('#previewVideo')[0];
+        start();
+    }
+
+    return true;
+}
+
+async function start() {
+    initSDK();
+
+    $('#createRoom').click(async () => {
+        if ($('#videoCodec').val()) {
+            videoCodec = $('#videoCodec').val();
+        }
+        const extraInfo = JSON.stringify({
+            currentVideoCode: videoCodec,
+            mixStreamId,
         });
+        const loginSuc = await enterRoom();
+        loginSuc && (await push({ extraInfo, videoCodec: videoCodec }));
+    });
+
+    $('#openRoom').click(async () => {
+        if ($('#videoCodec').val()) {
+            videoCodec = $('#videoCodec').val();
+        }
+        await enterRoom();
+    });
+
+    $('#leaveRoom').click(function() {
+        logout();
     });
 }
-function start() {
-    return __awaiter(this, void 0, void 0, function () {
-        var _this = this;
-        return __generator(this, function (_a) {
-            initSDK();
-            $('#createRoom').click(function () { return __awaiter(_this, void 0, void 0, function () {
-                var extraInfo, loginSuc, _a;
-                return __generator(this, function (_b) {
-                    switch (_b.label) {
-                        case 0:
-                            if ($('#videoCodec').val()) {
-                                videoCodec = $('#videoCodec').val();
-                            }
-                            extraInfo = JSON.stringify({
-                                currentVideoCode: videoCodec,
-                                mixStreamId: mixStreamId,
-                            });
-                            return [4 /*yield*/, enterRoom()];
-                        case 1:
-                            loginSuc = _b.sent();
-                            _a = loginSuc;
-                            if (!_a) return [3 /*break*/, 3];
-                            return [4 /*yield*/, push({ extraInfo: extraInfo, videoCodec: videoCodec })];
-                        case 2:
-                            _a = (_b.sent());
-                            _b.label = 3;
-                        case 3:
-                            _a;
-                            return [2 /*return*/];
-                    }
-                });
-            }); });
-            $('#openRoom').click(function () { return __awaiter(_this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if ($('#videoCodec').val()) {
-                                videoCodec = $('#videoCodec').val();
-                            }
-                            return [4 /*yield*/, enterRoom()];
-                        case 1:
-                            _a.sent();
-                            return [2 /*return*/];
-                    }
-                });
-            }); });
-            $('#leaveRoom').click(function () {
-                logout();
-            });
-            return [2 /*return*/];
-        });
-    });
-}
+
 function initSDK() {
-    var _this = this;
     enumDevices();
-    zg.on('roomStateUpdate', function (roomID, state, errorCode) {
+    zg.on('roomStateUpdate', (roomID, state, errorCode) => {
         console.log('roomStateUpdate', roomID, state, errorCode);
     });
-    zg.on('publisherStateUpdate', function (result) {
-        console.log("publisherStateUpdate roomID:" + result.streamID);
+    zg.on('publisherStateUpdate', result => {
+        console.log(`publisherStateUpdate roomID:${result.streamID}`);
         if (result.state == 'PUBLISHING') {
             console.info(' publish  success');
             mixStream();
-        }
-        else if (result.state == 'PUBLISH_REQUESTING') {
+        } else if (result.state == 'PUBLISH_REQUESTING') {
             console.info(' publish  retry');
-        }
-        else {
+        } else {
             console.error('publish error code ' + result.errorCode);
             // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
@@ -184,14 +109,12 @@ function initSDK() {
             // alert('推流失败,reason = ' + _msg);
         }
     });
-    zg.on('playerStateUpdate', function (result) {
+    zg.on('playerStateUpdate', result => {
         if (result.state == 'PLAYING') {
             console.info(' play  success');
-        }
-        else if (result.state == 'PLAY_REQUESTING') {
+        } else if (result.state == 'PLAY_REQUESTING') {
             console.info(' play  retry');
-        }
-        else {
+        } else {
             console.error('publish error code ' + result.errorCode);
             // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
@@ -207,316 +130,225 @@ function initSDK() {
             // alert('拉流失败,reason = ' + _msg);
         }
     });
-    zg.on('roomStreamUpdate', function (roomID, updateType, streamList) { return __awaiter(_this, void 0, void 0, function () {
-        var _loop_1, i, k, j, extraInfoObject;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log("roomStreamUpdate roomID: " + roomID);
-                    if (!(updateType == 'ADD')) return [3 /*break*/, 5];
-                    _loop_1 = function (i) {
-                        var remoteStream, video;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    console.info(streamList[i].streamID + ' was added');
-                                    useLocalStreamList.push(streamList[i]);
-                                    $('#memberList').append('<option value="' + streamList[i].user.userID + '">' + streamList[i].user.userName + '</option>');
-                                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                                    return [4 /*yield*/, getRemoteByCodeType(useLocalStreamList[i])];
-                                case 1:
-                                    remoteStream = _a.sent();
-                                    video = $('.remoteVideo video:eq(' + i + ')')[0];
-                                    video.srcObject = remoteStream;
-                                    video.muted = false;
-                                    setTimeout(function () {
-                                        video.play();
-                                    }, 2000);
-                                    return [2 /*return*/];
-                            }
-                        });
-                    };
-                    i = 0;
-                    _a.label = 1;
-                case 1:
-                    if (!(i < streamList.length)) return [3 /*break*/, 4];
-                    return [5 /*yield**/, _loop_1(i)];
-                case 2:
-                    _a.sent();
-                    _a.label = 3;
-                case 3:
-                    i++;
-                    return [3 /*break*/, 1];
-                case 4: return [3 /*break*/, 6];
-                case 5:
-                    if (updateType == 'DELETE') {
-                        for (k = 0; k < useLocalStreamList.length; k++) {
-                            for (j = 0; j < streamList.length; j++) {
-                                if (useLocalStreamList[k].streamID === streamList[j].streamID) {
-                                    extraInfoObject = JSON.parse(useLocalStreamList[k].extraInfo);
-                                    zg.stopPlayingStream(useLocalStreamList[k].streamID);
-                                    extraInfoObject.mixStreamId && zg.stopPlayingStream(extraInfoObject.mixStreamId);
-                                    console.info(useLocalStreamList[k].streamID + 'was devared');
-                                    useLocalStreamList.splice(k, 1);
-                                    $('.remoteVideo video:eq(' + k + ')').remove();
-                                    $('#memberList option:eq(' + k + ')').remove();
-                                    break;
-                                }
-                            }
-                        }
+    zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
+        console.log(`roomStreamUpdate roomID: ${roomID}`);
+        if (updateType == 'ADD') {
+            for (let i = 0; i < streamList.length; i++) {
+                console.info(streamList[i].streamID + ' was added');
+                useLocalStreamList.push(streamList[i]);
+                $('#memberList').append(
+                    '<option value="' + streamList[i].user.userID + '">' + streamList[i].user.userName + '</option>',
+                );
+                $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+
+                const remoteStream = await getRemoteByCodeType(useLocalStreamList[i]);
+                const video = $('.remoteVideo video:eq(' + i + ')')[0];
+                video.srcObject = remoteStream;
+                video.muted = false;
+                setTimeout(() => {
+                    video.play();
+                }, 2000);
+            }
+        } else if (updateType == 'DELETE') {
+            for (let k = 0; k < useLocalStreamList.length; k++) {
+                for (let j = 0; j < streamList.length; j++) {
+                    if (useLocalStreamList[k].streamID === streamList[j].streamID) {
+                        const extraInfoObject = JSON.parse(useLocalStreamList[k].extraInfo);
+                        zg.stopPlayingStream(useLocalStreamList[k].streamID);
+                        extraInfoObject.mixStreamId && zg.stopPlayingStream(extraInfoObject.mixStreamId);
+                        console.info(useLocalStreamList[k].streamID + 'was devared');
+
+                        useLocalStreamList.splice(k, 1);
+
+                        $('.remoteVideo video:eq(' + k + ')').remove();
+                        $('#memberList option:eq(' + k + ')').remove();
+
+                        break;
                     }
-                    _a.label = 6;
-                case 6: return [2 /*return*/];
+                }
             }
-        });
-    }); });
-    zg.on('playQualityUpdate', function (streamID, streamQuality) { return __awaiter(_this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            console.log("play#" + streamID + " videoFPS: " + streamQuality.video.videoFPS + " videoBitrate: " + streamQuality.video.videoBitrate + " audioBitrate: " + streamQuality.audio.audioBitrate);
-            return [2 /*return*/];
-        });
-    }); });
-    zg.on('publishQualityUpdate', function (streamID, streamQuality) { return __awaiter(_this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            console.log("publish#" + streamID + " videoFPS: " + streamQuality.video.videoFPS + " videoBitrate: " + streamQuality.video.videoBitrate + " audioBitrate: " + streamQuality.audio.audioBitrate);
-            return [2 /*return*/];
-        });
-    }); });
-}
-function enumDevices() {
-    return __awaiter(this, void 0, void 0, function () {
-        var audioInputList, videoInputList, deviceInfo;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    audioInputList = [], videoInputList = [];
-                    return [4 /*yield*/, zg.enumDevices()];
-                case 1:
-                    deviceInfo = _a.sent();
-                    deviceInfo &&
-                        deviceInfo.microphones.map(function (item, index) {
-                            if (!item.deviceName) {
-                                item.deviceName = 'microphone' + index;
-                            }
-                            audioInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
-                            console.log('microphone: ' + item.deviceName);
-                            return item;
-                        });
-                    deviceInfo &&
-                        deviceInfo.cameras.map(function (item, index) {
-                            if (!item.deviceName) {
-                                item.deviceName = 'camera' + index;
-                            }
-                            videoInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
-                            console.log('camera: ' + item.deviceName);
-                            return item;
-                        });
-                    audioInputList.push('<option value="0">禁止</option>');
-                    videoInputList.push('<option value="0">禁止</option>');
-                    $('#audioList').html(audioInputList.join(''));
-                    $('#videoList').html(videoInputList.join(''));
-                    return [2 /*return*/];
-            }
-        });
+        }
+    });
+    zg.on('playQualityUpdate', async (streamID, streamQuality) => {
+        console.log(
+            `play#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
+        );
+    });
+
+    zg.on('publishQualityUpdate', async (streamID, streamQuality) => {
+        console.log(
+            `publish#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
+        );
     });
 }
-function mixStream() {
-    return __awaiter(this, void 0, void 0, function () {
-        var streamList, res, result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    streamList = [
-                        {
-                            streamID: publishStreamId,
-                            layout: {
-                                top: 0,
-                                left: 0,
-                                bottom: 480,
-                                right: 640,
-                            },
-                        },
-                    ];
-                    console.error('videoCodec', videoCodec);
-                    return [4 /*yield*/, zg.setMixerTaskConfig({
-                            videoCodec: videoCodec === 'VP8' ? 'h264' : 'vp8',
-                        })];
-                case 1:
-                    res = _a.sent();
-                    console.log('setMixerTaskConfig ', res);
-                    return [4 /*yield*/, zg.startMixerTask({
-                            taskID: taskID,
-                            inputList: streamList,
-                            outputList: [
-                                {
-                                    target: mixStreamId,
-                                },
-                            ],
-                            outputConfig: {
-                                outputBitrate: 300,
-                                outputFPS: 15,
-                                outputWidth: 640,
-                                outputHeight: 480,
-                            },
-                        })];
-                case 2:
-                    result = _a.sent();
-                    console.log('startMixerTask ', result.errorCode);
-                    return [2 /*return*/];
+
+async function enumDevices() {
+    const audioInputList = [],
+        videoInputList = [];
+    const deviceInfo = await zg.enumDevices();
+
+    deviceInfo &&
+        deviceInfo.microphones.map((item, index) => {
+            if (!item.deviceName) {
+                item.deviceName = 'microphone' + index;
             }
+            audioInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
+            console.log('microphone: ' + item.deviceName);
+            return item;
         });
-    });
-}
-function login(roomId) {
-    return __awaiter(this, void 0, void 0, function () {
-        var token;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    token = '';
-                    if (!cgiToken) return [3 /*break*/, 2];
-                    return [4 /*yield*/, $.get(tokenUrl, { app_id: appID, id_name: userID, cgi_token: cgiToken })];
-                case 1:
-                    token = _a.sent();
-                    return [3 /*break*/, 4];
-                case 2: return [4 /*yield*/, $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appID, id_name: userID })];
-                case 3:
-                    token = _a.sent();
-                    _a.label = 4;
-                case 4: return [4 /*yield*/, zg.loginRoom(roomId, token, { userID: userID, userName: userID })];
-                case 5: return [2 /*return*/, _a.sent()];
+
+    deviceInfo &&
+        deviceInfo.cameras.map((item, index) => {
+            if (!item.deviceName) {
+                item.deviceName = 'camera' + index;
             }
+            videoInputList.push(' <option value="' + item.deviceID + '">' + item.deviceName + '</option>');
+            console.log('camera: ' + item.deviceName);
+            return item;
         });
-    });
+
+    audioInputList.push('<option value="0">禁止</option>');
+    videoInputList.push('<option value="0">禁止</option>');
+
+    $('#audioList').html(audioInputList.join(''));
+    $('#videoList').html(videoInputList.join(''));
 }
-function enterRoom() {
-    return __awaiter(this, void 0, void 0, function () {
-        var roomId;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    roomId = $('#roomId').val();
-                    if (!roomId) {
-                        alert('roomId is empty');
-                        return [2 /*return*/, false];
-                    }
-                    return [4 /*yield*/, login(roomId)];
-                case 1: return [2 /*return*/, _a.sent()];
-            }
-        });
+
+async function mixStream() {
+    const streamList = [
+        {
+            streamID: publishStreamId,
+            layout: {
+                top: 0,
+                left: 0,
+                bottom: 480,
+                right: 640,
+            },
+        },
+    ];
+    console.error('videoCodec', videoCodec);
+    const res = await zg.setMixerTaskConfig({
+        videoCodec: videoCodec === 'VP8' ? 'h264' : 'vp8',
     });
-}
-function logout() {
-    return __awaiter(this, void 0, void 0, function () {
-        var i, roomId;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.info('leave room  and close stream');
-                    if (!isPreviewed) return [3 /*break*/, 2];
-                    return [4 /*yield*/, zg.stopMixerTask(taskID)];
-                case 1:
-                    _a.sent();
-                    zg.stopPublishingStream(publishStreamId);
-                    zg.destroyStream(localStream);
-                    isPreviewed = false;
-                    _a.label = 2;
-                case 2:
-                    // 停止拉流
-                    // stop playing stream
-                    for (i = 0; i < useLocalStreamList.length; i++) {
-                        zg.stopPlayingStream(useLocalStreamList[i].streamID);
-                    }
-                    // 清空页面
-                    // clear page
-                    useLocalStreamList = [];
-                    $('.remoteVideo').html('');
-                    roomId = $('#roomId').val();
-                    zg.logoutRoom(roomId);
-                    return [2 /*return*/];
-            }
-        });
+    console.log('setMixerTaskConfig ', res);
+    const result = await zg.startMixerTask({
+        taskID,
+        inputList: streamList,
+        outputList: [
+            {
+                target: mixStreamId,
+            },
+        ],
+        outputConfig: {
+            outputBitrate: 300,
+            outputFPS: 15,
+            outputWidth: 640,
+            outputHeight: 480,
+        },
     });
+    console.log('startMixerTask ', result.errorCode);
 }
-function getRemoteByCodeType(stream) {
-    return __awaiter(this, void 0, void 0, function () {
-        var extraInfo, streamId, _stream, extraInfoObject;
-        var _this = this;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    extraInfo = stream.extraInfo;
-                    streamId = stream.streamID;
-                    _stream = null;
-                    if (!extraInfo) return [3 /*break*/, 4];
-                    extraInfoObject = JSON.parse(extraInfo);
-                    console.error('v ', extraInfoObject, videoCodec);
-                    if (!(extraInfoObject.currentVideoCode !== videoCodec)) return [3 /*break*/, 2];
-                    streamId = extraInfoObject.mixStreamId;
-                    extraInfoObject.currentVideoCode = videoCodec;
-                    return [4 /*yield*/, new Promise(function (resolve, reject) {
-                            setTimeout(function () { return __awaiter(_this, void 0, void 0, function () {
-                                var $stream;
-                                return __generator(this, function (_a) {
-                                    switch (_a.label) {
-                                        case 0: return [4 /*yield*/, zg.startPlayingStream(streamId, { videoCodec: videoCodec })];
-                                        case 1:
-                                            $stream = _a.sent();
-                                            resolve($stream);
-                                            return [2 /*return*/];
-                                    }
-                                });
-                            }); }, 2000);
-                        })];
-                case 1:
-                    _stream = _a.sent();
-                    return [3 /*break*/, 4];
-                case 2: return [4 /*yield*/, zg.startPlayingStream(streamId, { videoCodec: videoCodec })];
-                case 3:
-                    _stream = _a.sent();
-                    _a.label = 4;
-                case 4: return [2 /*return*/, _stream];
-            }
-        });
+
+async function login(roomId) {
+    // 获取token需要客户自己实现，token是对登录房间的唯一验证
+    // Obtaining a token needs to be implemented by the customer. The token is the only verification for the login room.
+    let token = '';
+    //测试用，开发者请忽略
+    //Test code, developers please ignore
+    if (cgiToken) {
+        token = await $.get(tokenUrl, { app_id: appID, id_name: userID, cgi_token: cgiToken });
+        //测试用结束
+        //Test code end
+    } else {
+        token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', { app_id: appID, id_name: userID });
+    }
+    return await zg.loginRoom(roomId, token, { userID, userName: userID });
+}
+
+async function enterRoom() {
+    const roomId = $('#roomId').val();
+    if (!roomId) {
+        alert('roomId is empty');
+        return false;
+    }
+    return await login(roomId);
+}
+
+async function logout() {
+    console.info('leave room  and close stream');
+
+    // 停止推流
+    // stop publishing
+    if (isPreviewed) {
+        await zg.stopMixerTask(taskID);
+        zg.stopPublishingStream(publishStreamId);
+        zg.destroyStream(localStream);
+        isPreviewed = false;
+        previewVideo.srcObject = null;
+    }
+
+    // 停止拉流
+    // stop playing stream
+    for (let i = 0; i < useLocalStreamList.length; i++) {
+        zg.stopPlayingStream(useLocalStreamList[i].streamID);
+    }
+
+    // 清空页面
+    // clear page
+    useLocalStreamList = [];
+    $('.remoteVideo').html('');
+
+    //退出登录
+    //logout
+    const roomId = $('#roomId').val();
+    zg.logoutRoom(roomId);
+}
+
+async function getRemoteByCodeType(stream) {
+    const extraInfo = stream.extraInfo;
+    let streamId = stream.streamID;
+    let _stream   = null;
+    if (extraInfo) {
+        const extraInfoObject = JSON.parse(extraInfo);
+        console.error('v ', extraInfoObject, videoCodec);
+        if (extraInfoObject.currentVideoCode !== videoCodec) {
+            streamId = extraInfoObject.mixStreamId;
+            extraInfoObject.currentVideoCode = videoCodec;
+            _stream = await new Promise((resolve, reject) => {
+                setTimeout(async () => {
+                    const $stream = await zg.startPlayingStream(streamId, { videoCodec: videoCodec });
+                    resolve($stream);
+                }, 2000);
+            });
+        } else {
+            _stream = await zg.startPlayingStream(streamId, { videoCodec: videoCodec });
+        }
+    }
+    return _stream;
+}
+
+async function push(publishOption) {
+    console.warn('createStream', $('#audioList').val(), $('#videoList').val());
+    localStream = await zg.createStream({
+        camera: {
+            audioInput: $('#audioList').val(),
+            videoInput: $('#videoList').val(),
+        },
     });
+    previewVideo.srcObject = localStream;
+    isPreviewed = true;
+    const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
+    console.log('publish stream' + publishStreamId, result, publishOption);
 }
-function push(publishOption) {
-    return __awaiter(this, void 0, void 0, function () {
-        var result;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.warn('createStream', $('#audioList').val(), $('#videoList').val());
-                    return [4 /*yield*/, zg.createStream({
-                            camera: {
-                                audioInput: $('#audioList').val(),
-                                videoInput: $('#videoList').val(),
-                            },
-                        })];
-                case 1:
-                    localStream = _a.sent();
-                    previewVideo.srcObject = localStream;
-                    isPreviewed = true;
-                    result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
-                    console.log('publish stream' + publishStreamId, result, publishOption);
-                    return [2 /*return*/];
-            }
-        });
-    });
-}
+
 function setConfig(param) {
     param.appID && (appID = param.appID);
 }
-$(function () { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, checkAnRun()];
-            case 1:
-                _a.sent();
-                return [2 /*return*/];
-        }
-    });
-}); });
-$(window).on('unload', function () {
+
+$(async () => {
+    await checkAnRun();
+});
+
+$(window).on('unload', function() {
     logout();
 });

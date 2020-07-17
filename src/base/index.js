@@ -1,45 +1,119 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
+import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout } from '../common';
+import { getBrowser } from '../assets/utils';
+
+let playOption = {};
+// --test begin
+let previewStream;
+let previewed = false;
+const publishStreamID = 'web-' + new Date().getTime();
+// ---test end
+
+$(async () => {
+    await checkAnRun();
+
+    // --- test begin
+    $('#enterRoom').click(async () => {
+        let loginSuc = false;
+        try {
+            loginSuc = await enterRoom();
+            if (loginSuc) {
+                previewStream = await zg.createStream({
+                    camera: {
+                        audioInput: $('#audioList').val() ,
+                        videoInput: $('#videoList').val() ,
+                        video: $('#videoList').val() === '0' ? false : true,
+                        audio: $('#audioList').val() === '0' ? false : true,
+                    },
+                });
+                previewVideo.srcObject = previewStream;
+                previewed = true;
             }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var common_1 = require("../common");
-$(function () { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        common_1.checkAnRun();
-        return [2 /*return*/];
+        } catch (error) {
+            console.error(error);
+        }
     });
-}); });
+    $('#publish').click(() => {
+        const result = zg.startPublishingStream(publishStreamID, previewStream);
+        console.log('publish stream' + publishStreamID, result);
+    });
+    // --- test end
+    $('#leaveRoom').unbind('click');
+    $('#leaveRoom').click(() => {
+        if (previewed) {
+            zg.stopPublishingStream(publishStreamID);
+            zg.destroyStream(previewStream);
+            previewed = false;
+            previewVideo.srcObject = null;
+        }
+        logout();
+    });
+    $('#openRoom').unbind('click');
+    $('#openRoom').click(async () => {
+        playOption = {};
+        const _selectMode = $('#playMode option:selected').val();
+        console.warn('playMode', _selectMode, playOption);
+        if (_selectMode) {
+            if (_selectMode == 'all') {
+                playOption.video = true;
+                playOption.audio = true;
+            } else if (_selectMode == 'video') {
+                playOption.audio = false;
+            } else if (_selectMode == 'audio') {
+                playOption.video = false;
+            }
+        }
+        await enterRoom();
+    });
+    zg.off('roomStreamUpdate');
+    zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
+        console.log('roomStreamUpdate roomID ', roomID, streamList);
+        if (updateType == 'ADD') {
+            for (let i = 0; i < streamList.length; i++) {
+                console.info(streamList[i].streamID + ' was added');
+                useLocalStreamList.push(streamList[i]);
+                let remoteStream;
+
+                try {
+                    remoteStream = await zg.startPlayingStream(streamList[i].streamID, playOption);
+                } catch (error) {
+                    console.error(error);
+                    break;
+                }
+
+                let video;
+                if (getBrowser() == 'Safari' && playOption.video === false) {
+                    $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
+                    video = $('.remoteVideo audio:last')[0];
+                    console.warn('audio', video, remoteStream);
+                } else {
+                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                    video = $('.remoteVideo video:last')[0];
+                    console.warn('video', video, remoteStream);
+                }
+
+                video.srcObject = remoteStream;
+                video.muted = false;
+            }
+        } else if (updateType == 'DELETE') {
+            for (let k = 0; k < useLocalStreamList.length; k++) {
+                for (let j = 0; j < streamList.length; j++) {
+                    if (useLocalStreamList[k].streamID === streamList[j].streamID) {
+                        try {
+                            zg.stopPlayingStream(useLocalStreamList[k].streamID);
+                        } catch (error) {
+                            console.error(error);
+                        }
+
+                        console.info(useLocalStreamList[k].streamID + 'was devared');
+
+                        useLocalStreamList.splice(k, 1);
+
+                        $('.remoteVideo video:eq(' + k + ')').remove();
+                        $('#memberList option:eq(' + k + ')').remove();
+                        break;
+                    }
+                }
+            }
+        }
+    });
+});

@@ -1,24 +1,18 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const filterFileList = require('./tools');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require('webpack');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const miniCssExtractPlugin = require('mini-css-extract-plugin');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const internalIp = require('internal-ip');
 const targetList = [];
 const entry = {};
 const htmlPlugins = [];
 filterFileList('./src', targetList);
-entry['content'] = targetList.find(item => item.endsWith('content.ts'));
+entry['content'] = targetList.find(item => item.endsWith('content.js'));
 targetList
-    .filter(item => item.endsWith('index.ts'))
+    .filter(item => item.endsWith('index.js'))
     .forEach(p => {
-        const regResult = /.+src[\/|\\](.+)[\/|\\]index.ts$/.exec(p);
+        const regResult = /.+src[\/|\\](.+)[\/|\\]index.js$/.exec(p);
         if (regResult && regResult[1]) {
             entry[regResult[1]] = regResult[0];
         }

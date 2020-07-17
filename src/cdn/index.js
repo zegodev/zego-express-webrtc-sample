@@ -5,12 +5,12 @@ import { checkAnRun, logout, publishStreamId, zg, appID, useLocalStreamList } fr
 import { getBrowser } from '../assets/utils';
 import flvjs from 'flv.js';
 
-let flvPlayer: flvjs.Player | null = null;
-let cdnFlvPlayer: flvjs.Player | null = null;
+let flvPlayer = null;
+let cdnFlvPlayer = null;
 const ua = navigator.userAgent.toLowerCase();
 let isAndWechat = false;
-const videoElement: any = document.getElementById('test');
-const cdnVideoElement: any = document.getElementById('cdn');
+const videoElement = document.getElementById('test');
+const cdnVideoElement = document.getElementById('cdn');
 
 console.warn('ua', ua);
 // @ts-ignore
@@ -19,17 +19,17 @@ if ((ua.indexOf('android') > -1 || ua.indexOf('linux') > -1) && ua.match(/MicroM
     isAndWechat = true;
 }
 
-function filterStreamList(streamList: any, streamId?: string) {
-    const flv: { [index: string]: string } = {};
-    const hls: { [index: string]: string } = {};
-    const rtmp: { [index: string]: string } = {};
+function filterStreamList(streamList, streamId) {
+    const flv= {};
+    const hls = {};
+    const rtmp = {};
 
-    const streamListUrl: any = [];
+    const streamListUrl = [];
     let index = 0;
 
     // console.log(zg.stateCenter.streamList);
 
-    streamList.forEach((item: { stream_id: string }, ind: number) => {
+    streamList.forEach((item, ind) => {
         if (item.stream_id == streamId) index = ind;
     });
 
@@ -81,12 +81,12 @@ function filterStreamList(streamList: any, streamId?: string) {
         }
     }
 
-    return streamListUrl.filter(function(ele: any, index: number, self: any) {
+    return streamListUrl.filter(function(ele, index, self) {
         return self.indexOf(ele) == index;
     });
 }
 
-function playStream(streamList: any) {
+function playStream(streamList) {
     const browser = getBrowser();
     let hasAudio = true;
     let playType;
@@ -121,7 +121,7 @@ function playStream(streamList: any) {
                 });
                 flvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
                     console.error('LOADING_COMPLETE');
-                    flvPlayer!.play();
+                    flvPlayer.play();
                 });
                 flvPlayer.attachMediaElement(videoElement);
                 flvPlayer.load();
@@ -132,7 +132,7 @@ function playStream(streamList: any) {
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
-    zg.on('roomStreamUpdate', (roomID: string, updateType: 'ADD' | 'DELETE', streamList: any): void => {
+    zg.on('roomStreamUpdate', (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
         // console.log('l', zg.stateCenter.streamList);
         if (updateType == 'ADD') {
@@ -161,7 +161,7 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('add push target success');
-            ($('#cdnDelPush')[0] as any).disabled = false;
+            ($('#cdnDelPush')[0]).disabled = false;
         } else {
             console.warn('add push target fail ' + result.errorCode);
         }
@@ -176,7 +176,7 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('del push target success');
-            ($('#cdnDelPush')[0] as any).disabled = true;
+            ($('#cdnDelPush')[0]).disabled = true;
         } else {
             console.warn('del push target fail ' + result.errorCode);
         }
@@ -199,7 +199,7 @@ $(async () => {
             });
             cdnFlvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
                 console.error('LOADING_COMPLETE');
-                cdnFlvPlayer!.play();
+                cdnFlvPlayer.play();
             });
             cdnFlvPlayer.attachMediaElement(cdnVideoElement);
             cdnFlvPlayer.load();
@@ -226,11 +226,11 @@ $(async () => {
 
     $('#secret').change(() => {
         if ($('#secret').val() == '') {
-            ($('#cdnAddPush')[0] as any).disabled = true;
-            ($('#cdnDelPush')[0] as any).disabled = true;
+            ($('#cdnAddPush')[0]).disabled = true;
+            ($('#cdnDelPush')[0]).disabled = true;
         } else {
-            ($('#cdnAddPush')[0] as any).disabled = false;
-            ($('#cdnDelPush')[0] as any).disabled = true;
+            ($('#cdnAddPush')[0]).disabled = false;
+            ($('#cdnDelPush')[0]).disabled = true;
         }
     });
 });
