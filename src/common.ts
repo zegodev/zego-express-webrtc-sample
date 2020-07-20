@@ -13,7 +13,7 @@ const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 const publishStreamId = 'webrtc' + new Date().getTime();
 let zg: ZegoExpressEngine;
 let appID = 1739272706;
-let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
+let server: string | Array<string> = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
 let cgiToken = '';
 //const appSign = '';
 let previewVideo: HTMLVideoElement;
@@ -34,6 +34,7 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
         console.log(cgiToken);
     });
 }
+
 // 测试用代码 end
 // Test code end
 
@@ -70,11 +71,11 @@ async function start(): Promise<void> {
     initSDK();
 
     zg.setLogConfig({
-        logLevel: 'info',
+        logLevel: 'debug',
         remoteLogLevel: 'info',
         logURL: '',
     });
-    // zg.config({ userUpdate: true });
+
     zg.setDebugVerbose(false);
     zg.setSoundLevelDelegate(true, 1000);
 
@@ -151,13 +152,17 @@ function initSDK(): void {
         );
     });
     zg.on('publisherStateUpdate', result => {
-        console.log('publisherStateUpdate: ', result.streamID);
+        console.log('publisherStateUpdate: ', result.streamID, result.state);
         if (result.state == 'PUBLISHING') {
             console.info(' publish  success');
         } else if (result.state == 'PUBLISH_REQUESTING') {
             console.info(' publish  retry');
         } else {
-            console.error('publish error ' + result.errorCode);
+            if (result.errorCode == 0) {
+                console.warn('publish stop ' + result.errorCode);
+            } else {
+                console.error('publish error ' + result.errorCode);
+            }
             // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
             //         const code = stateInfo.error.msg.replace ('server session closed, reason: ', '');
@@ -173,13 +178,18 @@ function initSDK(): void {
         }
     });
     zg.on('playerStateUpdate', result => {
-        console.log('playerStateUpdate', result.streamID);
+        console.log('playerStateUpdate', result.streamID, result.state);
         if (result.state == 'PLAYING') {
             console.info(' play  success');
         } else if (result.state == 'PLAY_REQUESTING') {
             console.info(' play  retry');
         } else {
-            console.error('publish error ' + result.errorCode);
+            if (result.errorCode == 0) {
+                console.warn('play stop ' + result.errorCode);
+            } else {
+                console.error('play error ' + result.errorCode);
+            }
+
             // const _msg = stateInfo.error.msg;
             // if (stateInfo.error.msg.indexOf ('server session closed, reason: ') > -1) {
             //         const code = stateInfo.error.msg.replace ('server session closed, reason: ', '');
@@ -322,13 +332,14 @@ async function logout(): Promise<void> {
     // 停止拉流
     // stop playing
     for (let i = 0; i < useLocalStreamList.length; i++) {
-        zg.stopPlayingStream(useLocalStreamList[i].streamID);
+        useLocalStreamList[i].streamID && zg.stopPlayingStream(useLocalStreamList[i].streamID);
     }
 
     // 清空页面
     // Clear page
     useLocalStreamList = [];
     $('.remoteVideo').html('');
+    $('#memberList').html('');
 
     //退出登录
     //logout

@@ -161,6 +161,7 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('add push target success');
+            ($('#cdnDelPush')[0] as any).disabled = false;
         } else {
             console.warn('add push target fail ' + result.errorCode);
         }
@@ -175,6 +176,7 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('del push target success');
+            ($('#cdnDelPush')[0] as any).disabled = true;
         } else {
             console.warn('del push target fail ' + result.errorCode);
         }
