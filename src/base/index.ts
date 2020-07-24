@@ -37,6 +37,14 @@ $(async () => {
         const result = zg.startPublishingStream(publishStreamID, previewStream);
         console.log('publish stream' + publishStreamID, result);
     });
+
+    $('#useVideo').click(() => {
+        zg.useVideoDevice(previewVideo.srcObject as MediaStream, $('#videoList').val() as string);
+    });
+
+    $('#useAudio').click(() => {
+        zg.useAudioDevice(previewVideo.srcObject as MediaStream, $('#audioList').val() as string);
+    });
     // --- test end
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(() => {
