@@ -82,26 +82,40 @@ $(async () => {
                 useLocalStreamList.push(streamList[i]);
                 let remoteStream: MediaStream;
 
+                const handlePlaySuccess = () => {
+                    let video;
+                    if (getBrowser() == 'Safari' && playOption.video === false) {
+                        $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
+                        video = $('.remoteVideo audio:last')[0] as HTMLAudioElement;
+                        console.warn('audio', video, remoteStream);
+                    } else {
+                        $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                        video = $('.remoteVideo video:last')[0] as HTMLVideoElement;
+                        console.warn('video', video, remoteStream);
+                    }
+
+                    video.srcObject = remoteStream!;
+                    video.muted = false;
+                };
+
                 try {
-                    remoteStream = await zg.startPlayingStream(streamList[i].streamID, playOption);
+                    zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
+                        remoteStream = stream;
+                        handlePlaySuccess();
+                    });
+
+                    if ($('#repeat').val() == 'yes') {
+                        zg.stopPlayingStream(streamList[i].streamID);
+                        zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
+                            remoteStream = stream;
+                            let video;
+                            handlePlaySuccess();
+                        });
+                    }
                 } catch (error) {
                     console.error(error);
                     break;
                 }
-
-                let video;
-                if (getBrowser() == 'Safari' && playOption.video === false) {
-                    $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
-                    video = $('.remoteVideo audio:last')[0] as HTMLAudioElement;
-                    console.warn('audio', video, remoteStream);
-                } else {
-                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                    video = $('.remoteVideo video:last')[0] as HTMLVideoElement;
-                    console.warn('video', video, remoteStream);
-                }
-
-                video.srcObject = remoteStream!;
-                video.muted = false;
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {

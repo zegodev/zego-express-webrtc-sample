@@ -154,7 +154,7 @@ function initSDK(): void {
     zg.on('publisherStateUpdate', result => {
         console.log('publisherStateUpdate: ', result.streamID, result.state);
         if (result.state == 'PUBLISHING') {
-            console.info(' publish  success');
+            console.info(' publish  success ' + result.streamID);
         } else if (result.state == 'PUBLISH_REQUESTING') {
             console.info(' publish  retry');
         } else {
@@ -180,7 +180,7 @@ function initSDK(): void {
     zg.on('playerStateUpdate', result => {
         console.log('playerStateUpdate', result.streamID, result.state);
         if (result.state == 'PLAYING') {
-            console.info(' play  success');
+            console.info(' play  success ' + result.streamID);
         } else if (result.state == 'PLAY_REQUESTING') {
             console.info(' play  retry');
         } else {
@@ -373,6 +373,10 @@ async function push(constraints?: Constraints, publishOption?: webPublishOption)
     isPreviewed = true;
     $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
+    if ($('#repeat').val() == 'yes') {
+        zg.stopPublishingStream(publishStreamId);
+        zg.startPublishingStream(publishStreamId, localStream, publishOption);
+    }
     console.log('publish stream' + publishStreamId, result);
 }
 
