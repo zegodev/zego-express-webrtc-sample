@@ -37,7 +37,8 @@ $(async () => {
         try {
             const screenStream = await zg.createStream({
                 screen: {
-                    audio: true,
+                    //@ts-ignore
+                    audio: $('#isScreenAudio').val() == 'yes' ? true : false,
                     videoQuality: 1,
                 },
             });
