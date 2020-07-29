@@ -2,7 +2,7 @@ import '../common';
 import 'popper.js';
 import './css/chat.css';
 import './font_Icon/iconfont.css';
-import { checkAnRun, zg, userID, logout } from '../common';
+import { checkAnRun, zg, userID, logout, loginRoom } from '../common';
 import { User } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 
 let msgCount = 0;
@@ -92,6 +92,10 @@ $(async () => {
     });
 
     $('#chat-fasong').click(async () => {
+        if (!loginRoom) {
+            alert('no login rooom');
+            return;
+        }
         const textContent = $('.div-textarea')
             .html()
             .replace(/[\n\r]/g, '<br>');
@@ -130,6 +134,10 @@ $(async () => {
     });
 
     $('#sendCustomrMsg').click(async () => {
+        if (!loginRoom) {
+            alert('no login rooom');
+            return;
+        }
         const roomId: string = $('#roomId').val() as string;
         const result = await zg.sendCustomCommand(roomId, 'test', [$('#memberList').val() as string]);
         if (result.errorCode === 0) {
@@ -140,6 +148,10 @@ $(async () => {
     });
 
     $('#BarrageMessage').click(async () => {
+        if (!loginRoom) {
+            alert('no login rooom');
+            return;
+        }
         const roomId: string = $('#roomId').val() as string;
         if (!roomId) {
             alert('roomId is empty');
