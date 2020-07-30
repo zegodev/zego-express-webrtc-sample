@@ -103,15 +103,6 @@ $(async () => {
                         remoteStream = stream;
                         handlePlaySuccess();
                     });
-
-                    if ($('#repeat').val() == 'yes') {
-                        zg.stopPlayingStream(streamList[i].streamID);
-                        zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
-                            remoteStream = stream;
-                            let video;
-                            handlePlaySuccess();
-                        });
-                    }
                 } catch (error) {
                     console.error(error);
                     break;

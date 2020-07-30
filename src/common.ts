@@ -373,10 +373,6 @@ async function push(constraints?: Constraints, publishOption?: webPublishOption)
     isPreviewed = true;
     $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
     const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
-    if ($('#repeat').val() == 'yes') {
-        zg.stopPublishingStream(publishStreamId);
-        zg.startPublishingStream(publishStreamId, localStream, publishOption);
-    }
     console.log('publish stream' + publishStreamId, result);
 }
 
