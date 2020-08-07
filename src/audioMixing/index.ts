@@ -21,6 +21,20 @@ $(async () => {
         zg.stopMixingAudio(publishStreamId);
     });
 
+    $('#volume1').on('input', () => {
+        // @ts-ignore
+        zg.setMixingAudioVolume(publishStreamId, parseInt($('#volume1').val()), $(
+            '#extenerVideo1',
+        )[0] as HTMLMediaElement);
+    });
+
+    $('#volume2').on('input', () => {
+        // @ts-ignore
+        zg.setMixingAudioVolume(publishStreamId, parseInt($('#volume2').val()), $(
+            '#extenerVideo2',
+        )[0] as HTMLMediaElement);
+    });
+
     $('#mixingBuffer').click(function() {
         const xhr = new XMLHttpRequest();
 

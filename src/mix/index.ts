@@ -16,7 +16,6 @@ $(async () => {
             const streamList = [
                 {
                     streamID: publishStreamId,
-                    contentType: '',
                     layout: {
                         top: 0,
                         left: 0,
@@ -28,7 +27,6 @@ $(async () => {
             if (useLocalStreamList.length !== 0) {
                 streamList.push({
                     streamID: useLocalStreamList[0].streamID,
-                    contentType: '',
                     layout: {
                         top: 240,
                         left: 0,

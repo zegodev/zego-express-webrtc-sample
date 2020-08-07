@@ -1,4 +1,4 @@
-import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg, loginRoom } from '../common';
+import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg, loginRoom, previewVideo } from '../common';
 
 $(async () => {
     await checkAnRun(true);
@@ -9,6 +9,9 @@ $(async () => {
     }
     let screenStreamList: { streamId: string; stream: MediaStream }[] = [];
     let screenCount = 0;
+    let screenStream: MediaStream;
+    let screenStreamVideoTrack: MediaStreamTrack;
+    let cameraStreamVideoTrack: MediaStreamTrack;
 
     const stopScreenShot = (screenStream: { streamId: string; stream: MediaStream }): void => {
         zg.stopPublishingStream(screenStream.streamId);
@@ -29,6 +32,24 @@ $(async () => {
         _stopScreenStream && stopScreenShot(_stopScreenStream);
     });
 
+    $('#replaceTrack').click(async function() {
+        if (!screenStream) {
+            screenStream = await zg.createStream({
+                screen: true,
+            });
+            screenStreamVideoTrack = screenStream.getVideoTracks()[0].clone();
+            cameraStreamVideoTrack = (previewVideo.srcObject as MediaStream).getVideoTracks()[0].clone();
+        }
+
+        zg.replaceTrack(previewVideo.srcObject as MediaStream, screenStreamVideoTrack.clone())
+            .then(res => console.warn('replaceTrack success'))
+            .catch(err => console.error(err));
+    });
+    $('#replaceTrack2').click(async function() {
+        zg.replaceTrack(previewVideo.srcObject as MediaStream, cameraStreamVideoTrack.clone())
+            .then(res => console.warn('replaceTrack success'))
+            .catch(err => console.error(err));
+    });
     $('#screenShot').click(async () => {
         if (!loginRoom) {
             alert('请先登录房间');

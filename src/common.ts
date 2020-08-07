@@ -362,6 +362,7 @@ async function publish(constraints?: Constraints): Promise<void> {
             videoInput: $('#videoList').val() as string,
             video: video !== undefined ? video : $('#videoList').val() === '0' ? false : true,
             audio: $('#audioList').val() === '0' ? false : true,
+            channelCount: constraints && constraints.camera && constraints.camera.channelCount,
         },
     };
     !_constraints.camera.video && (previewVideo.controls = true);
