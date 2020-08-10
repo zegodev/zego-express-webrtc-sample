@@ -1,4 +1,13 @@
-import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg, loginRoom, previewVideo } from '../common';
+import {
+    checkAnRun,
+    supportScreenSharing,
+    logout,
+    publishStreamId,
+    zg,
+    loginRoom,
+    previewVideo,
+    enterRoom,
+} from '../common';
 
 $(async () => {
     await checkAnRun(true);
@@ -12,6 +21,9 @@ $(async () => {
     let screenStream: MediaStream;
     let screenStreamVideoTrack: MediaStreamTrack;
     let cameraStreamVideoTrack: MediaStreamTrack;
+    let previewStream: MediaStream;
+    let previewed = false;
+    const publishStreamID = 'web-' + new Date().getTime();
 
     const stopScreenShot = (screenStream: { streamId: string; stream: MediaStream }): void => {
         zg.stopPublishingStream(screenStream.streamId);
@@ -32,6 +44,30 @@ $(async () => {
         _stopScreenStream && stopScreenShot(_stopScreenStream);
     });
 
+    $('#enterRoom').click(async () => {
+        let loginSuc = false;
+        try {
+            loginSuc = await enterRoom();
+            if (loginSuc) {
+                previewStream = await zg.createStream({
+                    camera: {
+                        audioInput: $('#audioList').val() as string,
+                        videoInput: $('#videoList').val() as string,
+                        video: $('#videoList').val() === '0' ? false : true,
+                        audio: $('#audioList').val() === '0' ? false : true,
+                    },
+                });
+                previewVideo.srcObject = previewStream;
+                previewed = true;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    });
+    $('#publish').click(() => {
+        const result = zg.startPublishingStream(publishStreamID, previewStream);
+        console.log('publish stream' + publishStreamID, result);
+    });
     $('#replaceTrack').click(async function() {
         if (!screenStream) {
             screenStream = await zg.createStream({

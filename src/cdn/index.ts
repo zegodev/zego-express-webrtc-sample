@@ -1,7 +1,7 @@
 import '../common';
 //@ts-ignore
 import md5 from 'md5';
-import { checkAnRun, logout, publishStreamId, zg, appID, useLocalStreamList } from '../common';
+import { checkAnRun, logout, publishStreamId, zg, appID, useLocalStreamList, enterRoom, publish } from '../common';
 import { getBrowser } from '../assets/utils';
 import flvjs from 'flv.js';
 
@@ -208,6 +208,18 @@ $(async () => {
     });
     $('#playCDN').click(() => {
         flvPlayer && flvPlayer.play();
+    });
+    $('#createRoom').unbind('click');
+    $('#createRoom').click(async () => {
+        let loginSuc = false;
+        const channelCount = parseInt($('#channelCount').val() as string);
+        console.error('channelCount', channelCount);
+        try {
+            loginSuc = await enterRoom();
+            loginSuc && (await publish({ camera: { channelCount: channelCount } }));
+        } catch (error) {
+            console.error(error);
+        }
     });
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {

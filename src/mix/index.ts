@@ -88,6 +88,84 @@ $(async () => {
         }
     });
 
+    $('#mixStreamOnlyAudio').click(async () => {
+        try {
+            const streamList = [
+                {
+                    streamID: publishStreamId,
+                    contentType: 'AUDIO',
+                    layout: {
+                        top: 0,
+                        left: 0,
+                        bottom: 1,
+                        right: 1,
+                    },
+                },
+            ];
+            if (useLocalStreamList.length !== 0) {
+                streamList.push({
+                    streamID: useLocalStreamList[0].streamID,
+                    contentType: 'AUDIO',
+                    layout: {
+                        top: 0,
+                        left: 0,
+                        bottom: 1,
+                        right: 1,
+                    },
+                });
+            }
+
+            const res = await zg.startMixerTask({
+                taskID,
+                inputList: streamList,
+                outputList: [
+                    mixStreamID,
+                    // {
+                    //     target: mixStreamID,
+                    //     // target: 'rtmp://test.aliyun.zego.im/livestream/zegodemo',
+                    // },
+                ],
+                outputConfig: {
+                    outputBitrate: 1,
+                    outputFPS: 1,
+                    outputWidth: 10,
+                    outputHeight: 10,
+                },
+            });
+            if (res.errorCode == 0) {
+                $('#stopMixStream').removeAttr('disabled');
+                const result = JSON.parse(res.extendedData).mixerOutputList;
+                if (
+                    navigator.userAgent.indexOf('iPhone') !== -1 &&
+                    getBrowser() == 'Safari' &&
+                    result &&
+                    result[0].hlsURL
+                ) {
+                    hlsUrl = result[0].hlsURL.replace('http', 'https');
+                    mixVideo.src = hlsUrl;
+                } else if (result && result[0].flvURL) {
+                    const flvUrl = result[0].flvURL.replace('http', 'https');
+                    console.log('mixStreamId: ' + mixStreamID);
+                    console.log('mixStreamUrl:' + flvUrl);
+                    alert('混流开始。。。');
+                    if (flvjs.isSupported()) {
+                        flvPlayer = flvjs.createPlayer({
+                            type: 'flv',
+                            url: flvUrl,
+                        });
+                        flvPlayer.attachMediaElement(mixVideo);
+                        flvPlayer.load();
+                    }
+                }
+                mixVideo.muted = false;
+            }
+
+            $('#mixVideo').css('display', '');
+        } catch (err) {
+            alert('混流失败。。。');
+            console.error('err: ', err);
+        }
+    });
     $('#stopMixStream').click(async () => {
         try {
             await zg.stopMixerTask(taskID);
