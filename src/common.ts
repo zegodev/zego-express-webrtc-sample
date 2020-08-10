@@ -3,7 +3,7 @@ import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
-import { webPublishOption, Constraints } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
+import { webPublishOption, Constraints, DeviceInfo } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from './content';
 
 new VConsole();
@@ -275,6 +275,15 @@ function initSDK(): void {
             stream.type == 'push' && $('#soundLevel').html(Math.round(stream.soundLevel) + '');
             console.warn(`${stream.type} ${stream.streamID}, soundLevel: ${stream.soundLevel}`);
         });
+    });
+    zg.on('deviceError', (errorCode: number, deviceName) => {
+        console.warn(`deviceError`, errorCode, deviceName);
+    });
+    zg.on('videoDeviceStateChanged', (device: DeviceInfo, updateType: string) => {
+        console.warn(`videoDeviceStateChanged`, device, updateType);
+    });
+    zg.on('audioDeviceStateChanged', (device: DeviceInfo, updateType: string, deviceType: string) => {
+        console.warn(`audioDeviceStateChanged`, device, updateType, deviceType);
     });
 }
 
