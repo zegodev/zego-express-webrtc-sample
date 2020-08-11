@@ -7,8 +7,10 @@ $(async () => {
     await checkAnRun();
     $('');
     const taskID = 'task-' + new Date().getTime();
+    let taskID2: string;
     const mixStreamID = 'mixwebrtc-' + new Date().getTime();
     const mixVideo = $('#mixVideo')[0] as HTMLVideoElement;
+    const mixVideo2 = $('#mixVideo2')[0] as HTMLVideoElement;
     let hlsUrl: string;
     let flvPlayer: flvjs.Player | null = null;
     $('#mixStream').click(async () => {
@@ -114,9 +116,9 @@ $(async () => {
                     },
                 });
             }
-
+            taskID2 = 'task-' + new Date().getTime();
             const res = await zg.startMixerTask({
-                taskID,
+                taskID: taskID2,
                 inputList: streamList,
                 outputList: [
                     mixStreamID,
@@ -142,7 +144,7 @@ $(async () => {
                     result[0].hlsURL
                 ) {
                     hlsUrl = result[0].hlsURL.replace('http', 'https');
-                    mixVideo.src = hlsUrl;
+                    mixVideo2.src = hlsUrl;
                 } else if (result && result[0].flvURL) {
                     const flvUrl = result[0].flvURL.replace('http', 'https');
                     console.log('mixStreamId: ' + mixStreamID);
@@ -153,14 +155,14 @@ $(async () => {
                             type: 'flv',
                             url: flvUrl,
                         });
-                        flvPlayer.attachMediaElement(mixVideo);
+                        flvPlayer.attachMediaElement(mixVideo2);
                         flvPlayer.load();
                     }
                 }
-                mixVideo.muted = false;
+                mixVideo2.muted = false;
             }
 
-            $('#mixVideo').css('display', '');
+            $('#mixVideo2').css('display', '');
         } catch (err) {
             alert('混流失败。。。');
             console.error('err: ', err);
@@ -177,6 +179,7 @@ $(async () => {
             console.log('stopMixStream success: ');
             $('#stopMixStream').attr('disabled', 'disabled');
             $('#mixVideo').css('display', 'none');
+            $('#mixVideo2').css('display', 'none');
         } catch (err) {
             alert('停止混流失败。。。');
             console.log('stopMixStream err: ', err);
@@ -191,6 +194,8 @@ $(async () => {
         }
         mixVideo.src = '';
         $('#mixVideo').css('display', 'none');
+        mixVideo2.src = '';
+        $('#mixVideo2').css('display', 'none');
 
         logout();
     });
