@@ -7,9 +7,10 @@ $(async () => {
     await checkAnRun();
     $('');
     const taskID = 'task-' + new Date().getTime();
-    let taskID2: string;
     const mixStreamID = 'mixwebrtc-' + new Date().getTime();
     const mixVideo = $('#mixVideo')[0] as HTMLVideoElement;
+    let taskID2: string;
+    let mixStreamID2;
     const mixVideo2 = $('#mixVideo2')[0] as HTMLVideoElement;
     let hlsUrl: string;
     let flvPlayer: flvjs.Player | null = null;
@@ -117,11 +118,12 @@ $(async () => {
                 });
             }
             taskID2 = 'task-' + new Date().getTime();
+            mixStreamID2 = 'mixwebrtc-' + new Date().getTime();
             const res = await zg.startMixerTask({
                 taskID: taskID2,
                 inputList: streamList,
                 outputList: [
-                    mixStreamID,
+                    mixStreamID2,
                     // {
                     //     target: mixStreamID,
                     //     // target: 'rtmp://test.aliyun.zego.im/livestream/zegodemo',
