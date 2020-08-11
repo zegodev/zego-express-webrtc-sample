@@ -3,7 +3,7 @@ import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
-import { webPublishOption, Constraints, DeviceInfo } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
+import { webPublishOption, Constraints, DeviceInfo, Device } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from './content';
 
 new VConsole();
@@ -282,10 +282,10 @@ function initSDK(): void {
     zg.on('deviceError', (errorCode: number, deviceName) => {
         console.warn(`deviceError`, errorCode, deviceName);
     });
-    zg.on('videoDeviceStateChanged', (device: DeviceInfo, updateType: string) => {
+    zg.on('videoDeviceStateChanged', (updateType: string, device: Device) => {
         console.warn(`videoDeviceStateChanged`, device, updateType);
     });
-    zg.on('audioDeviceStateChanged', (device: DeviceInfo, updateType: string, deviceType: string) => {
+    zg.on('audioDeviceStateChanged', (updateType: string, deviceType: string, device: Device) => {
         console.warn(`audioDeviceStateChanged`, device, updateType, deviceType);
     });
 }
