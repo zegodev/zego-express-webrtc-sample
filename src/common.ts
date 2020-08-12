@@ -41,6 +41,9 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 // eslint-disable-next-line prefer-const
 zg = new ZegoExpressEngine(appID, server);
 
+// @ts-ignore
+window.zg = zg;
+
 async function checkAnRun(checkScreen?: boolean): Promise<boolean> {
     console.log('sdk version is', zg.getVersion());
     const result = await zg.checkSystemRequirements();
