@@ -69,6 +69,10 @@ $(async () => {
         console.log('publish stream' + publishStreamID, result);
     });
     $('#replaceTrack').click(async function() {
+        if (!previewVideo.srcObject) {
+            alert('流不存在');
+            return;
+        }
         if (!screenStream) {
             screenStream = await zg.createStream({
                 screen: true,
@@ -82,6 +86,10 @@ $(async () => {
             .catch(err => console.error(err));
     });
     $('#replaceTrack2').click(async function() {
+        if (!previewVideo.srcObject || !screenStreamVideoTrack) {
+            alert('先创建流及屏幕共享');
+            return;
+        }
         zg.replaceTrack(previewVideo.srcObject as MediaStream, cameraStreamVideoTrack.clone())
             .then(res => console.warn('replaceTrack success'))
             .catch(err => console.error(err));
