@@ -3,7 +3,7 @@ import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
-import { webPublishOption, Constraints } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
+import { webPublishOption, Constraints, DeviceInfo, Device } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from './content';
 
 new VConsole();
@@ -23,6 +23,7 @@ let supportScreenSharing = false;
 let loginRoom = false;
 
 let localStream: MediaStream;
+let publishType: string;
 
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
@@ -266,11 +267,11 @@ function initSDK(): void {
     });
 
     zg.on('remoteCameraStatusUpdate', (streamID, status) => {
-        console.warn(`${streamID} camera status ${status == 'OPEN' ? 'open' : 'close'}`);
+        console.warn(`remoteCameraStatusUpdate ${streamID} camera status ${status == 'OPEN' ? 'open' : 'close'}`);
     });
 
     zg.on('remoteMicStatusUpdate', (streamID, status) => {
-        console.warn(`${streamID} micro status ${status == 'OPEN' ? 'open' : 'close'}`);
+        console.warn(`remoteMicStatusUpdate ${streamID} micro status ${status == 'OPEN' ? 'open' : 'close'}`);
     });
 
     zg.on('soundLevelUpdate', (streamList: Array<{ streamID: string; soundLevel: number; type: string }>) => {
@@ -278,6 +279,15 @@ function initSDK(): void {
             stream.type == 'push' && $('#soundLevel').html(Math.round(stream.soundLevel) + '');
             console.warn(`${stream.type} ${stream.streamID}, soundLevel: ${stream.soundLevel}`);
         });
+    });
+    zg.on('deviceError', (errorCode: number, deviceName) => {
+        console.warn(`deviceError`, errorCode, deviceName);
+    });
+    zg.on('videoDeviceStateChanged', (updateType: string, device: Device) => {
+        console.warn(`videoDeviceStateChanged`, device, updateType);
+    });
+    zg.on('audioDeviceStateChanged', (updateType: string, deviceType: string, device: Device) => {
+        console.warn(`audioDeviceStateChanged`, device, updateType, deviceType);
     });
 }
 
@@ -365,10 +375,15 @@ async function publish(constraints?: Constraints): Promise<void> {
             videoInput: $('#videoList').val() as string,
             video: video !== undefined ? video : $('#videoList').val() === '0' ? false : true,
             audio: $('#audioList').val() === '0' ? false : true,
+            channelCount: constraints && constraints.camera && constraints.camera.channelCount,
         },
     };
     !_constraints.camera.video && (previewVideo.controls = true);
-    push(_constraints);
+    const playType =
+        _constraints.camera.audio === false ? 'Video' : _constraints.camera.video === false ? 'Audio' : 'all';
+    publishType = playType;
+    // console.error('playType', playType);
+    push(_constraints, { extraInfo: JSON.stringify({ playType }) });
 }
 async function push(constraints?: Constraints, publishOption?: webPublishOption): Promise<void> {
     localStream = await zg.createStream(constraints);
@@ -404,6 +419,7 @@ export {
     previewVideo,
     isPreviewed,
     loginRoom,
+    publishType,
 };
 
 $(window).on('unload', function() {

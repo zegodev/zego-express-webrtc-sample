@@ -1,7 +1,17 @@
 import '../common';
 //@ts-ignore
 import md5 from 'md5';
-import { checkAnRun, logout, publishStreamId, zg, appID, useLocalStreamList } from '../common';
+import {
+    checkAnRun,
+    logout,
+    publishStreamId,
+    zg,
+    appID,
+    useLocalStreamList,
+    enterRoom,
+    publish,
+    publishType,
+} from '../common';
 import { getBrowser } from '../assets/utils';
 import flvjs from 'flv.js';
 
@@ -89,12 +99,13 @@ function filterStreamList(streamList: any, streamId?: string) {
 function playStream(streamList: any) {
     const browser = getBrowser();
     let hasAudio = true;
+    let hasVideo = true;
     let playType;
 
     if (streamList) {
-        if (streamList[0] && streamList[0].extra_info && streamList[0].extra_info.length !== 0) {
+        if (streamList[0] && streamList[0].extraInfo && streamList[0].extraInfo.length !== 0) {
             try {
-                playType = JSON.parse(streamList[0].extra_info).playType;
+                playType = JSON.parse(streamList[0].extraInfo).playType;
             } catch (err) {
                 alert(err);
             }
@@ -102,6 +113,7 @@ function playStream(streamList: any) {
     }
 
     playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+    playType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
 
     if (browser == 'Safari' && !isAndWechat && useLocalStreamList.length !== 0) {
         videoElement.src = useLocalStreamList[0];
@@ -118,6 +130,7 @@ function playStream(streamList: any) {
                     isLive: true,
                     url: flvUrl,
                     hasAudio: hasAudio,
+                    hasVideo: hasVideo,
                 });
                 flvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
                     console.error('LOADING_COMPLETE');
@@ -126,6 +139,7 @@ function playStream(streamList: any) {
                 flvPlayer.attachMediaElement(videoElement);
                 flvPlayer.load();
                 videoElement.muted = false;
+                videoElement.controls = true;
             }
     }
 }
@@ -189,13 +203,18 @@ $(async () => {
         //     cdnVideoElement.load();
         //     cdnVideoElement.muted = false;
         // } else
+        let hasVideo = true;
+        let hasAudio = true;
+        publishType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+        publishType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
         if (flvjs.isSupported()) {
             //若支持flv.js
             cdnFlvPlayer = flvjs.createPlayer({
                 type: 'flv',
                 isLive: true,
                 url: 'https://hdl-wsdemo.zego.im/livestream/test259.flv',
-                hasAudio: true,
+                hasAudio: hasAudio,
+                hasVideo: hasVideo,
             });
             cdnFlvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
                 console.error('LOADING_COMPLETE');
@@ -204,10 +223,23 @@ $(async () => {
             cdnFlvPlayer.attachMediaElement(cdnVideoElement);
             cdnFlvPlayer.load();
             cdnVideoElement.muted = false;
+            cdnVideoElement.controls = true;
         }
     });
     $('#playCDN').click(() => {
         flvPlayer && flvPlayer.play();
+    });
+    $('#createRoom').unbind('click');
+    $('#createRoom').click(async () => {
+        let loginSuc = false;
+        const channelCount = parseInt($('#channelCount').val() as string);
+        console.error('channelCount', channelCount);
+        try {
+            loginSuc = await enterRoom();
+            loginSuc && (await publish({ camera: { channelCount: channelCount } }));
+        } catch (error) {
+            console.error(error);
+        }
     });
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {

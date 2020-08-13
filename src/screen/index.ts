@@ -1,4 +1,13 @@
-import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg, loginRoom } from '../common';
+import {
+    checkAnRun,
+    supportScreenSharing,
+    logout,
+    publishStreamId,
+    zg,
+    loginRoom,
+    previewVideo,
+    enterRoom,
+} from '../common';
 
 $(async () => {
     await checkAnRun(true);
@@ -9,6 +18,12 @@ $(async () => {
     }
     let screenStreamList: { streamId: string; stream: MediaStream }[] = [];
     let screenCount = 0;
+    let screenStream: MediaStream;
+    let screenStreamVideoTrack: MediaStreamTrack;
+    let cameraStreamVideoTrack: MediaStreamTrack;
+    let previewStream: MediaStream;
+    let previewed = false;
+    const publishStreamID = 'web-' + new Date().getTime();
 
     const stopScreenShot = (screenStream: { streamId: string; stream: MediaStream }): void => {
         zg.stopPublishingStream(screenStream.streamId);
@@ -29,6 +44,56 @@ $(async () => {
         _stopScreenStream && stopScreenShot(_stopScreenStream);
     });
 
+    $('#enterRoom').click(async () => {
+        let loginSuc = false;
+        try {
+            loginSuc = await enterRoom();
+            if (loginSuc) {
+                previewStream = await zg.createStream({
+                    camera: {
+                        audioInput: $('#audioList').val() as string,
+                        videoInput: $('#videoList').val() as string,
+                        video: $('#videoList').val() === '0' ? false : true,
+                        audio: $('#audioList').val() === '0' ? false : true,
+                    },
+                });
+                previewVideo.srcObject = previewStream;
+                previewed = true;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    });
+    $('#publish').click(() => {
+        const result = zg.startPublishingStream(publishStreamID, previewStream);
+        console.log('publish stream' + publishStreamID, result);
+    });
+    $('#replaceTrack').click(async function() {
+        if (!previewVideo.srcObject) {
+            alert('流不存在');
+            return;
+        }
+        if (!screenStream) {
+            screenStream = await zg.createStream({
+                screen: true,
+            });
+            screenStreamVideoTrack = screenStream.getVideoTracks()[0].clone();
+            cameraStreamVideoTrack = (previewVideo.srcObject as MediaStream).getVideoTracks()[0].clone();
+        }
+
+        zg.replaceTrack(previewVideo.srcObject as MediaStream, screenStreamVideoTrack.clone())
+            .then(res => console.warn('replaceTrack success'))
+            .catch(err => console.error(err));
+    });
+    $('#replaceTrack2').click(async function() {
+        if (!previewVideo.srcObject || !screenStreamVideoTrack) {
+            alert('先创建流及屏幕共享');
+            return;
+        }
+        zg.replaceTrack(previewVideo.srcObject as MediaStream, cameraStreamVideoTrack.clone())
+            .then(res => console.warn('replaceTrack success'))
+            .catch(err => console.error(err));
+    });
     $('#screenShot').click(async () => {
         if (!loginRoom) {
             alert('请先登录房间');

@@ -1,4 +1,4 @@
-import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout } from '../common';
+import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout, publish } from '../common';
 import { webPlayOption } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getBrowser } from '../assets/utils';
 
@@ -46,6 +46,19 @@ $(async () => {
         zg.useAudioDevice(previewVideo.srcObject as MediaStream, $('#audioList').val() as string);
     });
     // --- test end
+
+    $('#createRoom').unbind('click');
+    $('#createRoom').click(async () => {
+        let loginSuc = false;
+        const channelCount = parseInt($('#channelCount').val() as string);
+        // console.error('channelCount', channelCount);
+        try {
+            loginSuc = await enterRoom();
+            loginSuc && (await publish({ camera: { channelCount: channelCount } }));
+        } catch (error) {
+            console.error(error);
+        }
+    });
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(() => {
         if (previewed) {
