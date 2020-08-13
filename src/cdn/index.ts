@@ -89,12 +89,13 @@ function filterStreamList(streamList: any, streamId?: string) {
 function playStream(streamList: any) {
     const browser = getBrowser();
     let hasAudio = true;
+    let hasVideo = true;
     let playType;
 
     if (streamList) {
-        if (streamList[0] && streamList[0].extra_info && streamList[0].extra_info.length !== 0) {
+        if (streamList[0] && streamList[0].extraInfo && streamList[0].extraInfo.length !== 0) {
             try {
-                playType = JSON.parse(streamList[0].extra_info).playType;
+                playType = JSON.parse(streamList[0].extraInfo).playType;
             } catch (err) {
                 alert(err);
             }
@@ -102,6 +103,7 @@ function playStream(streamList: any) {
     }
 
     playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+    playType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
 
     if (browser == 'Safari' && !isAndWechat && useLocalStreamList.length !== 0) {
         videoElement.src = useLocalStreamList[0];
@@ -118,6 +120,7 @@ function playStream(streamList: any) {
                     isLive: true,
                     url: flvUrl,
                     hasAudio: hasAudio,
+                    hasVideo: hasVideo,
                 });
                 flvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
                     console.error('LOADING_COMPLETE');
@@ -126,6 +129,7 @@ function playStream(streamList: any) {
                 flvPlayer.attachMediaElement(videoElement);
                 flvPlayer.load();
                 videoElement.muted = false;
+                videoElement.controls = true;
             }
     }
 }

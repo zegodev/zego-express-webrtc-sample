@@ -266,11 +266,11 @@ function initSDK(): void {
     });
 
     zg.on('remoteCameraStatusUpdate', (streamID, status) => {
-        console.warn(`${streamID} camera status ${status == 'OPEN' ? 'open' : 'close'}`);
+        console.warn(`remoteCameraStatusUpdate ${streamID} camera status ${status == 'OPEN' ? 'open' : 'close'}`);
     });
 
     zg.on('remoteMicStatusUpdate', (streamID, status) => {
-        console.warn(`${streamID} micro status ${status == 'OPEN' ? 'open' : 'close'}`);
+        console.warn(`remoteMicStatusUpdate ${streamID} micro status ${status == 'OPEN' ? 'open' : 'close'}`);
     });
 
     zg.on('soundLevelUpdate', (streamList: Array<{ streamID: string; soundLevel: number; type: string }>) => {
@@ -378,7 +378,10 @@ async function publish(constraints?: Constraints): Promise<void> {
         },
     };
     !_constraints.camera.video && (previewVideo.controls = true);
-    push(_constraints);
+    const playType =
+        _constraints.camera.audio === false ? 'Video' : _constraints.camera.video === false ? 'Audio' : 'all';
+    // console.error('playType', playType);
+    push(_constraints, { extraInfo: JSON.stringify({ playType }) });
 }
 async function push(constraints?: Constraints, publishOption?: webPublishOption): Promise<void> {
     localStream = await zg.createStream(constraints);
