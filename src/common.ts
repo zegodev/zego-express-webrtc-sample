@@ -23,6 +23,7 @@ let supportScreenSharing = false;
 let loginRoom = false;
 
 let localStream: MediaStream;
+let publishType: string;
 
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
@@ -380,6 +381,7 @@ async function publish(constraints?: Constraints): Promise<void> {
     !_constraints.camera.video && (previewVideo.controls = true);
     const playType =
         _constraints.camera.audio === false ? 'Video' : _constraints.camera.video === false ? 'Audio' : 'all';
+    publishType = playType;
     // console.error('playType', playType);
     push(_constraints, { extraInfo: JSON.stringify({ playType }) });
 }
@@ -417,6 +419,7 @@ export {
     previewVideo,
     isPreviewed,
     loginRoom,
+    publishType,
 };
 
 $(window).on('unload', function() {

@@ -1,7 +1,17 @@
 import '../common';
 //@ts-ignore
 import md5 from 'md5';
-import { checkAnRun, logout, publishStreamId, zg, appID, useLocalStreamList, enterRoom, publish } from '../common';
+import {
+    checkAnRun,
+    logout,
+    publishStreamId,
+    zg,
+    appID,
+    useLocalStreamList,
+    enterRoom,
+    publish,
+    publishType,
+} from '../common';
 import { getBrowser } from '../assets/utils';
 import flvjs from 'flv.js';
 
@@ -193,13 +203,18 @@ $(async () => {
         //     cdnVideoElement.load();
         //     cdnVideoElement.muted = false;
         // } else
+        let hasVideo = true;
+        let hasAudio = true;
+        publishType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+        publishType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
         if (flvjs.isSupported()) {
             //若支持flv.js
             cdnFlvPlayer = flvjs.createPlayer({
                 type: 'flv',
                 isLive: true,
                 url: 'https://hdl-wsdemo.zego.im/livestream/test259.flv',
-                hasAudio: true,
+                hasAudio: hasAudio,
+                hasVideo: hasVideo,
             });
             cdnFlvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
                 console.error('LOADING_COMPLETE');
@@ -208,6 +223,7 @@ $(async () => {
             cdnFlvPlayer.attachMediaElement(cdnVideoElement);
             cdnFlvPlayer.load();
             cdnVideoElement.muted = false;
+            cdnVideoElement.controls = true;
         }
     });
     $('#playCDN').click(() => {
