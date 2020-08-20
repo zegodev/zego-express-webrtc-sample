@@ -291,6 +291,9 @@ function initSDK(){
     zg.on('audioDeviceStateChanged', (updateType, deviceType, device) => {
         console.warn(`audioDeviceStateChanged`, device, updateType, deviceType);
     });
+    zg.on('roomOnlineUserCountUpdate', (roomID, count) => {
+        console.warn(`roomOnlineUserCountUpdate ${roomID} ${count}`);
+    });
 }
 
 async function login(roomId){
