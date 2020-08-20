@@ -102,8 +102,47 @@
               aria-describedby="emailHelp" placeholder="please enter room ID">
           </div>
         </div>
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="extraInfo"><strong class="text-gray-dark extrainfo">流附加信息</strong></label>
+            </div>
+            <input type="input" class="form-control d-inline" id="extraInfoInput" style="width: 75%; max-width: 200px"
+              aria-describedby="emailHelp" placeholder="please stream extraInfo">
+          </div>
+        </div>
       </div>
+      <div class="row">
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="width"><strong class="text-gray-dark">宽</strong></label>
+            </div>
+            <input type="email" class="form-control d-inline" id="width" aria-describedby="emailHelp"
+              placeholder="" value="">
+          </div>
+        </div>
 
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="height"><strong class="text-gray-dark">高</strong></label>
+            </div>
+            <input type="email" class="form-control d-inline" id="height" aria-describedby="emailHelp"
+              placeholder="" value="">
+          </div>
+        </div>
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="frameRate"><strong class="text-gray-dark">帧率</strong></label>
+            </div>
+            <input type="email" class="form-control d-inline" id="frameRate" aria-describedby="emailHelp"
+              placeholder="" value="">
+          </div>
+        </div>
+      </div>
       <div class="row">
         <div class="col-sm">
           <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
@@ -116,6 +155,8 @@
           <button type="button" id="toggleSpeaker" class="btn btn-primary btn-sm enableMicrophone">启用/关闭麦克风</button>
           <button type="button" id="stopPlaySound" class="btn btn-primary btn-sm unenableSound">停止获取音浪</button>
           <button type="button" id="resumePlaySound" class="btn btn-primary btn-sm resumeSound">恢复获取音浪</button>
+          <button type="button" id="extraInfo" class="btn btn-primary btn-sm">修改推流信息</button>
+          <button type="button" id="switchConstraints" class="btn btn-primary btn-sm">改变推流参数</button>
           <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
         </div>
       </div>

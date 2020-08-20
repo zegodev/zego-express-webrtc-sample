@@ -1,4 +1,4 @@
-import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout, publish } from '../common';
+import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout, publish, publishStreamId } from '../common';
 import { getBrowser } from '../assets/utils';
 
 let playOption = {};
@@ -84,6 +84,28 @@ $(async () => {
             }
         }
         await enterRoom();
+    });
+    $('#extraInfo').click(() => {
+        zg.setStreamExtraInfo(publishStreamId, $('#extraInfoInput').val());
+    });
+    $('#switchConstraints').click(() => {
+        const constraints = {};
+        const w = $('#width').val() ? parseInt($('#width').val()) : 0;
+        const h = $('#height').val() ? parseInt($('#height').val()) : 0;
+        const f = $('#frameRate').val() ? parseInt($('#frameRate').val()) : 0;
+
+        w && Object.assign(constraints, { width: w });
+        h && Object.assign(constraints, { height: h });
+        f && Object.assign(constraints, { frameRate: f });
+
+        zg.setPublishStreamConstraints(previewVideo.srcObject, constraints).then(
+            () => {
+                console.warn('change constraints success');
+            },
+            err => {
+                console.error(err);
+            },
+        );
     });
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {

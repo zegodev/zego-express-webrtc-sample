@@ -207,6 +207,9 @@ function initSDK(){
             // alert('拉流失败,reason = ' + _msg);
         }
     });
+    zg.on('streamExtraInfoUpdate', (roomID, streamList) => {
+        console.warn(`streamExtraInfoUpdate: room ${roomID},  `, JSON.stringify(streamList));
+    });
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
         if (updateType == 'ADD') {
