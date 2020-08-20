@@ -3,7 +3,6 @@ import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
-import { webPublishOption, Constraints, DeviceInfo, Device } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from './content';
 
 new VConsole();

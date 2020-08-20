@@ -1,5 +1,4 @@
 import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout, publish } from '../common';
-import { webPlayOption } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getBrowser } from '../assets/utils';
 
 let playOption = {};

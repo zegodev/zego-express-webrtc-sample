@@ -146,7 +146,7 @@ function playStream(streamList) {
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
-    zg.on('roomStreamUpdate', (roomID, updateType: 'ADD' | 'DELETE', streamList) => {
+    zg.on('roomStreamUpdate', (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
         // console.log('l', zg.stateCenter.streamList);
         if (updateType == 'ADD') {

@@ -3,7 +3,7 @@ import 'popper.js';
 import './css/chat.css';
 import './font_Icon/iconfont.css';
 import { checkAnRun, zg, userID, logout, loginRoom } from '../common';
-import { User } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
+
 
 let msgCount = 0;
 let localUserList= [];
