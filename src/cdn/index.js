@@ -1,7 +1,17 @@
 import '../common';
 //@ts-ignore
 import md5 from 'md5';
-import { checkAnRun, logout, publishStreamId, zg, appID, useLocalStreamList } from '../common';
+import {
+    checkAnRun,
+    logout,
+    publishStreamId,
+    zg,
+    appID,
+    useLocalStreamList,
+    enterRoom,
+    publish,
+    publishType,
+} from '../common';
 import { getBrowser } from '../assets/utils';
 import flvjs from 'flv.js';
 
@@ -20,7 +30,7 @@ if ((ua.indexOf('android') > -1 || ua.indexOf('linux') > -1) && ua.match(/MicroM
 }
 
 function filterStreamList(streamList, streamId) {
-    const flv= {};
+    const flv = {};
     const hls = {};
     const rtmp = {};
 
@@ -81,7 +91,7 @@ function filterStreamList(streamList, streamId) {
         }
     }
 
-    return streamListUrl.filter(function(ele, index, self) {
+    return streamListUrl.filter(function (ele, index, self) {
         return self.indexOf(ele) == index;
     });
 }
@@ -89,12 +99,13 @@ function filterStreamList(streamList, streamId) {
 function playStream(streamList) {
     const browser = getBrowser();
     let hasAudio = true;
+    let hasVideo = true;
     let playType;
 
     if (streamList) {
-        if (streamList[0] && streamList[0].extra_info && streamList[0].extra_info.length !== 0) {
+        if (streamList[0] && streamList[0].extraInfo && streamList[0].extraInfo.length !== 0) {
             try {
-                playType = JSON.parse(streamList[0].extra_info).playType;
+                playType = JSON.parse(streamList[0].extraInfo).playType;
             } catch (err) {
                 alert(err);
             }
@@ -102,6 +113,7 @@ function playStream(streamList) {
     }
 
     playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+    playType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
 
     if (browser == 'Safari' && !isAndWechat && useLocalStreamList.length !== 0) {
         videoElement.src = useLocalStreamList[0];
@@ -118,21 +130,23 @@ function playStream(streamList) {
                     isLive: true,
                     url: flvUrl,
                     hasAudio: hasAudio,
+                    hasVideo: hasVideo,
                 });
-                flvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
+                flvPlayer.on(flvjs.Events.LOADING_COMPLETE, function () {
                     console.error('LOADING_COMPLETE');
                     flvPlayer.play();
                 });
                 flvPlayer.attachMediaElement(videoElement);
                 flvPlayer.load();
                 videoElement.muted = false;
+                videoElement.controls = true;
             }
     }
 }
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
-    zg.on('roomStreamUpdate', (roomID, updateType, streamList) => {
+    zg.on('roomStreamUpdate', (roomID, updateType: 'ADD' | 'DELETE', streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
         // console.log('l', zg.stateCenter.streamList);
         if (updateType == 'ADD') {
@@ -189,28 +203,46 @@ $(async () => {
         //     cdnVideoElement.load();
         //     cdnVideoElement.muted = false;
         // } else
+        let hasVideo = true;
+        let hasAudio = true;
+        publishType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+        publishType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
         if (flvjs.isSupported()) {
             //若支持flv.js
             cdnFlvPlayer = flvjs.createPlayer({
                 type: 'flv',
                 isLive: true,
                 url: 'https://hdl-wsdemo.zego.im/livestream/test259.flv',
-                hasAudio: true,
+                hasAudio: hasAudio,
+                hasVideo: hasVideo,
             });
-            cdnFlvPlayer.on(flvjs.Events.LOADING_COMPLETE, function() {
+            cdnFlvPlayer.on(flvjs.Events.LOADING_COMPLETE, function () {
                 console.error('LOADING_COMPLETE');
                 cdnFlvPlayer.play();
             });
             cdnFlvPlayer.attachMediaElement(cdnVideoElement);
             cdnFlvPlayer.load();
             cdnVideoElement.muted = false;
+            cdnVideoElement.controls = true;
         }
     });
     $('#playCDN').click(() => {
         flvPlayer && flvPlayer.play();
     });
+    $('#createRoom').unbind('click');
+    $('#createRoom').click(async () => {
+        let loginSuc = false;
+        const channelCount = parseInt($('#channelCount').val());
+        console.error('channelCount', channelCount);
+        try {
+            loginSuc = await enterRoom();
+            loginSuc && (await publish({ camera: { channelCount: channelCount } }));
+        } catch (error) {
+            console.error(error);
+        }
+    });
     $('#leaveRoom').unbind('click');
-    $('#leaveRoom').click(function() {
+    $('#leaveRoom').click(function () {
         if (typeof flvPlayer !== 'undefined') {
             if (flvPlayer != null) {
                 flvPlayer.pause();

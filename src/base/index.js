@@ -1,4 +1,5 @@
-import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout } from '../common';
+import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout, publish } from '../common';
+import { webPlayOption } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getBrowser } from '../assets/utils';
 
 let playOption = {};
@@ -36,7 +37,28 @@ $(async () => {
         const result = zg.startPublishingStream(publishStreamID, previewStream);
         console.log('publish stream' + publishStreamID, result);
     });
+
+    $('#useVideo').click(() => {
+        zg.useVideoDevice(previewVideo.srcObject, $('#videoList').val());
+    });
+
+    $('#useAudio').click(() => {
+        zg.useAudioDevice(previewVideo.srcObject, $('#audioList').val());
+    });
     // --- test end
+
+    $('#createRoom').unbind('click');
+    $('#createRoom').click(async () => {
+        let loginSuc = false;
+        const channelCount = parseInt($('#channelCount').val() );
+        // console.error('channelCount', channelCount);
+        try {
+            loginSuc = await enterRoom();
+            loginSuc && (await publish({ camera: { channelCount: channelCount } }));
+        } catch (error) {
+            console.error(error);
+        }
+    });
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(() => {
         if (previewed) {
@@ -73,26 +95,31 @@ $(async () => {
                 useLocalStreamList.push(streamList[i]);
                 let remoteStream;
 
+                const handlePlaySuccess = () => {
+                    let video;
+                    if (getBrowser() == 'Safari' && playOption.video === false) {
+                        $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
+                        video = $('.remoteVideo audio:last')[0] ;
+                        console.warn('audio', video, remoteStream);
+                    } else {
+                        $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                        video = $('.remoteVideo video:last')[0];
+                        console.warn('video', video, remoteStream);
+                    }
+
+                    video.srcObject = remoteStream;
+                    video.muted = false;
+                };
+
                 try {
-                    remoteStream = await zg.startPlayingStream(streamList[i].streamID, playOption);
+                    zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
+                        remoteStream = stream;
+                        handlePlaySuccess();
+                    });
                 } catch (error) {
                     console.error(error);
                     break;
                 }
-
-                let video;
-                if (getBrowser() == 'Safari' && playOption.video === false) {
-                    $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
-                    video = $('.remoteVideo audio:last')[0];
-                    console.warn('audio', video, remoteStream);
-                } else {
-                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                    video = $('.remoteVideo video:last')[0];
-                    console.warn('video', video, remoteStream);
-                }
-
-                video.srcObject = remoteStream;
-                video.muted = false;
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {

@@ -1,3 +1,4 @@
+
 import { checkAnRun, enterRoom, push } from '../common';
 
 $(async () => {
@@ -5,12 +6,14 @@ $(async () => {
 
     $('#externalCaptureV').click(async () => {
         let loginSuc = false;
+        const channelCount = parseInt($('#channelCount').val());
         try {
             loginSuc = await enterRoom();
             if (loginSuc) {
                 push({
                     custom: {
                         source: $('#externerVideo')[0],
+                        channelCount: channelCount,
                     },
                 });
             }

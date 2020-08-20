@@ -70,6 +70,26 @@
           </div>
         </div>
 
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="channelCount"><strong class="text-gray-dark channelCount">声道</strong></label>
+            </div>
+            <select class="custom-select" id="channelCount" style="width: 50%">
+              <option value="1" class="channel1">默认</option>
+              <option value="2" class="channel2">双声道</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="playMode"><strong class="text-gray-dark repeat">重复推拉流</strong></label>
+            </div>
+          </div>
+        </div> -->
+
       </div>
 
       <div class="row">
@@ -83,13 +103,15 @@
           </div>
         </div>
       </div>
-      
+
       <div class="row">
         <div class="col-sm">
           <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
           <button type="button" id="enterRoom" class="btn btn-primary btn-sm">进房预览</button>
           <button type="button" id="publish" class="btn btn-primary btn-sm">推流</button>
           <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间（不推流）</button>
+          <button type="button" id="useVideo" class="btn btn-secondary btn-sm">更改视频输入设备</button>
+          <button type="button" id="useAudio" class="btn btn-secondary btn-sm">更改音频输入设备</button>
           <button type="button" id="toggleCamera" class="btn btn-primary btn-sm enableCamera">启用/关闭摄像头</button>
           <button type="button" id="toggleSpeaker" class="btn btn-primary btn-sm enableMicrophone">启用/关闭麦克风</button>
           <button type="button" id="stopPlaySound" class="btn btn-primary btn-sm unenableSound">停止获取音浪</button>

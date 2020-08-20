@@ -2,10 +2,11 @@ import '../common';
 import 'popper.js';
 import './css/chat.css';
 import './font_Icon/iconfont.css';
-import { checkAnRun, zg, userID, logout } from '../common'; 
+import { checkAnRun, zg, userID, logout, loginRoom } from '../common';
+import { User } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 
 let msgCount = 0;
-let localUserList = [];
+let localUserList= [];
 $(async () => {
     await checkAnRun();
 
@@ -91,11 +92,15 @@ $(async () => {
     });
 
     $('#chat-fasong').click(async () => {
+        if (!loginRoom) {
+            alert('no login rooom');
+            return;
+        }
         const textContent = $('.div-textarea')
             .html()
             .replace(/[\n\r]/g, '<br>');
         if (textContent) {
-            const roomId = $('#roomId').val();
+            const roomId= $('#roomId').val() ;
             if (!roomId) {
                 alert('roomId is empty');
                 return false;
@@ -129,7 +134,11 @@ $(async () => {
     });
 
     $('#sendCustomrMsg').click(async () => {
-        const roomId = $('#roomId').val() ;
+        if (!loginRoom) {
+            alert('no login rooom');
+            return;
+        }
+        const roomId= $('#roomId').val() ;
         const result = await zg.sendCustomCommand(roomId, 'test', [$('#memberList').val() ]);
         if (result.errorCode === 0) {
             console.warn('sendCustomCommand suc');
@@ -139,7 +148,11 @@ $(async () => {
     });
 
     $('#BarrageMessage').click(async () => {
-        const roomId = $('#roomId').val() ;
+        if (!loginRoom) {
+            alert('no login rooom');
+            return;
+        }
+        const roomId= $('#roomId').val() ;
         if (!roomId) {
             alert('roomId is empty');
             return false;
@@ -154,7 +167,7 @@ $(async () => {
     });
 
     // $('#ReliableMessage').click(async () => {
-    //     const roomId = $('#roomId').val() ;
+    //     const roomId= $('#roomId').val() ;
     //     const result = await zg.setRoomExtraInfo(roomId, '2', 'ReliableMessage test');
     //     if (result.errorCode === 0) {
     //         console.warn('setRoomExtraInfo suc');
