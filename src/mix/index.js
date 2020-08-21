@@ -100,24 +100,12 @@ $(async () => {
                 {
                     streamID: publishStreamId,
                     contentType: 'AUDIO',
-                    layout: {
-                        top: 0,
-                        left: 0,
-                        bottom: 1,
-                        right: 1,
-                    },
                 },
             ];
             if (useLocalStreamList.length !== 0) {
                 streamList.push({
                     streamID: useLocalStreamList[0].streamID,
                     contentType: 'AUDIO',
-                    layout: {
-                        top: 0,
-                        left: 0,
-                        bottom: 1,
-                        right: 1,
-                    },
                 });
             }
             taskID2 = 'task-' + new Date().getTime();
@@ -132,12 +120,12 @@ $(async () => {
                     //     // target: 'rtmp://test.aliyun.zego.im/livestream/zegodemo',
                     // },
                 ],
-                outputConfig: {
-                    outputBitrate: 1,
-                    outputFPS: 1,
-                    outputWidth: 10,
-                    outputHeight: 10,
-                },
+                // outputConfig: {
+                //     outputBitrate: 1,
+                //     outputFPS: 1,
+                //     outputWidth: 10,
+                //     outputHeight: 10,
+                // },
             });
             if (res.errorCode == 0) {
                 $('#stopMixStream2').removeAttr('disabled');
@@ -159,6 +147,7 @@ $(async () => {
                         flvPlayer2 = flvjs.createPlayer({
                             type: 'flv',
                             url: flvUrl,
+                            hasVideo: false
                         });
                         flvPlayer2.attachMediaElement(mixVideo2);
                         flvPlayer2.load();
