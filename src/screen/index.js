@@ -37,11 +37,25 @@ $(async () => {
         console.log(`screenStreamList `, screenStreamList);
     };
 
+    const stopScreen = () => {
+        if (screenStream) {
+            zg.destroyStream(screenStream);
+            screenStream = null;
+            screenStreamVideoTrack.stop();
+            screenStreamVideoTrack = null;
+        }
+        
+    }
     // 点击系统停止共享
     zg.on('screenSharingEnded', (stream)=> {
         console.warn('screen sharing end');
         const _stopScreenStream = screenStreamList.find(screenStream => screenStream.stream == stream);
         _stopScreenStream && stopScreenShot(_stopScreenStream);
+        if (stream === screenStream) {
+            console.warn('stop');
+            zg.mutePublishStreamVideo(previewVideo.srcObject, true)
+            stopScreen();
+        }
     });
 
     $('#enterRoom').click(async () => {
@@ -78,7 +92,7 @@ $(async () => {
                 screen: true,
             });
             screenStreamVideoTrack = screenStream.getVideoTracks()[0].clone();
-            cameraStreamVideoTrack = (previewVideo.srcObject).getVideoTracks()[0].clone();
+            cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone();
         }
 
         zg.replaceTrack(previewVideo.srcObject, screenStreamVideoTrack.clone())
@@ -90,7 +104,7 @@ $(async () => {
             alert('先创建流及屏幕共享');
             return;
         }
-        zg.replaceTrack(previewVideo.srcObject, cameraStreamVideoTrack.clone())
+        cameraStreamVideoTrack && zg.replaceTrack(previewVideo.srcObject, cameraStreamVideoTrack.clone())
             .then(res => console.warn('replaceTrack success'))
             .catch(err => console.error(err));
     });
@@ -143,6 +157,7 @@ $(async () => {
         screenStreamList.forEach(item => {
             stopScreenShot(item);
         });
+        stopScreen();
         logout();
     });
 });
