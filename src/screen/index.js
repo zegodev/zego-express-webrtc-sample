@@ -98,7 +98,8 @@ $(async () => {
                 screen: true,
             });
             screenStreamVideoTrack = screenStream.getVideoTracks()[0].clone();
-            cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone();
+            console.log('cameraStreamVideoTrack', cameraStreamVideoTrack);
+            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone());
         }
 
         zg.replaceTrack(previewVideo.srcObject, screenStreamVideoTrack.clone())
@@ -106,7 +107,7 @@ $(async () => {
             .catch(err => console.error(err));
     });
     $('#replaceTrack2').click(async function() {
-        if (!previewVideo.srcObject || !screenStreamVideoTrack) {
+        if (!previewVideo.srcObject || !cameraStreamVideoTrack) {
             alert('先创建流及屏幕共享');
             return;
         }
