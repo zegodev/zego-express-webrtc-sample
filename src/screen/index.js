@@ -73,6 +73,7 @@ $(async () => {
                     },
                 });
                 previewVideo.srcObject = previewStream;
+                previewVideo.controls = true;
                 previewed = true;
             }
         } catch (error) {
@@ -89,7 +90,7 @@ $(async () => {
             return;
         }
         console.log(publishType);
-        if (publishType == 'Audio') {
+        if (publishType == 'Audio' || $('#videoList').val() === '0') {
             alert('stream is only contain audio');
             return;
         }
