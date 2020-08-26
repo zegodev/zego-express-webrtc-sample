@@ -7,6 +7,7 @@ import {
     loginRoom,
     previewVideo,
     enterRoom,
+    publishType
 } from '../common';
 
 $(async () => {
@@ -87,6 +88,11 @@ $(async () => {
             alert('流不存在');
             return;
         }
+        console.log(publishType);
+        if (publishType == 'Audio') {
+            alert('stream is only contain audio');
+            return;
+        }
         if (!screenStream) {
             screenStream = await zg.createStream({
                 screen: true,
@@ -158,6 +164,10 @@ $(async () => {
             stopScreenShot(item);
         });
         stopScreen();
+        if (previewVideo.srcObject) {
+            zg.destroyStream(previewVideo.srcObject);
+            previewVideo.srcObject = null;
+        }
         logout();
     });
 });
