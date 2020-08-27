@@ -88,25 +88,25 @@ $(async () => {
     $('#extraInfo').click(() => {
         zg.setStreamExtraInfo(publishStreamId, $('#extraInfoInput').val());
     });
-    $('#switchConstraints').click(() => {
-        const constraints = {};
-        const w = $('#width').val() ? parseInt($('#width').val()) : 0;
-        const h = $('#height').val() ? parseInt($('#height').val()) : 0;
-        const f = $('#frameRate').val() ? parseInt($('#frameRate').val()) : 0;
+    // $('#switchConstraints').click(() => {
+    //     const constraints = {};
+    //     const w = $('#width').val() ? parseInt($('#width').val()) : 0;
+    //     const h = $('#height').val() ? parseInt($('#height').val()) : 0;
+    //     const f = $('#frameRate').val() ? parseInt($('#frameRate').val()) : 0;
 
-        w && Object.assign(constraints, { width: w });
-        h && Object.assign(constraints, { height: h });
-        f && Object.assign(constraints, { frameRate: f });
+    //     w && Object.assign(constraints, { width: w });
+    //     h && Object.assign(constraints, { height: h });
+    //     f && Object.assign(constraints, { frameRate: f });
 
-        zg.setPublishStreamConstraints(previewVideo.srcObject, constraints).then(
-            () => {
-                console.warn('change constraints success');
-            },
-            err => {
-                console.error(err);
-            },
-        );
-    });
+    //     zg.setPublishStreamConstraints(previewVideo.srcObject, constraints).then(
+    //         () => {
+    //             console.warn('change constraints success');
+    //         },
+    //         err => {
+    //             console.error(err);
+    //         },
+    //     );
+    // });
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
