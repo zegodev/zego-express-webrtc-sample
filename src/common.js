@@ -11,8 +11,8 @@ const userName= 'sampleUser' + new Date().getTime();
 const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 const publishStreamId = 'webrtc' + new Date().getTime();
 let zg;
-let appID = 1739272706;
-let server = 'wss://webliveroom-test.zego.im/ws'; //'wss://wsliveroom' + appID + '-api.zego.im:8282/ws'
+let appID = 1739272706; // 请从官网控制台获取对应的appID
+let server = 'wss://webliveroom-test.zego.im/ws'; // 请从官网控制台获取对应的server地址，否则可能登录失败
 let cgiToken = '';
 //const appSign = '';
 let previewVideo;
