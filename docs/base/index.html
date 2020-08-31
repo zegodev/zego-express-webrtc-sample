@@ -25,7 +25,7 @@
     }
   </style>
   <title class="base">推拉流基础功能</title>
-<link href="../index.e33f6e43.css" rel="stylesheet"></head>
+<link href="../index.74e358e4.css" rel="stylesheet"></head>
 
 <body class="bg-f2">
   <div class="container">
@@ -69,7 +69,19 @@
             </select>
           </div>
         </div>
-
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="videoQuality"><strong class="text-gray-dark videoQuality">推流质量</strong></label>
+            </div>
+            <select class="custom-select" id="videoQuality" style="width: 50%">
+              <option value="1" selected>标清</option>
+              <option value="2">高清</option>
+              <option value="3">超清</option>
+              <option value="4">自定义</option>
+            </select>
+          </div>
+        </div>
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
@@ -102,6 +114,7 @@
               aria-describedby="emailHelp" placeholder="please enter room ID">
           </div>
         </div>
+        
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
@@ -112,7 +125,7 @@
           </div>
         </div>
       </div>
-      <!-- <div class="row">
+      <div class="row">
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
@@ -142,7 +155,16 @@
               placeholder="" value="">
           </div>
         </div>
-      </div> -->
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="bitrate"><strong class="text-gray-dark">码率</strong></label>
+            </div>
+            <input type="email" class="form-control d-inline" id="bitrate" aria-describedby="emailHelp"
+              placeholder="" value="">
+          </div>
+        </div>
+      </div>
       <div class="row">
         <div class="col-sm">
           <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
@@ -156,7 +178,7 @@
           <button type="button" id="stopPlaySound" class="btn btn-primary btn-sm unenableSound">停止获取音浪</button>
           <button type="button" id="resumePlaySound" class="btn btn-primary btn-sm resumeSound">恢复获取音浪</button>
           <button type="button" id="extraInfo" class="btn btn-primary btn-sm">修改推流信息</button>
-          <!-- <button type="button" id="switchConstraints" class="btn btn-primary btn-sm">改变推流参数</button> -->
+          <button type="button" id="switchConstraints" class="btn btn-primary btn-sm">改变推流参数</button>
           <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
         </div>
       </div>

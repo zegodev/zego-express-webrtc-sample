@@ -380,9 +380,10 @@ async function publish(constraints){
             videoInput: $('#videoList').val(),
             video: video !== undefined ? video : $('#videoList').val() === '0' ? false : true,
             audio: $('#audioList').val() === '0' ? false : true,
-            channelCount: constraints && constraints.camera && constraints.camera.channelCount,
+            // channelCount: constraints && constraints.camera && constraints.camera.channelCount,
         },
     };
+    constraints.camera && Object.assign(_constraints.camera, constraints.camera);
     !_constraints.camera.video && (previewVideo.controls = true);
     const playType =
         _constraints.camera.audio === false ? 'Video' : _constraints.camera.video === false ? 'Audio' : 'all';
