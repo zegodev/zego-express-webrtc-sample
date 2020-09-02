@@ -54,13 +54,13 @@ $(async () => {
         constraints.channelCount = channelCount;
         const videoQuality = $('#videoQuality').val();
         if (videoQuality == 4) {
-            constraints.width = parseInt($('#width').val()),
-            constraints.height = parseInt($('#height').val()),
-            constraints.frameRate = parseInt($('#frameRate').val()),
-            constraints.bitrate = parseInt($('#bitrate').val())
+            $('#width').val() && (constraints.width = parseInt($('#width').val())),
+            $('#height').val() && (constraints.height = parseInt($('#height').val())),
+            $('#frameRate').val() && (constraints.frameRate = parseInt($('#frameRate').val())),
+            $('#bitrate').val() && (constraints.bitrate = parseInt($('#bitrate').val()))
         }
         constraints.videoQuality = parseInt(videoQuality);
-        // console.error('channelCount', channelCount);
+        console.error('constraints', constraints);
         try {
             loginSuc = await enterRoom();
             loginSuc && (await publish({ camera: constraints }));
