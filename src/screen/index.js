@@ -59,63 +59,63 @@ $(async () => {
         }
     });
 
-    $('#enterRoom').click(async () => {
-        let loginSuc = false;
-        try {
-            loginSuc = await enterRoom();
-            if (loginSuc) {
-                previewStream = await zg.createStream({
-                    camera: {
-                        audioInput: $('#audioList').val(),
-                        videoInput: $('#videoList').val(),
-                        video: $('#videoList').val() === '0' ? false : true,
-                        audio: $('#audioList').val() === '0' ? false : true,
-                    },
-                });
-                previewVideo.srcObject = previewStream;
-                previewVideo.controls = true;
-                previewed = true;
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    });
-    $('#publish').click(() => {
-        const result = zg.startPublishingStream(publishStreamID, previewStream);
-        console.log('publish stream' + publishStreamID, result);
-    });
-    $('#replaceTrack').click(async function() {
-        if (!previewVideo.srcObject) {
-            alert('流不存在');
-            return;
-        }
-        console.log(publishType);
-        if (publishType == 'Audio' || $('#videoList').val() === '0') {
-            alert('stream is only contain audio');
-            return;
-        }
-        if (!screenStream) {
-            screenStream = await zg.createStream({
-                screen: true,
-            });
-            screenStreamVideoTrack = screenStream.getVideoTracks()[0].clone();
-            console.log('cameraStreamVideoTrack', cameraStreamVideoTrack);
-            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone());
-        }
+    // $('#enterRoom').click(async () => {
+    //     let loginSuc = false;
+    //     try {
+    //         loginSuc = await enterRoom();
+    //         if (loginSuc) {
+    //             previewStream = await zg.createStream({
+    //                 camera: {
+    //                     audioInput: $('#audioList').val(),
+    //                     videoInput: $('#videoList').val(),
+    //                     video: $('#videoList').val() === '0' ? false : true,
+    //                     audio: $('#audioList').val() === '0' ? false : true,
+    //                 },
+    //             });
+    //             previewVideo.srcObject = previewStream;
+    //             previewVideo.controls = true;
+    //             previewed = true;
+    //         }
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // });
+    // $('#publish').click(() => {
+    //     const result = zg.startPublishingStream(publishStreamID, previewStream);
+    //     console.log('publish stream' + publishStreamID, result);
+    // });
+    // $('#replaceTrack').click(async function() {
+    //     if (!previewVideo.srcObject) {
+    //         alert('流不存在');
+    //         return;
+    //     }
+    //     console.log(publishType);
+    //     if (publishType == 'Audio' || $('#videoList').val() === '0') {
+    //         alert('stream is only contain audio');
+    //         return;
+    //     }
+    //     if (!screenStream) {
+    //         screenStream = await zg.createStream({
+    //             screen: true,
+    //         });
+    //         screenStreamVideoTrack = screenStream.getVideoTracks()[0].clone();
+    //         console.log('cameraStreamVideoTrack', cameraStreamVideoTrack);
+    //         !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone());
+    //     }
 
-        zg.replaceTrack(previewVideo.srcObject, screenStreamVideoTrack.clone())
-            .then(res => console.warn('replaceTrack success'))
-            .catch(err => console.error(err));
-    });
-    $('#replaceTrack2').click(async function() {
-        if (!previewVideo.srcObject || !cameraStreamVideoTrack) {
-            alert('先创建流及屏幕共享');
-            return;
-        }
-        cameraStreamVideoTrack && zg.replaceTrack(previewVideo.srcObject, cameraStreamVideoTrack.clone())
-            .then(res => console.warn('replaceTrack success'))
-            .catch(err => console.error(err));
-    });
+    //     zg.replaceTrack(previewVideo.srcObject, screenStreamVideoTrack.clone())
+    //         .then(res => console.warn('replaceTrack success'))
+    //         .catch(err => console.error(err));
+    // });
+    // $('#replaceTrack2').click(async function() {
+    //     if (!previewVideo.srcObject || !cameraStreamVideoTrack) {
+    //         alert('先创建流及屏幕共享');
+    //         return;
+    //     }
+    //     cameraStreamVideoTrack && zg.replaceTrack(previewVideo.srcObject, cameraStreamVideoTrack.clone())
+    //         .then(res => console.warn('replaceTrack success'))
+    //         .catch(err => console.error(err));
+    // });
     $('#screenShot').click(async () => {
         if (!loginRoom) {
             alert('请先登录房间');
