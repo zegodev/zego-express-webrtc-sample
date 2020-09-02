@@ -383,7 +383,7 @@ async function publish(constraints){
             // channelCount: constraints && constraints.camera && constraints.camera.channelCount,
         },
     };
-    constraints.camera && Object.assign(_constraints.camera, constraints.camera);
+    constraints && constraints.camera && Object.assign(_constraints.camera, constraints.camera);
     !_constraints.camera.video && (previewVideo.controls = true);
     const playType =
         _constraints.camera.audio === false ? 'Video' : _constraints.camera.video === false ? 'Audio' : 'all';
