@@ -103,10 +103,12 @@ $(async () => {
         const w = $('#width').val() ? parseInt($('#width').val()) : 0;
         const h = $('#height').val() ? parseInt($('#height').val()) : 0;
         const f = $('#frameRate').val() ? parseInt($('#frameRate').val()) : 0;
+        const b = $('#bitrate').val() ? parseInt($('#bitrate').val()) : 0;
 
         w && Object.assign(constraints, { width: w });
         h && Object.assign(constraints, { height: h });
         f && Object.assign(constraints, { frameRate: f });
+        b && Object.assign(constraints, { maxBitrate: b});
 
         zg.setPublishStreamConstraints(previewVideo.srcObject, constraints).then(
             () => {
