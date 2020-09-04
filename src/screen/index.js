@@ -22,7 +22,12 @@ $(async () => {
     let screenStream;
     let screenStreamVideoTrack;
     let cameraStreamVideoTrack;
+    let cameraStreamAudioTrack;
     let previewStream;
+    let screendStream;
+    let externalStream;
+    let externalStreamVideoTrack;
+    let externalStreamAudioTrack;
     let previewed = false;
     const publishStreamID = 'web-' + new Date().getTime();
 
@@ -84,7 +89,7 @@ $(async () => {
         const result = zg.startPublishingStream(publishStreamID, previewStream);
         console.log('publish stream' + publishStreamID, result);
     });
-    $('#replaceTrack').click(async function() {
+    $('#replaceScreenShot').click(async function() {
         if (!previewVideo.srcObject) {
             alert('流不存在');
             return;
@@ -94,25 +99,79 @@ $(async () => {
             alert('stream is only contain audio');
             return;
         }
-        if (!screenStream) {
-            screenStream = await zg.createStream({
+        if (!screendStream) {
+            screendStream = await zg.createStream({
                 screen: true,
             });
-            screenStreamVideoTrack = screenStream.getVideoTracks()[0].clone();
+            screenStreamVideoTrack = screendStream.getVideoTracks()[0];
             console.log('cameraStreamVideoTrack', cameraStreamVideoTrack);
-            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone());
+            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0]);
         }
 
-        zg.replaceTrack(previewVideo.srcObject, screenStreamVideoTrack.clone())
+        zg.replaceTrack(previewVideo.srcObject, screenStreamVideoTrack)
             .then(res => console.warn('replaceTrack success'))
             .catch(err => console.error(err));
     });
-    $('#replaceTrack2').click(async function() {
+    $('#replaceCamera').click(async function() {
         if (!previewVideo.srcObject || !cameraStreamVideoTrack) {
             alert('先创建流及屏幕共享');
             return;
         }
-        cameraStreamVideoTrack && zg.replaceTrack(previewVideo.srcObject, cameraStreamVideoTrack.clone())
+        cameraStreamVideoTrack && zg.replaceTrack(previewVideo.srcObject, cameraStreamVideoTrack)
+            .then(res => console.warn('replaceTrack success'))
+            .catch(err => console.error(err));
+    });
+    $('#replaceExternalVideo').click(async function() {
+        if (!previewVideo.srcObject) {
+            alert('流不存在');
+            return;
+        }
+        console.log(publishType);
+        if (publishType == 'Audio' || $('#videoList').val() === '0') {
+            alert('stream is only contain audio');
+            return;
+        }
+        if (!externalStream) {
+            externalStream = await zg.createStream({
+                custom: {
+                    source: $('#customVideo')[0],
+                }
+            });
+        }
+        if (!externalStreamVideoTrack) {
+            externalStreamVideoTrack = externalStream.getVideoTracks()[0];
+            console.log('externalStreamVideoTrack', cameraStreamVideoTrack);
+            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0]);
+        }
+
+        zg.replaceTrack(previewVideo.srcObject, externalStreamVideoTrack)
+            .then(res => console.warn('replaceTrack success'))
+            .catch(err => console.error(err));
+    });
+    $('#replaceExternalAudio').click(async function() {
+        if (!previewVideo.srcObject) {
+            alert('流不存在');
+            return;
+        }
+        console.log(publishType);
+        if (publishType == 'Video') {
+            alert('stream is only contain video');
+            return;
+        }
+        if (!externalStream) {
+            externalStream = await zg.createStream({
+                custom: {
+                    source: $('#customVideo')[0],
+                }
+            });
+        }
+        if (!externalStreamAudioTrack) {
+            externalStreamAudioTrack = externalStream.getAudioTracks()[0];
+            console.log('externalStreamAudioTrack', externalStreamAudioTrack);
+            !cameraStreamAudioTrack && (cameraStreamAudioTrack = previewVideo.srcObject.getAudioTracks()[0]);
+        }
+
+        zg.replaceTrack(previewVideo.srcObject, externalStreamVideoTrack)
             .then(res => console.warn('replaceTrack success'))
             .catch(err => console.error(err));
     });
