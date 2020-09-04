@@ -349,6 +349,6 @@ $(async () => {
     await checkAnRun();
 });
 
-$(window).on('unload', function() {
-    logout();
-});
+// $(window).on('unload', function() {
+//     logout();
+// });
