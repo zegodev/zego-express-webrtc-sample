@@ -26,6 +26,7 @@ $(async () => {
                     },
                 });
                 previewVideo.srcObject = previewStream;
+                $('#videoList').val() === '0' && (previewVideo.controls = true);
                 previewed = true;
             }
         } catch (error) {
@@ -130,7 +131,8 @@ $(async () => {
 
                 const handlePlaySuccess = () => {
                     let video;
-                    if (getBrowser() == 'Safari' && playOption.video === false) {
+                    const bro = getBrowser();
+                    if (bro == 'Safari' && playOption.video === false) {
                         $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
                         video = $('.remoteVideo audio:last')[0] ;
                         console.warn('audio', video, remoteStream);
