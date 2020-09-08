@@ -137,7 +137,7 @@ $(async () => {
                         video = $('.remoteVideo audio:last')[0] ;
                         console.warn('audio', video, remoteStream);
                     } else {
-                        $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                        $('.remoteVideo').append($('<video autoplay muted playsinline controls></video>'));
                         video = $('.remoteVideo video:last')[0];
                         console.warn('video', video, remoteStream);
                     }
