@@ -44,9 +44,9 @@ $(async () => {
     };
 
     const stopScreen = () => {
-        if (screenStream) {
-            zg.destroyStream(screenStream);
-            screenStream = null;
+        if (screendStream) {
+            // zg.destroyStream(screenStream);
+            screendStream = null;
             screenStreamVideoTrack.stop();
             screenStreamVideoTrack = null;
         }
@@ -57,7 +57,7 @@ $(async () => {
         console.warn('screen sharing end');
         const _stopScreenStream = screenStreamList.find(screenStream => screenStream.stream == stream);
         _stopScreenStream && stopScreenShot(_stopScreenStream);
-        if (stream === screenStream) {
+        if (stream === screendStream) {
             console.warn('stop');
             zg.mutePublishStreamVideo(previewVideo.srcObject, true)
             stopScreen();
@@ -148,6 +148,15 @@ $(async () => {
             .then(res => console.warn('replaceTrack success'))
             .catch(err => console.error(err));
     });
+    $('#replaceMicro').click(async function() {
+        if (!previewVideo.srcObject || !cameraStreamAudioTrack) {
+            alert('先创建流及屏幕共享');
+            return;
+        }
+        cameraStreamAudioTrack && zg.replaceTrack(previewVideo.srcObject, cameraStreamAudioTrack)
+            .then(res => console.warn('replaceTrack success'))
+            .catch(err => console.error(err));
+    });
     $('#replaceExternalAudio').click(async function() {
         if (!previewVideo.srcObject) {
             alert('流不存在');
@@ -171,7 +180,7 @@ $(async () => {
             !cameraStreamAudioTrack && (cameraStreamAudioTrack = previewVideo.srcObject.getAudioTracks()[0]);
         }
 
-        zg.replaceTrack(previewVideo.srcObject, externalStreamVideoTrack)
+        zg.replaceTrack(previewVideo.srcObject, externalStreamAudioTrack)
             .then(res => console.warn('replaceTrack success'))
             .catch(err => console.error(err));
     });
