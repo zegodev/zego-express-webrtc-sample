@@ -56,11 +56,11 @@ $(async () => {
     }
     const stopExternal = () => {
         if (externalStream) {
-            zg.destroyStream(screenStream);
+            zg.destroyStream(externalStream);
             externalStream = null;
-            externalStreamVideoTrack.stop();
+            externalStreamVideoTrack && externalStreamVideoTrack.stop();
             externalStreamVideoTrack = null;
-            externalStreamAudioTrack.stop();
+            externalStreamAudioTrack && externalStreamAudioTrack.stop();
             externalStreamAudioTrack = null;
         }
     }
