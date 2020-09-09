@@ -119,7 +119,7 @@ $(async () => {
             });
             screenStreamVideoTrack = screendStream.getVideoTracks()[0];
             console.log('cameraStreamVideoTrack', cameraStreamVideoTrack);
-            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0]);
+            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone());
         }
 
         zg.replaceTrack(previewVideo.srcObject, screenStreamVideoTrack)
@@ -165,7 +165,7 @@ $(async () => {
         if (!externalStreamVideoTrack) {
             externalStreamVideoTrack = externalStream.getVideoTracks()[0];
             console.log('externalStreamVideoTrack', cameraStreamVideoTrack);
-            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0]);
+            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0].clone());
         }
 
         zg.replaceTrack(previewVideo.srcObject, externalStreamVideoTrack)
