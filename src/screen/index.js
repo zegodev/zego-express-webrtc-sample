@@ -9,6 +9,7 @@ import {
     enterRoom,
     publishType
 } from '../common';
+import { getBrowser } from '../assets/utils';
 
 $(async () => {
     await checkAnRun(true);
@@ -31,6 +32,8 @@ $(async () => {
     let previewed = false;
     const publishStreamID = 'web-' + new Date().getTime();
 
+    const browser = getBrowser();
+
     const stopScreenShot = (screenStream)=> {
         zg.stopPublishingStream(screenStream.streamId);
         $(`#screenList option[value='${screenStream.streamId}']`).remove();
@@ -50,7 +53,16 @@ $(async () => {
             screenStreamVideoTrack.stop();
             screenStreamVideoTrack = null;
         }
-        
+    }
+    const stopExternal = () => {
+        if (externalStream) {
+            zg.destroyStream(screenStream);
+            externalStream = null;
+            externalStreamVideoTrack.stop();
+            externalStreamVideoTrack = null;
+            externalStreamAudioTrack.stop();
+            externalStreamAudioTrack = null;
+        }
     }
     // 点击系统停止共享
     zg.on('screenSharingEnded', (stream)=> {
@@ -122,6 +134,10 @@ $(async () => {
             .catch(err => console.error(err));
     });
     $('#replaceExternalVideo').click(async function() {
+        if (browser == 'Safari') {
+            alert('Safari do not support');
+            return;
+        }
         if (!previewVideo.srcObject) {
             alert('流不存在');
             return;
@@ -158,6 +174,10 @@ $(async () => {
             .catch(err => console.error(err));
     });
     $('#replaceExternalAudio').click(async function() {
+        if (browser == 'Safari') {
+            alert('Safari do not support');
+            return;
+        }
         if (!previewVideo.srcObject) {
             alert('流不存在');
             return;
@@ -234,6 +254,7 @@ $(async () => {
             stopScreenShot(item);
         });
         stopScreen();
+        stopExternal();
         if (previewVideo.srcObject) {
             zg.destroyStream(previewVideo.srcObject);
             previewVideo.srcObject = null;

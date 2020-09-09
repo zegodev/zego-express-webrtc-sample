@@ -27,7 +27,6 @@ $(async () => {
                 });
                 previewVideo.srcObject = previewStream;
                 $('#videoList').val() === '0' && (previewVideo.controls = true);
-                previewed = true;
             }
         } catch (error) {
             console.error(error);
@@ -35,6 +34,7 @@ $(async () => {
     });
     $('#publish').click(() => {
         const result = zg.startPublishingStream(publishStreamID, previewStream);
+        previewed = true;
         console.log('publish stream' + publishStreamID, result);
     });
 
