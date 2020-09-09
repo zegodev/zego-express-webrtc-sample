@@ -5,6 +5,7 @@ let playOption = {};
 // --test begin
 let previewStream;
 let previewed = false;
+let published = false;
 const publishStreamID = 'web-' + new Date().getTime();
 // ---test end
 
@@ -26,6 +27,7 @@ $(async () => {
                     },
                 });
                 previewVideo.srcObject = previewStream;
+                previewed = true;
                 $('#videoList').val() === '0' && (previewVideo.controls = true);
             }
         } catch (error) {
@@ -34,7 +36,7 @@ $(async () => {
     });
     $('#publish').click(() => {
         const result = zg.startPublishingStream(publishStreamID, previewStream);
-        previewed = true;
+        published = true;
         console.log('publish stream' + publishStreamID, result);
     });
 
@@ -72,11 +74,15 @@ $(async () => {
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(() => {
         if (previewed) {
-            zg.stopPublishingStream(publishStreamID);
             zg.destroyStream(previewStream);
             previewed = false;
             previewVideo.srcObject = null;
         }
+        if (published) {
+            zg.stopPublishingStream(publishStreamID);
+            published = false;
+        }
+
         logout();
     });
     $('#openRoom').unbind('click');
