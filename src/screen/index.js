@@ -165,8 +165,12 @@ $(async () => {
             .catch(err => console.error(err));
     });
     $('#replaceMicro').click(async function() {
-        if (!previewVideo.srcObject || !cameraStreamAudioTrack) {
-            alert('先创建流及屏幕共享');
+        if (!previewVideo.srcObject) {
+            alert('先创建流');
+            return;
+        }
+        if (!cameraStreamAudioTrack) {
+            alert('当前是麦克风');
             return;
         }
         cameraStreamAudioTrack && zg.replaceTrack(previewVideo.srcObject, cameraStreamAudioTrack)
@@ -258,6 +262,14 @@ $(async () => {
         if (previewVideo.srcObject) {
             zg.destroyStream(previewVideo.srcObject);
             previewVideo.srcObject = null;
+        }
+        if(cameraStreamVideoTrack) {
+            cameraStreamVideoTrack.stop();
+            cameraStreamVideoTrack = null;
+        }
+        if (cameraStreamAudioTrack) {
+            cameraStreamAudioTrack.stop();
+            cameraStreamAudioTrack = null;
         }
         logout();
     });
