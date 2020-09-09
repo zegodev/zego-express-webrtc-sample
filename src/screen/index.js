@@ -21,6 +21,7 @@ $(async () => {
     let screenStreamList= [];
     let screenCount = 0;
     let screenStream;
+    let videoType = 'camera';
     let screenStreamVideoTrack;
     let cameraStreamVideoTrack;
     let cameraStreamAudioTrack;
@@ -66,12 +67,12 @@ $(async () => {
     }
     // 点击系统停止共享
     zg.on('screenSharingEnded', (stream)=> {
-        console.warn('screen sharing end');
+        console.warn('screen sharing end',videoType );
         const _stopScreenStream = screenStreamList.find(screenStream => screenStream.stream == stream);
         _stopScreenStream && stopScreenShot(_stopScreenStream);
         if (stream === screendStream) {
             console.warn('stop');
-            zg.mutePublishStreamVideo(previewVideo.srcObject, true)
+            videoType === 'screen' && zg.mutePublishStreamVideo(previewVideo.srcObject, true)
             stopScreen();
         }
     });
@@ -92,6 +93,7 @@ $(async () => {
                 previewVideo.srcObject = previewStream;
                 previewVideo.controls = true;
                 previewed = true;
+                videoType = 'camera';
             }
         } catch (error) {
             console.error(error);
@@ -121,7 +123,10 @@ $(async () => {
         }
 
         zg.replaceTrack(previewVideo.srcObject, screenStreamVideoTrack)
-            .then(res => console.warn('replaceTrack success'))
+            .then(res => {
+                console.warn('replaceTrack success');
+                videoType = 'screen';
+            })
             .catch(err => console.error(err));
     });
     $('#replaceCamera').click(async function() {
@@ -130,7 +135,10 @@ $(async () => {
             return;
         }
         cameraStreamVideoTrack && zg.replaceTrack(previewVideo.srcObject, cameraStreamVideoTrack)
-            .then(res => console.warn('replaceTrack success'))
+            .then(res => {
+                console.warn('replaceTrack success');
+                videoType = 'camera';
+            })
             .catch(err => console.error(err));
     });
     $('#replaceExternalVideo').click(async function() {
@@ -161,7 +169,10 @@ $(async () => {
         }
 
         zg.replaceTrack(previewVideo.srcObject, externalStreamVideoTrack)
-            .then(res => console.warn('replaceTrack success'))
+            .then(res => {
+                console.warn('replaceTrack success');
+                videoType = 'external';
+            })
             .catch(err => console.error(err));
     });
     $('#replaceMicro').click(async function() {
