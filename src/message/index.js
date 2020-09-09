@@ -70,9 +70,9 @@ $(async () => {
         });
         $('#memberList').html(userListHtml);
     });
-    zg.on('roomExtraInfoUpdate', (roomID, type, data) => {
-        console.warn(`roomExtraInfoUpdate: room ${roomID} `, type, data);
-        $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + type + ' | ' + data);
+    zg.on('roomExtraInfoUpdate', (roomID, extraInfoList) => {
+        console.warn(`roomExtraInfoUpdate: room ${roomID} `, extraInfoList);
+        $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + extraInfoList[0].key + ' | ' + extraInfoList[0].value);
         $('#showAlert').click();
     });
     $('.chatBox').hide();
