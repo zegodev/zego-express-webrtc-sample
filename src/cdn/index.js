@@ -180,14 +180,16 @@ $(async () => {
         }
     });
 
-    zg.on('roomExtraInfoUpdate', (roomID, type, data) => {
-        console.warn(`roomExtraInfoUpdate: room ${roomID} `, type, data);
-        if (type === 'cdn') {
-            const extra = JSON.parse(data);
-            if (extra.state === 'add') {
-                playType = extra.publishType;
+    zg.on('roomExtraInfoUpdate', (roomID, roomExtraInfoList) => {
+        console.warn(`roomExtraInfoUpdate: room ${roomID} `, roomExtraInfoList);
+        const extraInfo = roomExtraInfoList[0];
+        if (extraInfo.key === 'cdn') {
+            const extraData = JSON.parse(extraInfo.value);
+            console.log(extraData);
+            if (extraData.state === 'add') {
+                playType = extraData.publishType;
                 ($('#cdnPlay')[0]).disabled = false;
-            } else if (extra.state === 'delete') {
+            } else if (extraData.state === 'delete') {
                 if (typeof cdnFlvPlayer !== 'undefined') {
                     if (cdnFlvPlayer != null) {
                         cdnFlvPlayer.pause();
