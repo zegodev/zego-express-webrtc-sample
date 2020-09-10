@@ -165,7 +165,7 @@ $(async () => {
         if (!externalStreamVideoTrack) {
             externalStreamVideoTrack = externalStream.getVideoTracks()[0];
             console.log('externalStreamVideoTrack', cameraStreamVideoTrack);
-            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0].clone());
+            !cameraStreamVideoTrack && (cameraStreamVideoTrack = previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone());
         }
 
         zg.replaceTrack(previewVideo.srcObject, externalStreamVideoTrack)
@@ -198,7 +198,7 @@ $(async () => {
             return;
         }
         console.log(publishType);
-        if (publishType == 'Video') {
+        if (publishType == 'Video' || $('#audioList').val() === '0') {
             alert('stream is only contain video');
             return;
         }
