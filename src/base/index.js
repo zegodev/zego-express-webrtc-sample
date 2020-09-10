@@ -63,7 +63,7 @@ $(async () => {
             $('#bitrate').val() && (constraints.bitrate = parseInt($('#bitrate').val()))
         }
         constraints.videoQuality = parseInt(videoQuality);
-        console.error('constraints', constraints);
+        console.warn('constraints', constraints);
         try {
             loginSuc = await enterRoom();
             loginSuc && (await publish({ camera: constraints }));
