@@ -5,6 +5,7 @@ let playOption = {};
 // --test begin
 let previewStream;
 let previewed = false;
+let published = false;
 const publishStreamID = 'web-' + new Date().getTime();
 // ---test end
 
@@ -27,6 +28,7 @@ $(async () => {
                 });
                 previewVideo.srcObject = previewStream;
                 previewed = true;
+                $('#videoList').val() === '0' && (previewVideo.controls = true);
             }
         } catch (error) {
             console.error(error);
@@ -34,6 +36,7 @@ $(async () => {
     });
     $('#publish').click(() => {
         const result = zg.startPublishingStream(publishStreamID, previewStream);
+        published = true;
         console.log('publish stream' + publishStreamID, result);
     });
 
@@ -49,11 +52,21 @@ $(async () => {
     $('#createRoom').unbind('click');
     $('#createRoom').click(async () => {
         let loginSuc = false;
+        const constraints = {};
         const channelCount = parseInt($('#channelCount').val() );
-        // console.error('channelCount', channelCount);
+        constraints.channelCount = channelCount;
+        const videoQuality = $('#videoQuality').val();
+        if (videoQuality == 4) {
+            $('#width').val() && (constraints.width = parseInt($('#width').val())),
+            $('#height').val() && (constraints.height = parseInt($('#height').val())),
+            $('#frameRate').val() && (constraints.frameRate = parseInt($('#frameRate').val())),
+            $('#bitrate').val() && (constraints.bitrate = parseInt($('#bitrate').val()))
+        }
+        constraints.videoQuality = parseInt(videoQuality);
+        console.warn('constraints', constraints);
         try {
             loginSuc = await enterRoom();
-            loginSuc && (await publish({ camera: { channelCount: channelCount } }));
+            loginSuc && (await publish({ camera: constraints }));
         } catch (error) {
             console.error(error);
         }
@@ -61,11 +74,15 @@ $(async () => {
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(() => {
         if (previewed) {
-            zg.stopPublishingStream(publishStreamID);
             zg.destroyStream(previewStream);
             previewed = false;
             previewVideo.srcObject = null;
         }
+        if (published) {
+            zg.stopPublishingStream(publishStreamID);
+            published = false;
+        }
+
         logout();
     });
     $('#openRoom').unbind('click');
@@ -88,25 +105,27 @@ $(async () => {
     $('#extraInfo').click(() => {
         zg.setStreamExtraInfo(publishStreamId, $('#extraInfoInput').val());
     });
-    // $('#switchConstraints').click(() => {
-    //     const constraints = {};
-    //     const w = $('#width').val() ? parseInt($('#width').val()) : 0;
-    //     const h = $('#height').val() ? parseInt($('#height').val()) : 0;
-    //     const f = $('#frameRate').val() ? parseInt($('#frameRate').val()) : 0;
+    $('#switchConstraints').click(() => {
+        const constraints = {};
+        const w = $('#width').val() ? parseInt($('#width').val()) : 0;
+        const h = $('#height').val() ? parseInt($('#height').val()) : 0;
+        const f = $('#frameRate').val() ? parseInt($('#frameRate').val()) : 0;
+        const b = $('#bitrate').val() ? parseInt($('#bitrate').val()) : 0;
 
-    //     w && Object.assign(constraints, { width: w });
-    //     h && Object.assign(constraints, { height: h });
-    //     f && Object.assign(constraints, { frameRate: f });
+        w && Object.assign(constraints, { width: w });
+        h && Object.assign(constraints, { height: h });
+        f && Object.assign(constraints, { frameRate: f });
+        b && Object.assign(constraints, { maxBitrate: b});
 
-    //     zg.setPublishStreamConstraints(previewVideo.srcObject, constraints).then(
-    //         () => {
-    //             console.warn('change constraints success');
-    //         },
-    //         err => {
-    //             console.error(err);
-    //         },
-    //     );
-    // });
+        zg.setPublishStreamConstraints(previewVideo.srcObject, constraints).then(
+            () => {
+                console.warn('change constraints success');
+            },
+            err => {
+                console.error(err);
+            },
+        );
+    });
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
@@ -118,12 +137,13 @@ $(async () => {
 
                 const handlePlaySuccess = () => {
                     let video;
-                    if (getBrowser() == 'Safari' && playOption.video === false) {
+                    const bro = getBrowser();
+                    if (bro == 'Safari' && playOption.video === false) {
                         $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
                         video = $('.remoteVideo audio:last')[0] ;
                         console.warn('audio', video, remoteStream);
                     } else {
-                        $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                        $('.remoteVideo').append($('<video autoplay muted playsinline controls></video>'));
                         video = $('.remoteVideo video:last')[0];
                         console.warn('video', video, remoteStream);
                     }

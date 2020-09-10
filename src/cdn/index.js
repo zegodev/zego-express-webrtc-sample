@@ -11,6 +11,7 @@ import {
     enterRoom,
     publish,
     publishType,
+    loginRoom
 } from '../common';
 import { getBrowser } from '../assets/utils';
 import flvjs from 'flv.js';
@@ -21,6 +22,8 @@ const ua = navigator.userAgent.toLowerCase();
 let isAndWechat = false;
 const videoElement = document.getElementById('test');
 const cdnVideoElement = document.getElementById('cdn');
+let isLogin = false;
+let playType = 'all';
 
 console.warn('ua', ua);
 // @ts-ignore
@@ -143,6 +146,18 @@ function playStream(streamList) {
             }
     }
 }
+
+async function updateCdnStatus(state) {
+    const extra = { state, publishType };
+    playType = publishType;
+    const result = await zg.setRoomExtraInfo($('#roomId').val(), 'cdn', JSON.stringify(extra));
+    console.warn('result', result);
+    if (result.errorCode === 0) {
+        console.warn('updateCdnStatus suc');
+    } else {
+        console.error('updateCdnStatus err', result.errorCode);
+    }
+}
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
@@ -166,6 +181,29 @@ $(async () => {
         }
     });
 
+    zg.on('roomExtraInfoUpdate', (roomID, roomExtraInfoList) => {
+        console.warn(`roomExtraInfoUpdate: room ${roomID} `, roomExtraInfoList);
+        const extraInfo = roomExtraInfoList[0];
+        if (extraInfo.key === 'cdn') {
+            const extraData = JSON.parse(extraInfo.value);
+            console.log(extraData);
+            if (extraData.state === 'add') {
+                playType = extraData.publishType;
+                ($('#cdnPlay')[0]).disabled = false;
+            } else if (extraData.state === 'delete') {
+                if (typeof cdnFlvPlayer !== 'undefined') {
+                    if (cdnFlvPlayer != null) {
+                        cdnFlvPlayer.pause();
+                        cdnFlvPlayer.unload();
+                        cdnFlvPlayer.detachMediaElement();
+                        cdnFlvPlayer.destroy();
+                        cdnFlvPlayer = null;
+                    }
+                }
+                ($('#cdnPlay')[0]).disabled = true;
+            }
+        }
+    });
     $('#cdnAddPush').click(async () => {
         const result = await zg.addPublishCdnUrl(
             publishStreamId,
@@ -175,7 +213,9 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('add push target success');
+            updateCdnStatus('add');
             ($('#cdnDelPush')[0]).disabled = false;
+            ($('#cdnPlay')[0]).disabled = false;
         } else {
             console.warn('add push target fail ' + result.errorCode);
         }
@@ -190,13 +230,19 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('del push target success');
+            updateCdnStatus('delete');
             ($('#cdnDelPush')[0]).disabled = true;
+            ($('#cdnPlay')[0]).disabled = true;
         } else {
             console.warn('del push target fail ' + result.errorCode);
         }
     });
 
     $('#cdnPlay').click(() => {
+        if (!isLogin && !loginRoom) {
+            alert('please enter the room');
+            return;
+        }
         const browser = getBrowser();
         // if (browser == 'Safari' && !isAndWechat) {
         //     cdnVideoElement.src = 'https://hls-wsdemo.zego.im/livestream/test259/playlist.m3u8';
@@ -205,8 +251,8 @@ $(async () => {
         // } else
         let hasVideo = true;
         let hasAudio = true;
-        publishType === 'Video' ? (hasAudio = false) : (hasAudio = true);
-        publishType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
+        playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+        playType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
         if (flvjs.isSupported()) {
             //若支持flv.js
             cdnFlvPlayer = flvjs.createPlayer({
@@ -231,12 +277,12 @@ $(async () => {
     });
     $('#createRoom').unbind('click');
     $('#createRoom').click(async () => {
-        let loginSuc = false;
+        // let loginSuc = false;
         const channelCount = parseInt($('#channelCount').val());
         console.error('channelCount', channelCount);
         try {
-            loginSuc = await enterRoom();
-            loginSuc && (await publish({ camera: { channelCount: channelCount } }));
+            isLogin = await enterRoom();
+            isLogin && (await publish({ camera: { channelCount: channelCount } }));
         } catch (error) {
             console.error(error);
         }
@@ -254,6 +300,7 @@ $(async () => {
         }
 
         logout();
+        isLogin = false;
     });
 
     $('#secret').change(() => {

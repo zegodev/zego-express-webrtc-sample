@@ -83,6 +83,7 @@
         <div class="row">
             <div class="col-sm">
                 <button type="button" id="externalCaptureV" class="btn btn-primary btn-sm pushThird">推第三方视频</button>
+                <button type="button" id="externalCaptureA" class="btn btn-primary btn-sm ">推第三方音频</button>
                 <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间（不推流）</button>
                 <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
             </div>
@@ -93,7 +94,7 @@
                 <label id="previewLabel" class="text-white"></label>
                 <video id="previewVideo" autoplay muted playsinline controls></video>
                 <video id="externerVideo" crossOrigin="anonymous" playsinline autoplay controls src="https://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/big_buck_bunny.mp4" loop></video>
-<!--                <audio id="externerAudio" muted controls src="../assets/bike.mp3" loop></audio>-->
+                <audio id="externerAudio" crossOrigin="anonymous" playsinline autoplay muted controls src="http://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/bike.mp3" loop></audio>
             </div>
             <div class="col-sm remoteVideo">
                 <!-- <video  autoplay muted playsinline></video> -->

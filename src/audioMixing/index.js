@@ -2,6 +2,7 @@ import { checkAnRun, zg, publishStreamId, logout } from '../common';
 
 $(async () => {
     let isMixingAudio = false;
+    let isMixingBuffer = false;
     const audioEffectList = [
         {
             effectId: '1',
@@ -47,7 +48,7 @@ $(async () => {
                     if (err) {
                         console.error(err);
                     } else {
-                        isMixingAudio = true;
+                        isMixingBuffer = true;
                         console.warn('real time effect success');
                     }
                 });
@@ -63,8 +64,9 @@ $(async () => {
 
     $('#leaveMixRoom').click(function() {
         isMixingAudio && zg.stopMixingAudio(publishStreamId);
-        isMixingAudio && zg.stopMixingBuffer(publishStreamId, '1');
+        isMixingBuffer && zg.stopMixingBuffer(publishStreamId, '1');
         isMixingAudio = false;
+        isMixingBuffer = false;
         logout();
     });
 

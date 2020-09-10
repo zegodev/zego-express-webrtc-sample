@@ -331,6 +331,8 @@ async function push(publishOption) {
     console.warn('createStream', $('#audioList').val(), $('#videoList').val());
     localStream = await zg.createStream({
         camera: {
+            video: $('#videoList').val() === '0' ? false : true,
+            audio: $('#audioList').val() === '0' ? false : true,
             audioInput: $('#audioList').val(),
             videoInput: $('#videoList').val(),
         },
@@ -349,6 +351,6 @@ $(async () => {
     await checkAnRun();
 });
 
-$(window).on('unload', function() {
-    logout();
-});
+// $(window).on('unload', function() {
+//     logout();
+// });

@@ -95,10 +95,13 @@
           <button type="button" id="openRoom" class=" btn btn-primary btn-sm enterRoomPlay">进入房间</button>
           <button type="button" id="screenShot" class="btn btn-primary btn-sm screenSharingContent">捕捉屏幕</button>
           <button type="button" id="stopScreenShot" class="btn btn-primary btn-sm stopScreenSharing">停止捕捉</button>
-          <!-- <button type="button" id="enterRoom" class="btn btn-primary btn-sm">进房预览</button> -->
-          <!-- <button type="button" id="publish" class="btn btn-primary btn-sm">推流</button> -->
-          <!-- <button type="button" id="replaceTrack" class="btn btn-primary btn-sm">切换为屏幕共享</button> -->
-          <!-- <button type="button" id="replaceTrack2" class="btn btn-primary btn-sm">切换为摄像头</button> -->
+          <button type="button" id="enterRoom" class="btn btn-primary btn-sm">进房预览</button>
+          <button type="button" id="publish" class="btn btn-primary btn-sm">推流</button>
+          <button type="button" id="replaceScreenShot" class="btn btn-primary btn-sm">切换为屏幕共享</button>
+          <button type="button" id="replaceCamera" class="btn btn-primary btn-sm">切换为摄像头</button>
+          <button type="button" id="replaceExternalVideo" class="btn btn-primary btn-sm">切换外部视频轨</button>
+          <button type="button" id="replaceMicro" class="btn btn-primary btn-sm">切换为麦克风</button>
+          <button type="button" id="replaceExternalAudio" class="btn btn-primary btn-sm">切换外部音频轨</button>
           <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
         </div>
       </div>
@@ -111,6 +114,8 @@
           <div class="previewScreenVideo">
 
           </div>
+          <video id="customVideo" crossOrigin="anonymous" muted playsinline autoplay controls src="https://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/big_buck_bunny.mp4" loop></video>
+          <video id="testVideo" autoplay muted playsinline></video>
         </div>
 
         <div class="col-sm remoteVideo">
