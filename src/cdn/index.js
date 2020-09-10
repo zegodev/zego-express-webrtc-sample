@@ -148,7 +148,8 @@ function playStream(streamList) {
 }
 
 async function updateCdnStatus(state) {
-    const extra = { state, publishType }
+    const extra = { state, publishType };
+    playType = publishType;
     const result = await zg.setRoomExtraInfo($('#roomId').val(), 'cdn', JSON.stringify(extra));
     console.warn('result', result);
     if (result.errorCode === 0) {
