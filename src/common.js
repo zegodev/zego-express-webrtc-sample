@@ -407,7 +407,8 @@ async function push(constraints, publishOption) {
         const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
         console.log('publish stream' + publishStreamId, result);
     } catch (err) {
-        console.error('createStream ', err)
+        console.error('createStream error', err);
+        console.error('createStream', err.name, err.message);
     }
 }
 
