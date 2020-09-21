@@ -33,12 +33,15 @@ export function loadJs(url, callback) {
 
 export function getBrowser() {
 	let ua = window.navigator.userAgent;
+	let isWechat = ua.toLowerCase().match(/MicroMessenger/i) == "micromessenger";
 	let isIE = window['ActiveXObject'] != undefined && ua.indexOf('MSIE') != -1;
 	let isFirefox = ua.indexOf('Firefox') != -1;
 	let isOpera = window['opr'] != undefined;
 	let isChrome = ua.indexOf('Chrome') && window['chrome'];
 	let isSafari = ua.indexOf('Safari') != -1 && ua.indexOf('Version') != -1;
-	if (isIE) {
+	if (isWechat) {
+		return 'Wechat';
+	} else if (isIE) {
 		return 'IE';
 	} else if (isFirefox) {
 		return 'Firefox';

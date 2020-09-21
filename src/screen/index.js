@@ -35,6 +35,7 @@ $(async () => {
 
     const browser = getBrowser();
 
+    console.warn('bro', browser)
     const stopScreenShot = (screenStream)=> {
         zg.stopPublishingStream(screenStream.streamId);
         $(`#screenList option[value='${screenStream.streamId}']`).remove();
