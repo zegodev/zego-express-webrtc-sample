@@ -46,9 +46,14 @@ window.zg = zg;
 
 async function checkAnRun(checkScreen){
     console.log('sdk version is', zg.getVersion());
-    const result = await zg.checkSystemRequirements();
+    try {
+        const result = await zg.checkSystemRequirements();
 
-    console.warn('checkSystemRequirements ', result);
+        console.warn('checkSystemRequirements ', result);
+    } catch(err) {
+        console.error('checkSystemRequirements', err);
+    }
+    
     !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
     !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
 
@@ -392,12 +397,16 @@ async function publish(constraints){
     push(_constraints, { extraInfo: JSON.stringify({ playType }) });
 }
 async function push(constraints, publishOption){
-    localStream = await zg.createStream(constraints);
-    previewVideo.srcObject = localStream;
-    isPreviewed = true;
-    $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
-    const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
-    console.log('publish stream' + publishStreamId, result);
+    try {
+        localStream = await zg.createStream(constraints);
+        previewVideo.srcObject = localStream;
+        isPreviewed = true;
+        $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
+        const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
+        console.log('publish stream' + publishStreamId, result);
+    } catch(err) {
+        console.error('createStream ', error)
+    }
 }
 
 $('#toggleCamera').click(function() {
