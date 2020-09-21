@@ -6,8 +6,8 @@ import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
 import { getCgi } from './content';
 
 new VConsole();
-const userID= 'sample' + new Date().getTime();
-const userName= 'sampleUser' + new Date().getTime();
+const userID = 'sample' + new Date().getTime();
+const userName = 'sampleUser' + new Date().getTime();
 const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
 const publishStreamId = 'webrtc' + new Date().getTime();
 let zg;
@@ -16,7 +16,7 @@ let server = 'wss://webliveroom-test.zego.im/ws'; // 请从官网控制台获取
 let cgiToken = '';
 //const appSign = '';
 let previewVideo;
-let useLocalStreamList= [];
+let useLocalStreamList = [];
 let isPreviewed = false;
 let supportScreenSharing = false;
 let loginRoom = false;
@@ -44,38 +44,40 @@ zg = new ZegoExpressEngine(appID, server);
 // @ts-ignore
 window.zg = zg;
 
-async function checkAnRun(checkScreen){
+async function checkAnRun(checkScreen) {
     console.log('sdk version is', zg.getVersion());
     try {
         const result = await zg.checkSystemRequirements();
 
         console.warn('checkSystemRequirements ', result);
-    } catch(err) {
+        !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
+        !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
+
+        if (!result.webRTC) {
+            alert('browser is not support webrtc!!');
+            return false;
+        } else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
+            alert('browser is not support H264 and VP8');
+            return false;
+        } else if (result.videoCodec.H264) {
+            supportScreenSharing = result.screenSharing;
+            if (checkScreen && !supportScreenSharing) alert('browser is not support screenSharing');
+            previewVideo = $('#previewVideo')[0];
+            start();
+        } else {
+            alert('不支持H264，请前往混流转码测试');
+        }
+
+        return true;
+    } catch (err) {
         console.error('checkSystemRequirements', err);
-    }
-    
-    !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
-    !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
-
-    if (!result.webRTC) {
-        alert('browser is not support webrtc!!');
         return false;
-    } else if (!result.videoCodec.H264 && !result.videoCodec.VP8) {
-        alert('browser is not support H264 and VP8');
-        return false;
-    } else if (result.videoCodec.H264) {
-        supportScreenSharing = result.screenSharing;
-        if (checkScreen && !supportScreenSharing) alert('browser is not support screenSharing');
-        previewVideo = $('#previewVideo')[0];
-        start();
-    } else {
-        alert('不支持H264，请前往混流转码测试');
     }
 
-    return true;
+
 }
 
-async function start(){
+async function start() {
     initSDK();
 
     zg.setLogConfig({
@@ -101,7 +103,7 @@ async function start(){
         await enterRoom();
     });
 
-    $('#leaveRoom').click(function() {
+    $('#leaveRoom').click(function () {
         logout();
     });
 
@@ -115,9 +117,9 @@ async function start(){
     });
 }
 
-async function enumDevices(){
-    const audioInputList= [],
-        videoInputList= [];
+async function enumDevices() {
+    const audioInputList = [],
+        videoInputList = [];
     const deviceInfo = await zg.enumDevices();
 
     deviceInfo &&
@@ -147,7 +149,7 @@ async function enumDevices(){
     $('#videoList').html(videoInputList.join(''));
 }
 
-function initSDK(){
+function initSDK() {
     enumDevices();
 
     zg.on('roomStateUpdate', (roomID, state, errorCode, extendedData) => {
@@ -301,7 +303,7 @@ function initSDK(){
     });
 }
 
-async function login(roomId){
+async function login(roomId) {
     // 获取token需要客户自己实现，token是对登录房间的唯一验证
     // Obtaining a token needs to be implemented by the customer. The token is the only verification for the login room.
     let token = '';
@@ -324,8 +326,8 @@ async function login(roomId){
     return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true });
 }
 
-async function enterRoom(){
-    const roomId= $('#roomId').val();
+async function enterRoom() {
+    const roomId = $('#roomId').val();
     if (!roomId) {
         alert('roomId is empty');
         return false;
@@ -339,7 +341,7 @@ async function enterRoom(){
     return true;
 }
 
-async function logout(){
+async function logout() {
     console.info('leave room  and close stream');
 
     // 停止推流
@@ -366,12 +368,12 @@ async function logout(){
 
     //退出登录
     //logout
-    const roomId= $('#roomId').val();
+    const roomId = $('#roomId').val();
     zg.logoutRoom(roomId);
     loginRoom = false;
 }
 
-async function publish(constraints){
+async function publish(constraints) {
     console.warn('createStream', $('#audioList').val(), $('#videoList').val());
     console.warn('constraints', constraints);
     const video =
@@ -396,7 +398,7 @@ async function publish(constraints){
     // console.error('playType', playType);
     push(_constraints, { extraInfo: JSON.stringify({ playType }) });
 }
-async function push(constraints, publishOption){
+async function push(constraints, publishOption) {
     try {
         localStream = await zg.createStream(constraints);
         previewVideo.srcObject = localStream;
@@ -404,17 +406,17 @@ async function push(constraints, publishOption){
         $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
         const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
         console.log('publish stream' + publishStreamId, result);
-    } catch(err) {
+    } catch (err) {
         console.error('createStream ', error)
     }
 }
 
-$('#toggleCamera').click(function() {
+$('#toggleCamera').click(function () {
     zg.mutePublishStreamVideo(previewVideo.srcObject, !$(this).hasClass('disabled'));
     $(this).toggleClass('disabled');
 });
 
-$('#toggleSpeaker').click(function() {
+$('#toggleSpeaker').click(function () {
     zg.mutePublishStreamAudio(previewVideo.srcObject, !$(this).hasClass('disabled'));
     $(this).toggleClass('disabled');
 });
