@@ -145,7 +145,7 @@ $(async () => {
     });
     $('#replaceExternalVideo').click(async function() {
         if (browser == 'Safari' || browser == 'Wechat') {
-            alert('Safari do not support');
+            alert('browser do not support');
             return;
         }
         if (!previewVideo.srcObject) {
@@ -192,7 +192,7 @@ $(async () => {
     });
     $('#replaceExternalAudio').click(async function() {
         if (browser == 'Safari' || browser == 'Wechat') {
-            alert('Safari do not support');
+            alert('browser do not support');
             return;
         }
         if (!previewVideo.srcObject) {
