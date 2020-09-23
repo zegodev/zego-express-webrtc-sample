@@ -17,6 +17,7 @@ $(async () => {
     if (!supportScreenSharing) {
         $('#screenShot').attr('disabled', 'disabled');
         $('#stopScreenShot').attr('disabled', 'disabled');
+        $('#replaceScreenShot').attr('disabled', 'disabled');
     }
     let screenStreamList= [];
     let screenCount = 0;
@@ -143,7 +144,7 @@ $(async () => {
             .catch(err => console.error(err));
     });
     $('#replaceExternalVideo').click(async function() {
-        if (browser == 'Safari') {
+        if (browser == 'Safari' || browser == 'Wechat') {
             alert('Safari do not support');
             return;
         }
@@ -190,7 +191,7 @@ $(async () => {
             .catch(err => console.error(err));
     });
     $('#replaceExternalAudio').click(async function() {
-        if (browser == 'Safari') {
+        if (browser == 'Safari' || browser == 'Wechat') {
             alert('Safari do not support');
             return;
         }
