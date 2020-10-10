@@ -3,11 +3,22 @@ const filterFileList = require('./tools');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const miniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const internalIp = require('internal-ip');
-const targetList = [];
+const tempList = [];
 const entry = {};
 const htmlPlugins = [];
-filterFileList('./src', targetList);
+filterFileList('./src', tempList);
+
+const targetList = tempList.filter(path => {
+    if (path.includes('docsSharing') || path.includes('whiteboard')) {
+        return false;
+    } else {
+        return true;
+    }
+});
+
+
 entry['content'] = targetList.find(item => item.endsWith('content.js'));
 targetList
     .filter(item => item.endsWith('index.js'))
@@ -105,9 +116,16 @@ module.exports = {
     },
     plugins: [
         ...htmlPlugins,
+        
         new miniCssExtractPlugin({
             filename: 'index.[contenthash:8].css',
         }),
+        new CopyWebpackPlugin({
+                patterns: [
+                  { from: './src/docsSharing', to: './docsSharing' },
+                  { from: './src/whiteboard', to: './whiteboard' },
+                ],
+              }),
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
