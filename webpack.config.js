@@ -32,7 +32,7 @@ targetList
 targetList
     .filter(item => item.endsWith('index.html'))
     .forEach(tepmlate => {
-        const regResult = /.+src\/(.+)\/index.html$/.exec(tepmlate);
+        const regResult = /.+src[\/|\\](.+)[\/|\\]index.html$/.exec(tepmlate);
         if (regResult && regResult[1]) {
             htmlPlugins.push(
                 new HtmlWebpackPlugin({
@@ -116,7 +116,7 @@ module.exports = {
     },
     plugins: [
         ...htmlPlugins,
-        
+
         new miniCssExtractPlugin({
             filename: 'index.[contenthash:8].css',
         }),
