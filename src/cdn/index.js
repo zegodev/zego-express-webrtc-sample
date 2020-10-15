@@ -32,29 +32,24 @@ if ((ua.indexOf('android') > -1 || ua.indexOf('linux') > -1) && ua.match(/MicroM
     isAndWechat = true;
 }
 
-function filterStreamList(streamList, streamId) {
+function filterStreamList(streamInfo) {
     const flv = {};
     const hls = {};
     const rtmp = {};
 
     const streamListUrl = [];
-    let index = 0;
 
     // console.log(zg.stateCenter.streamList);
 
-    streamList.forEach((item, ind) => {
-        if (item.stream_id == streamId) index = ind;
-    });
-
-    for (const key in streamList[index]) {
+    for (const key in streamInfo) {
         if (key == 'urlsFLV' || key == 'urlsHttpsFLV') {
-            flv[key] = streamList[index][key];
+            flv[key] = streamInfo[key];
         }
         if (key == 'urlsHLS' || key == 'urlsHttpsHLS') {
-            hls[key] = streamList[index][key];
+            hls[key] = streamInfo[key];
         }
         if (key == 'urlsRTMP') {
-            rtmp[key] = streamList[index][key];
+            rtmp[key] = streamInfo[key];
         }
     }
 
@@ -99,51 +94,53 @@ function filterStreamList(streamList, streamId) {
     });
 }
 
-function playStream(streamList) {
+function playStream(streamID, cdnUrl) {
     const browser = getBrowser();
     let hasAudio = true;
     let hasVideo = true;
     let playType;
 
-    if (streamList) {
-        if (streamList[0] && streamList[0].extraInfo && streamList[0].extraInfo.length !== 0) {
-            try {
-                playType = JSON.parse(streamList[0].extraInfo).playType;
-            } catch (err) {
-                alert(err);
-            }
-        }
+    const index = useLocalStreamList.findIndex(streamInfo => streamInfo.streamID == streamID);
+    const streamInfo = useLocalStreamList[index];
+
+    if (streamInfo && streamInfo.extraInfo && streamInfo.extraInfo.length !== 0) {
+          try {
+              playType = JSON.parse(streamInfo.extraInfo).playType;
+          } catch (err) {
+              alert(err);
+          }
     }
 
     playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
     playType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
 
-    if (browser == 'Safari' && !isAndWechat && useLocalStreamList.length !== 0) {
-        videoElement.src = useLocalStreamList[0];
+    if (browser == 'Safari' && !isAndWechat && cdnUrl.length !== 0) {
+        videoElement.src = cdnUrl[0];
         //videoElement.load();
         //videoElement.muted = false;
-    } else if (useLocalStreamList.length !== 0) {
-        const flvUrl = useLocalStreamList[0];
+    } else if (cdnUrl.length !== 0) {
+        const flvUrl = cdnUrl[0];
         // const flvUrl = 'https://hdl-wsdemo.zego.im/livestream/test259.flv';
-        if (streamList)
-            if (flvjs.isSupported()) {
-                //若支持flv.js
-                flvPlayer = flvjs.createPlayer({
-                    type: 'flv',
-                    isLive: true,
-                    url: flvUrl,
-                    hasAudio: hasAudio,
-                    hasVideo: hasVideo,
-                });
-                flvPlayer.on(flvjs.Events.LOADING_COMPLETE, function () {
-                    console.error('LOADING_COMPLETE');
-                    flvPlayer.play();
-                });
-                flvPlayer.attachMediaElement(videoElement);
-                flvPlayer.load();
-                videoElement.muted = false;
-                videoElement.controls = true;
-            }
+          if (flvjs.isSupported()) {
+              //若支持flv.js
+              flvPlayer = flvjs.createPlayer({
+                  type: 'flv',
+                  isLive: true,
+                  url: flvUrl,
+                  hasAudio: hasAudio,
+                  hasVideo: hasVideo,
+              });
+              flvPlayer.on(flvjs.Events.LOADING_COMPLETE, function () {
+                  console.error('LOADING_COMPLETE');
+                  flvPlayer.play();
+              });
+              flvPlayer.attachMediaElement(videoElement);
+              flvPlayer.load();
+              videoElement.muted = false;
+              videoElement.controls = true;
+
+              useLocalStreamList[index].player = flvPlayer;
+          }
     }
 }
 
@@ -165,13 +162,28 @@ $(async () => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
         // console.log('l', zg.stateCenter.streamList);
         if (updateType == 'ADD') {
-            useLocalStreamList.push(filterStreamList(streamList));
-            playStream(streamList);
+            streamList.forEach(streamInfo => {
+              const streamID = streamInfo.streamID;
+              const cdnUrl = filterStreamList(streamInfo);
+
+              useLocalStreamList.push(streamInfo);
+              playStream(streamID, cdnUrl);
+            })
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
                 for (let j = 0; j < streamList.length; j++) {
                     if (useLocalStreamList[k].streamID === streamList[j].streamID) {
                         console.info(useLocalStreamList[k].streamID + 'was devared');
+                        const player = useLocalStreamList[k].player
+                        if (player) {
+                                player.pause();
+                                player.unload();
+                                player.detachMediaElement();
+                                player.destroy();
+                                useLocalStreamList[k].player = null;
+                                if (flvPlayer == player) flvPlayer = null;
+                        }
+
                         useLocalStreamList.splice(k--, 1);
 
                         break;
@@ -207,14 +219,14 @@ $(async () => {
     $('#cdnAddPush').click(async () => {
         const result = await zg.addPublishCdnUrl(
             publishStreamId,
-            md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
-            'rtmp://wsdemo.zego.im/livestream/test259',
+            //md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
+            'rtmp://wsdemo.zego.im/livestream/' + publishStreamId,
         );
         if (result.errorCode == 0) {
             console.warn('add push target success');
             updateCdnStatus('add');
-            ($('#cdnDelPush')[0]).disabled = false;
-            ($('#cdnPlay')[0]).disabled = false;
+            // ($('#cdnDelPush')[0]).disabled = false;
+            // ($('#cdnPlay')[0]).disabled = false;
         } else {
             console.warn('add push target fail ' + result.errorCode);
         }
@@ -223,8 +235,8 @@ $(async () => {
     $('#cdnDelPush').click(async () => {
         const result = await zg.removePublishCdnUrl(
             publishStreamId,
-            md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
-            'rtmp://wsdemo.zego.im/livestream/test259',
+            //md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
+            'rtmp://wsdemo.zego.im/livestream/' + publishStreamId,
         );
         if (result.errorCode == 0) {
             console.warn('del push target success');
@@ -253,10 +265,17 @@ $(async () => {
         playType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
         if (flvjs.isSupported()) {
             //若支持flv.js
+            if (cdnFlvPlayer != null) {
+              cdnFlvPlayer.pause();
+              cdnFlvPlayer.unload();
+              cdnFlvPlayer.detachMediaElement();
+              cdnFlvPlayer.destroy();
+              cdnFlvPlayer = null;
+            }
             cdnFlvPlayer = flvjs.createPlayer({
                 type: 'flv',
                 isLive: true,
-                url: 'https://hdl-wsdemo.zego.im/livestream/test259.flv',
+                url: 'https://hdl-wsdemo.zego.im/livestream/' + publishStreamId + '.flv',
                 hasAudio: hasAudio,
                 hasVideo: hasVideo,
             });
@@ -301,13 +320,13 @@ $(async () => {
         isLogin = false;
     });
 
-    $('#secret').change(() => {
-        if ($('#secret').val() == '') {
-            ($('#cdnAddPush')[0]).disabled = true;
-            ($('#cdnDelPush')[0]).disabled = true;
-        } else {
-            ($('#cdnAddPush')[0]).disabled = false;
-            ($('#cdnDelPush')[0]).disabled = true;
-        }
-    });
+    // $('#secret').change(() => {
+    //     if ($('#secret').val() == '') {
+    //         ($('#cdnAddPush')[0]).disabled = true;
+    //         ($('#cdnDelPush')[0]).disabled = true;
+    //     } else {
+    //         ($('#cdnAddPush')[0]).disabled = false;
+    //         ($('#cdnDelPush')[0]).disabled = true;
+    //     }
+    // });
 });

@@ -44,7 +44,7 @@ $(async () => {
         xhr.onload = () => {
             if (xhr.status == 200 || xhr.status == 304) {
                 const buffer = xhr.response;
-                zg.mixingBuffer(publishStreamId, '1', buffer, (err) => {
+                zg.zegoWebRTC.mixingBuffer(publishStreamId, '1', buffer, (err) => {
                     if (err) {
                         console.error(err);
                     } else {
@@ -59,12 +59,12 @@ $(async () => {
     });
 
     $('#stopMixingBuffer').click(function() {
-        zg.stopMixingBuffer(publishStreamId, '1');
+        zg.zegoWebRTC.stopMixingBuffer(publishStreamId, '1');
     });
 
     $('#leaveMixRoom').click(function() {
         isMixingAudio && zg.stopMixingAudio(publishStreamId);
-        isMixingBuffer && zg.stopMixingBuffer(publishStreamId, '1');
+        isMixingBuffer && zg.zegoWebRTC.stopMixingBuffer(publishStreamId, '1');
         isMixingAudio = false;
         isMixingBuffer = false;
         logout();
@@ -72,7 +72,7 @@ $(async () => {
 
     $('#preloadEffect').click(() => {
         audioEffectList.forEach(effect => {
-            zg.preloadEffect(effect.effectId, effect.path, () => {
+            zg.zegoWebRTC.preloadEffect(effect.effectId, effect.path, () => {
                 console.warn('preload success');
                 //@ts-ignore
                 $('#playEffect')[0].disabled = false;
@@ -83,7 +83,7 @@ $(async () => {
     });
 
     $('#playEffect').click(() => {
-        zg.playEffect(
+        zg.zegoWebRTC.playEffect(
             {
                 streamID: publishStreamId,
                 effectID: '1',
@@ -112,15 +112,15 @@ $(async () => {
     });
 
     $('#pauseEffect').click(() => {
-        zg.pauseEffect(publishStreamId);
+        zg.zegoWebRTC.pauseEffect(publishStreamId);
     });
 
     $('#resumeEffect').click(() => {
-        zg.resumeEffect(publishStreamId);
+        zg.zegoWebRTC.resumeEffect(publishStreamId);
     });
 
     $('#stopEffect').click(() => {
-        zg.stopEffect(publishStreamId);
+        zg.zegoWebRTC.stopEffect(publishStreamId);
         //@ts-ignore
         $('#pauseEffect')[0].disabled = true;
         //@ts-ignore
@@ -132,7 +132,7 @@ $(async () => {
     $('#unloadEffect').click(() => {
         let num = 0;
         audioEffectList.forEach(effect => {
-            zg.unloadEffect(effect.effectId) && num++;
+            zg.zegoWebRTC.unloadEffect(effect.effectId) && num++;
         });
 
         if (num === audioEffectList.length) {

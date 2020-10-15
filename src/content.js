@@ -53,7 +53,7 @@ export function getCgi(appId, serverUrl, cgi) {
             }
 
             if (key == 'cgi_token') {
-                cgiToken = decodeURIComponent(value);
+              cgiToken = decodeURIComponent(value);
             }
         });
     }

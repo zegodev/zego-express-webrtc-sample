@@ -35,7 +35,7 @@ $(async () => {
         }
     });
     $('#publish').click(() => {
-        const result = zg.startPublishingStream(publishStreamID, previewStream);
+        const result = zg.startPublishingStream(publishStreamID, previewStream? previewStream: previewVideo.srcObject);
         published = true;
         console.log('publish stream' + publishStreamID, result);
     });
@@ -117,7 +117,7 @@ $(async () => {
         f && Object.assign(constraints, { frameRate: f });
         b && Object.assign(constraints, { maxBitrate: b});
 
-        zg.setPublishStreamConstraints(previewVideo.srcObject, constraints).then(
+        zg.setVideoConfig(previewVideo.srcObject, constraints).then(
             () => {
                 console.warn('change constraints success');
             },
