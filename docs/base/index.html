@@ -25,7 +25,7 @@
     }
   </style>
   <title class="base">推拉流基础功能</title>
-<link href="../index.439a0432.css" rel="stylesheet"></head>
+<link href="../index.e33f6e43.css" rel="stylesheet"></head>
 
 <body class="bg-f2">
   <div class="container">
@@ -124,6 +124,17 @@
               aria-describedby="emailHelp" placeholder="please stream extraInfo">
           </div>
         </div>
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="tcpOnly"><strong class="text-gray-dark">是否tcp</strong></label>
+            </div>
+            <select class="custom-select" id="tcpOnly" style="width: 50%">
+              <option value="1">开</option>
+              <option value="0">关</option>
+            </select>
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="col-sm">
@@ -175,10 +186,13 @@
           <button type="button" id="useAudio" class="btn btn-secondary btn-sm">更改音频输入设备</button>
           <button type="button" id="toggleCamera" class="btn btn-primary btn-sm enableCamera">启用/关闭摄像头</button>
           <button type="button" id="toggleSpeaker" class="btn btn-primary btn-sm enableMicrophone">启用/关闭麦克风</button>
+          <button type="button" id="mutePlayStreamVideo" class="btn btn-primary btn-sm">停止/恢复拉视频流</button>
+          <button type="button" id="mutePlayStreamAudio" class="btn btn-primary btn-sm">停止/恢复拉音频流</button>
           <button type="button" id="stopPlaySound" class="btn btn-primary btn-sm unenableSound">停止获取音浪</button>
           <button type="button" id="resumePlaySound" class="btn btn-primary btn-sm resumeSound">恢复获取音浪</button>
           <button type="button" id="extraInfo" class="btn btn-primary btn-sm">修改推流信息</button>
           <button type="button" id="switchConstraints" class="btn btn-primary btn-sm">改变推流参数</button>
+          <button type="button" id="setTcpOrUdp" class="btn btn-primary btn-sm">设置流tcp或udp</button>
           <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
         </div>
       </div>

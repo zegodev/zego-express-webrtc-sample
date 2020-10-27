@@ -126,6 +126,23 @@ $(async () => {
             },
         );
     });
+
+    $('#mutePlayStreamVideo').click(() => {
+        useLocalStreamList.forEach(item => {
+            zg.zegoWebRTC.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));
+        })
+        $(this).toggleClass('disabled');
+    })
+    $('#mutePlayStreamAudio').click(() => {
+        useLocalStreamList.forEach(item => {
+            zg.zegoWebRTC.mutePlayStreamAudio(item.streamID, !$(this).hasClass('disabled'));
+        })
+        $(this).toggleClass('disabled');
+    })
+    $('#setTcpOrUdp').click(() => {
+        const tcpOnly = $('#tcpOnly').val() === '1' ? true : false;
+        zg.zegoWebRTC.setTurnOverTcpOnly(tcpOnly);
+    })
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
