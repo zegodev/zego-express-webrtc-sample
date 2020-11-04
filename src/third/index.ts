@@ -10,7 +10,7 @@ $(async () => {
             if (loginSuc) {
                 push({
                     custom: {
-                        source: $('#externerVideo')[0],
+                        source: $('#externerVideo')[0] as HTMLMediaElement,
                     },
                 });
             }

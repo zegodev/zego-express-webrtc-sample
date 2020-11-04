@@ -16,7 +16,7 @@ $(async () => {
             const streamList = [
                 {
                     streamID: publishStreamId,
-                    contentType: '',
+                    contentType: 'VIDEO' as 'VIDEO' | 'AUDIO',
                     layout: {
                         top: 0,
                         left: 0,
@@ -28,7 +28,7 @@ $(async () => {
             if (useLocalStreamList.length !== 0) {
                 streamList.push({
                     streamID: useLocalStreamList[0].streamID,
-                    contentType: '',
+                    contentType: 'VIDEO',
                     layout: {
                         top: 240,
                         left: 0,
@@ -42,11 +42,11 @@ $(async () => {
                 taskID,
                 inputList: streamList,
                 outputList: [
-                    mixStreamID,
-                    // {
-                    //     target: mixStreamID,
-                    //     // target: 'rtmp://test.aliyun.zego.im/livestream/zegodemo',
-                    // },
+                    // mixStreamID,
+                    {
+                        target: mixStreamID,
+                        //     // target: 'rtmp://test.aliyun.zego.im/livestream/zegodemo',
+                    },
                 ],
                 outputConfig: {
                     outputBitrate: 300,
@@ -57,7 +57,7 @@ $(async () => {
             });
             if (res.errorCode == 0) {
                 $('#stopMixStream').removeAttr('disabled');
-                const result = JSON.parse(res.extendedData).mixerOutputList;
+                const result = JSON.parse(res.extendedData!).mixerOutputList;
                 if (
                     navigator.userAgent.indexOf('iPhone') !== -1 &&
                     getBrowser() == 'Safari' &&

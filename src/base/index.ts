@@ -1,8 +1,8 @@
 import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout } from '../common';
-import { webPlayOption } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getBrowser } from '../assets/utils';
+import { ZegoWebPlayOption } from 'zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity';
 
-let playOption: webPlayOption = {};
+let playOption: ZegoWebPlayOption = {};
 // --test begin
 let previewStream: MediaStream;
 let previewed = false;

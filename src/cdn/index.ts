@@ -156,7 +156,7 @@ $(async () => {
         const result = await zg.addPublishCdnUrl(
             publishStreamId,
             //The calculation of the signature is recommended to be placed in the background server
-            md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
+            // md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
             'rtmp://wsdemo.zego.im/livestream/test259',
         );
         if (result.errorCode == 0) {
@@ -171,7 +171,7 @@ $(async () => {
         const result = await zg.removePublishCdnUrl(
             publishStreamId,
             //The calculation of the signature is recommended to be placed in the background server
-            md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
+            // md5(appID + Math.ceil(new Date().getTime() / 1000).toString() + $('#secret').val()),
             'rtmp://wsdemo.zego.im/livestream/test259',
         );
         if (result.errorCode == 0) {

@@ -15,35 +15,35 @@ $(async () => {
         zg.stopMixingAudio(publishStreamId);
     });
 
-    $('#mixingBuffer').click(function() {
-        const xhr = new XMLHttpRequest();
+    // $('#mixingBuffer').click(function() {
+    //     const xhr = new XMLHttpRequest();
 
-        xhr.open('GET', 'https://storage.zego.im/demo/tonight.m4a', true);
-        xhr.responseType = 'arraybuffer';
-        xhr.onload = () => {
-            if (xhr.status == 200 || xhr.status == 304) {
-                const buffer = xhr.response;
-                zg.mixingBuffer(publishStreamId, '1', buffer, (err: any) => {
-                    if (err) {
-                        console.error(err);
-                    } else {
-                        isMixingAudio = true;
-                        console.warn('real time effect success');
-                    }
-                });
-            }
-        };
+    //     xhr.open('GET', 'https://storage.zego.im/demo/tonight.m4a', true);
+    //     xhr.responseType = 'arraybuffer';
+    //     xhr.onload = () => {
+    //         if (xhr.status == 200 || xhr.status == 304) {
+    //             const buffer = xhr.response;
+    //             zg.mixingBuffer(publishStreamId, '1', buffer, (err: any) => {
+    //                 if (err) {
+    //                     console.error(err);
+    //                 } else {
+    //                     isMixingAudio = true;
+    //                     console.warn('real time effect success');
+    //                 }
+    //             });
+    //         }
+    //     };
 
-        xhr.send();
-    });
+    //     xhr.send();
+    // });
 
-    $('#stopMixingBuffer').click(function() {
-        zg.stopMixingBuffer(publishStreamId, '1');
-    });
+    // $('#stopMixingBuffer').click(function() {
+    //     zg.stopMixingBuffer(publishStreamId, '1');
+    // });
 
     $('#leaveMixRoom').click(function() {
         isMixingAudio && zg.stopMixingAudio(publishStreamId);
-        isMixingAudio && zg.stopMixingBuffer(publishStreamId, '1');
+        // isMixingAudio && zg.stopMixingBuffer(publishStreamId, '1');
         isMixingAudio = false;
         logout();
     });

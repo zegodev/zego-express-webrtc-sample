@@ -3,8 +3,8 @@ import VConsole from 'vconsole';
 import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
-import { webPublishOption, Constraints } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from './content';
+import { ZegoLocalStreamConfig, ZegoWebPublishOption } from 'zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity';
 
 new VConsole();
 const userID: string = 'sample' + new Date().getTime();
@@ -298,7 +298,7 @@ async function login(roomId: string): Promise<boolean> {
             id_name: userID,
         });
     }
-    return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true });
+    return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true, maxMemberCount: 0 });
 }
 
 async function enterRoom(): Promise<boolean> {
@@ -348,7 +348,7 @@ async function logout(): Promise<void> {
     loginRoom = false;
 }
 
-async function publish(constraints?: Constraints): Promise<void> {
+async function publish(constraints?: ZegoLocalStreamConfig): Promise<void> {
     console.warn('createStream', $('#audioList').val(), $('#videoList').val());
     console.warn('constraints', constraints);
     const video =
@@ -367,12 +367,12 @@ async function publish(constraints?: Constraints): Promise<void> {
     !_constraints.camera.video && (previewVideo.controls = true);
     push(_constraints);
 }
-async function push(constraints?: Constraints, publishOption?: webPublishOption): Promise<void> {
-    localStream = await zg.createStream(constraints);
+async function push(constraints?: ZegoLocalStreamConfig, publishOption?: ZegoWebPublishOption): Promise<void> {
+    localStream = await zg.createStream(constraints!);
     previewVideo.srcObject = localStream;
     isPreviewed = true;
     $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
-    const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
+    const result = zg.startPublishingStream(publishStreamId, localStream, publishOption!);
     console.log('publish stream' + publishStreamId, result);
 }
 

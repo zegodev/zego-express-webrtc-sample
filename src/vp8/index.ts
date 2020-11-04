@@ -6,6 +6,7 @@ import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
 import { StreamInfo, webPublishOption } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 import { getCgi } from '../content';
 import { ZegoVideoCodec } from 'zego-express-engine-webrtc/types';
+import { ZegoWebPublishOption } from 'zego-express-engine-webrtc/sdk/code/zh/ZegoExpressEntity';
 
 new VConsole();
 const userID: string = 'sample' + new Date().getTime();
@@ -20,7 +21,7 @@ let previewVideo: HTMLVideoElement;
 let useLocalStreamList: StreamInfo[] = [];
 let isPreviewed = false;
 let localStream: MediaStream;
-let videoCodec: ZegoVideoCodec | undefined = 'H264';
+let videoCodec: 'H264' | 'VP8' | undefined = 'H264';
 
 ({ appID, server, cgiToken } = getCgi(appID, server, cgiToken));
 if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
@@ -61,7 +62,7 @@ async function start() {
 
     $('#createRoom').click(async () => {
         if ($('#videoCodec').val()) {
-            videoCodec = $('#videoCodec').val() as ZegoVideoCodec;
+            videoCodec = $('#videoCodec').val() as 'VP8' | 'H264';
         }
         const extraInfo = JSON.stringify({
             currentVideoCode: videoCodec,
@@ -73,7 +74,7 @@ async function start() {
 
     $('#openRoom').click(async () => {
         if ($('#videoCodec').val()) {
-            videoCodec = $('#videoCodec').val() as ZegoVideoCodec;
+            videoCodec = $('#videoCodec').val() as 'H264' | 'VP8';
         }
         await enterRoom();
     });
@@ -220,6 +221,7 @@ async function mixStream() {
     const streamList = [
         {
             streamID: publishStreamId,
+            contentType: 'VIDEO' as 'VIDEO' | 'AUDIO',
             layout: {
                 top: 0,
                 left: 0,
@@ -329,7 +331,7 @@ async function getRemoteByCodeType(stream: StreamInfo): Promise<MediaStream | nu
     return _stream;
 }
 
-async function push(publishOption?: webPublishOption) {
+async function push(publishOption?: ZegoWebPublishOption) {
     console.warn('createStream', $('#audioList').val(), $('#videoList').val());
     localStream = await zg.createStream({
         camera: {
