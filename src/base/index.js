@@ -177,7 +177,7 @@ $(async () => {
                         useLocalStreamList.splice(k, 1);
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
-                        $('#memberList option:eq(' + k + ')').remove();
+                        // $('#memberList option:eq(' + k + ')').remove();
                         break;
                     }
                 }
