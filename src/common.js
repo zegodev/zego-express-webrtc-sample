@@ -4,12 +4,13 @@ import './assets/bootstrap.min';
 import './assets/bootstrap.min.css';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
 import { getCgi } from './content';
+import { getBrowser } from './assets/utils';
 
 new VConsole();
 const userID = 'sample' + new Date().getTime();
 const userName = 'sampleUser' + new Date().getTime();
 const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
-const publishStreamId = 'webrtc' + new Date().getTime();
+let publishStreamId = 'webrtc' + new Date().getTime();
 let zg;
 let appID = 1739272706; // 请从官网控制台获取对应的appID
 let server = 'wss://webliveroom-test.zego.im/ws'; // 请从官网控制台获取对应的server地址，否则可能登录失败
@@ -191,6 +192,13 @@ function initSDK() {
         console.log('playerStateUpdate', result.streamID, result.state);
         if (result.state == 'PLAYING') {
             console.info(' play  success ' + result.streamID);
+            const browser = getBrowser();
+            if (browser === 'Safari') {
+                const videos = $('.remoteVideo video');
+                for (let i = 0; i < videos.length; i++) {
+                    videos[i].srcObject = videos[i].srcObject;
+                }
+            }
         } else if (result.state == 'PLAY_REQUESTING') {
             console.info(' play  retry');
         } else {
@@ -373,7 +381,7 @@ async function logout() {
     loginRoom = false;
 }
 
-async function publish(constraints) {
+async function publish(constraints, isNew) {
     console.warn('createStream', $('#audioList').val(), $('#videoList').val());
     console.warn('constraints', constraints);
     const video =
@@ -396,14 +404,15 @@ async function publish(constraints) {
         _constraints.camera.audio === false ? 'Video' : _constraints.camera.video === false ? 'Audio' : 'all';
     publishType = playType;
     // console.error('playType', playType);
-    push(_constraints, { extraInfo: JSON.stringify({ playType }) });
+    push(_constraints, { extraInfo: JSON.stringify({ playType }) }, isNew);
 }
-async function push(constraints, publishOption) {
+async function push(constraints, publishOption, isNew) {
     try {
         localStream = await zg.createStream(constraints);
         previewVideo.srcObject = localStream;
         isPreviewed = true;
         $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
+        isNew && (publishStreamId = 'webrtc' + new Date().getTime());
         const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
         console.log('publish stream' + publishStreamId, result);
     } catch (err) {
