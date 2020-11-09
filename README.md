@@ -3,7 +3,7 @@
  ## 说明
 - 该仓库为即构科技webrtc的使用示例demo,希望帮助开发者快速上手webrtc-sdk；
 - 每个页面展示sdk一种功能，可根据实际场景自由组合
-- 可[在线体验](https://zegodev.github.io/zego-express-webrtc-sample/),[在线体验2](https://zegodev.gitee.io/zego-express-webrtc-sample)
+- 可Github[在线体验](https://zegodev.github.io/zego-express-webrtc-sample/),码云[在线体验2](https://zegodev.gitee.io/zego-express-webrtc-sample)
 - [API文档](https://doc-zh.zego.im/zh/306.html)
 
 
