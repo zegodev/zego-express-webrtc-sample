@@ -20,8 +20,8 @@ $(async () => {
             if (loginSuc) {
                 previewStream = await zg.createStream({
                     camera: {
-                        audioInput: $('#audioList').val() ,
-                        videoInput: $('#videoList').val() ,
+                        audioInput: $('#audioList').val(),
+                        videoInput: $('#videoList').val(),
                         video: $('#videoList').val() === '0' ? false : true,
                         audio: $('#audioList').val() === '0' ? false : true,
                     },
@@ -35,7 +35,7 @@ $(async () => {
         }
     });
     $('#publish').click(() => {
-        const result = zg.startPublishingStream(publishStreamID, previewStream? previewStream: previewVideo.srcObject);
+        const result = zg.startPublishingStream(publishStreamID, previewStream ? previewStream : previewVideo.srcObject);
         published = true;
         console.log('publish stream' + publishStreamID, result);
     });
@@ -53,15 +53,18 @@ $(async () => {
     $('#createRoom').click(async () => {
         let loginSuc = false;
         const constraints = {};
-        const channelCount = parseInt($('#channelCount').val() );
+        const channelCount = parseInt($('#channelCount').val());
         constraints.channelCount = channelCount;
         const videoQuality = $('#videoQuality').val();
         if (videoQuality == 4) {
             $('#width').val() && (constraints.width = parseInt($('#width').val())),
-            $('#height').val() && (constraints.height = parseInt($('#height').val())),
-            $('#frameRate').val() && (constraints.frameRate = parseInt($('#frameRate').val())),
-            $('#bitrate').val() && (constraints.bitrate = parseInt($('#bitrate').val()))
+                $('#height').val() && (constraints.height = parseInt($('#height').val())),
+                $('#frameRate').val() && (constraints.frameRate = parseInt($('#frameRate').val())),
+                $('#bitrate').val() && (constraints.bitrate = parseInt($('#bitrate').val()))
         }
+        const tcpOnly = $('#tcpOnly').val() === '1' ? true : false;
+        debugger
+        zg.zegoWebRTC.setTurnOverTcpOnly(tcpOnly);
         constraints.videoQuality = parseInt(videoQuality);
         console.warn('constraints', constraints);
         try {
@@ -115,10 +118,12 @@ $(async () => {
         w && Object.assign(constraints, { width: w });
         h && Object.assign(constraints, { height: h });
         f && Object.assign(constraints, { frameRate: f });
-        b && Object.assign(constraints, { maxBitrate: b});
+        b && Object.assign(constraints, { maxBitrate: b });
 
         zg.setVideoConfig(previewVideo.srcObject, constraints).then(
+
             () => {
+
                 console.warn('change constraints success');
             },
             err => {
@@ -140,7 +145,7 @@ $(async () => {
                     const bro = getBrowser();
                     if (bro == 'Safari' && playOption.video === false) {
                         $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
-                        video = $('.remoteVideo audio:last')[0] ;
+                        video = $('.remoteVideo audio:last')[0];
                         console.warn('audio', video, remoteStream);
                     } else {
                         $('.remoteVideo').append($('<video autoplay muted playsinline controls></video>'));
@@ -177,7 +182,7 @@ $(async () => {
                         useLocalStreamList.splice(k, 1);
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
-                        // $('#memberList option:eq(' + k + ')').remove();
+                        $('#memberList option:eq(' + k + ')').remove();
                         break;
                     }
                 }
