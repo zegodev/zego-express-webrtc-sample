@@ -52,6 +52,7 @@ $(async () => {
         );
         $('#showAlert').click();
     });
+    zg.off('roomUserUpdate');
     zg.on('roomUserUpdate', (roomID, updateType, userList) => {
         console.warn(
             `roomUserUpdate: room ${roomID}, user ${updateType === 'ADD' ? 'added' : 'left'} `,

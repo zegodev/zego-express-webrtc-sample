@@ -20,7 +20,7 @@ let flvPlayer = null;
 let cdnFlvPlayer = null;
 const ua = navigator.userAgent.toLowerCase();
 let isAndWechat = false;
-const videoElement = document.getElementById('test');
+let videoElement;
 const cdnVideoElement = document.getElementById('cdn');
 let isLogin = false;
 let playType = 'all';
@@ -162,6 +162,14 @@ $(async () => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);
         // console.log('l', zg.stateCenter.streamList);
         if (updateType == 'ADD') {
+            $('#video-container').append(`
+                <video id="test" autoplay muted
+                x-webkit-airplay="true"
+                x5-video-player-type="h5-page"
+                webkit-playsinline="true"
+                playsinline></video>`
+            )
+            videoElement = document.getElementById('test');
             streamList.forEach(streamInfo => {
               const streamID = streamInfo.streamID;
               const cdnUrl = filterStreamList(streamInfo);
@@ -183,7 +191,7 @@ $(async () => {
                                 useLocalStreamList[k].player = null;
                                 if (flvPlayer == player) flvPlayer = null;
                         }
-
+                        $('#video-container').html('');
                         useLocalStreamList.splice(k--, 1);
 
                         break;
@@ -299,7 +307,7 @@ $(async () => {
         console.error('channelCount', channelCount);
         try {
             isLogin = await enterRoom();
-            isLogin && (await publish({ camera: { channelCount: channelCount } }));
+            isLogin && (await publish({ camera: { channelCount: channelCount } }, true));
         } catch (error) {
             console.error(error);
         }

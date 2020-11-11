@@ -127,6 +127,20 @@ $(async () => {
         );
     });
 
+    $('#setAudioConfig').click(() => {
+        const constraints = {};
+        let ANS, AGC, AEC;
+        $('#noiseSuppression').val() === '1' ? (ANS = true) : (ANS = false);
+        $('#autoGainControl').val() === '1' ? (AGC = true) : (AGC = false);
+        $('#echoCancellation').val() === '1' ? (AEC = true) : (AEC = false);
+        Object.assign(constraints, { ANS, AGC, AEC})
+        zg.setAudioConfig(previewVideo.srcObject, constraints).then((res) => {
+            console.warn('change constraints success', res);
+        }, err => {
+            console.error(JSON.stringify(err));
+        })
+    })
+
     $('#mutePlayStreamVideo').click(() => {
         useLocalStreamList.forEach(item => {
             zg.zegoWebRTC.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));
@@ -139,8 +153,9 @@ $(async () => {
         })
         $(this).toggleClass('disabled');
     })
-    $('#setTcpOrUdp').click(() => {
-        const tcpOnly = $('#tcpOnly').val() === '1' ? true : false;
+    $('#tcpOnly').change((e) => {
+        const tcpOnly = e.target.value === '1' ? true : false;
+        console.warn('tcporudp: ', e.target.value === '1' ? 'tcp' : 'udp');
         zg.zegoWebRTC.setTurnOverTcpOnly(tcpOnly);
     })
     zg.off('roomStreamUpdate');
@@ -194,7 +209,7 @@ $(async () => {
                         useLocalStreamList.splice(k, 1);
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
-                        $('#memberList option:eq(' + k + ')').remove();
+                        // $('#memberList option:eq(' + k + ')').remove();
                         break;
                     }
                 }

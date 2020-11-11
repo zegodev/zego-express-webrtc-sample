@@ -41,7 +41,7 @@ $(async () => {
                         useLocalStreamList.splice(k, 1);
 
                         $('.remoteVideo audio:eq(' + k + ')').remove();
-                        $('#memberList option:eq(' + k + ')').remove();
+                        // $('#memberList option:eq(' + k + ')').remove();
 
                         break;
                     }

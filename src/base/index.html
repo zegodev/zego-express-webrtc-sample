@@ -136,6 +136,49 @@
           </div>
         </div>
       </div>
+      
+      <div class="row" style="margin-top:1%">
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="noiseSuppression"><strong class="text-gray-dark">减噪</strong></label>
+            </div>
+            <select class="custom-select" id="noiseSuppression" style="width: 50%">
+              <option value="1">开</option>
+              <option value="0">关</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="autoGainControl"><strong class="text-gray-dark">自动增益</strong></label>
+            </div>
+            <select class="custom-select" id="autoGainControl" style="width: 50%">
+              <option value="1">开</option>
+              <option value="0">关</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="echoCancellation"><strong class="text-gray-dark">回声消除</strong></label>
+            </div>
+            <select class="custom-select" id="echoCancellation" style="width: 50%">
+              <option value="1">开</option>
+              <option value="0">关</option>
+            </select>
+          </div>
+        </div>
+
+        
+
+      </div>
+
       <div class="row">
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
@@ -192,7 +235,7 @@
           <button type="button" id="resumePlaySound" class="btn btn-primary btn-sm resumeSound">恢复获取音浪</button>
           <button type="button" id="extraInfo" class="btn btn-primary btn-sm">修改推流信息</button>
           <button type="button" id="switchConstraints" class="btn btn-primary btn-sm">改变推流参数</button>
-          <button type="button" id="setTcpOrUdp" class="btn btn-primary btn-sm">设置流tcp或udp</button>
+          <button type="button" id="setAudioConfig" class="btn btn-primary btn-sm">改变推流3A</button>
           <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
         </div>
       </div>
