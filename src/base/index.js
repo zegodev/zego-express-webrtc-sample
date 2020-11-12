@@ -62,6 +62,9 @@ $(async () => {
             $('#frameRate').val() && (constraints.frameRate = parseInt($('#frameRate').val())),
             $('#bitrate').val() && (constraints.bitrate = parseInt($('#bitrate').val()))
         }
+        $('#noiseSuppression').val() === '1' ? (constraints.ANS = true) : (constraints.ANS = false);
+        $('#autoGainControl').val() === '1' ? (constraints.AGC = true) : (constraints.AGC = false);
+        $('#echoCancellation').val() === '1' ? (constraints.AEC = true) : (constraints.AEC = false);
         constraints.videoQuality = parseInt(videoQuality);
         console.warn('constraints', constraints);
         try {
