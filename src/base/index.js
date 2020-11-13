@@ -65,6 +65,8 @@ $(async () => {
         $('#noiseSuppression').val() === '1' ? (constraints.ANS = true) : (constraints.ANS = false);
         $('#autoGainControl').val() === '1' ? (constraints.AGC = true) : (constraints.AGC = false);
         $('#echoCancellation').val() === '1' ? (constraints.AEC = true) : (constraints.AEC = false);
+        $('#audioBitrate').val() && (constraints.audioBitrate = parseInt($('#audioBitrate').val()));
+        
         constraints.videoQuality = parseInt(videoQuality);
         console.warn('constraints', constraints);
         try {
