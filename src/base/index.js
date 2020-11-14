@@ -62,9 +62,9 @@ $(async () => {
                 $('#frameRate').val() && (constraints.frameRate = parseInt($('#frameRate').val())),
                 $('#bitrate').val() && (constraints.bitrate = parseInt($('#bitrate').val()))
         }
-        const tcpOnly = $('#tcpOnly').val() === '1' ? true : false;
+        // const tcpOnly = $('#tcpOnly').val() === '1' ? true : false;
         
-        zg.zegoWebRTC.setTurnOverTcpOnly(tcpOnly);
+        // zg.zegoWebRTC.setTurnOverTcpOnly(tcpOnly);
         constraints.videoQuality = parseInt(videoQuality);
         console.warn('constraints', constraints);
         try {
