@@ -65,6 +65,28 @@ $(async () => {
         }
         await enterRoom();
     });
+    $('#switchConstraints').click(() => {
+        const constraints = {};
+        const w = $('#width').val() ? parseInt($('#width').val() as string) : 0;
+        const h = $('#height').val() ? parseInt($('#height').val() as string) : 0;
+        const f = $('#frameRate').val() ? parseInt($('#frameRate').val() as string) : 0;
+        const b = $('#bitrate').val() ? parseInt($('#bitrate').val() as string) : 0;
+
+        w && Object.assign(constraints, { width: w });
+        h && Object.assign(constraints, { height: h });
+        f && Object.assign(constraints, { frameRate: f });
+        b && Object.assign(constraints, { maxBitrate: b });
+
+        zg.setVideoConfig(previewVideo.srcObject as MediaStream, constraints).then(
+            () => {
+                console.warn('change constraints success');
+            },
+            err => {
+                console.error(err);
+            },
+        );
+    });
+
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate roomID ', roomID, streamList);

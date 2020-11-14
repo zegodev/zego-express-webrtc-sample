@@ -276,6 +276,10 @@ function initSDK(): void {
             console.warn(`${stream.type} ${stream.streamID}, soundLevel: ${stream.soundLevel}`);
         });
     });
+
+    zg.on('roomOnlineUserCountUpdate', (roomID: string, count: number) => {
+        console.warn(`roomOnlineUserCountUpdate ${roomID} ${count}`);
+    });
 }
 
 async function login(roomId: string): Promise<boolean> {
@@ -298,7 +302,7 @@ async function login(roomId: string): Promise<boolean> {
             id_name: userID,
         });
     }
-    return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true, maxMemberCount: 0 });
+    return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true });
 }
 
 async function enterRoom(): Promise<boolean> {

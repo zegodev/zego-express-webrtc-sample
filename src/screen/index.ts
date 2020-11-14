@@ -1,4 +1,4 @@
-import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg, loginRoom } from '../common';
+import { checkAnRun, supportScreenSharing, logout, publishStreamId, zg, loginRoom, previewVideo } from '../common';
 
 $(async () => {
     await checkAnRun(true);
@@ -38,7 +38,7 @@ $(async () => {
             const screenStream = await zg.createStream({
                 screen: {
                     audio: true,
-                    videoQuality: 1,
+                    // videoQuality: 1,
                 },
             });
             const screenStreamId = publishStreamId + 'screen' + screenCount++;
@@ -61,6 +61,38 @@ $(async () => {
         } catch (e) {
             console.error('screenShot', e);
         }
+    });
+    $('#replaceScreenShot').click(async function() {
+        if (!previewVideo.srcObject) {
+            alert('流不存在');
+            return;
+        }
+        // console.log(publishType);
+        // if (publishType == 'Audio' || $('#videoList').val() === '0') {
+        //     alert('stream is only contain audio');
+        //     return;
+        // }
+        // if (!screendStream) {
+        const screendStream = await zg.createStream({
+            screen: {
+                videoQuality: 4,
+                width: 640,
+                height: 480,
+            },
+        });
+        const screenStreamVideoTrack = screendStream.getVideoTracks()[0];
+        //     console.log('cameraStreamVideoTrack', cameraStreamVideoTrack);
+        //     !cameraStreamVideoTrack &&
+        //         (cameraStreamVideoTrack =
+        //             previewVideo.srcObject.getVideoTracks()[0] && previewVideo.srcObject.getVideoTracks()[0].clone());
+        // }
+
+        zg.replaceTrack(previewVideo.srcObject as MediaStream, screenStreamVideoTrack)
+            .then(res => {
+                console.warn('replaceTrack success');
+                // videoType = 'screen';
+            })
+            .catch(err => console.error(err));
     });
 
     $('#stopScreenShot').click(() => {

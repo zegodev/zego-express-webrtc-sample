@@ -5,6 +5,9 @@ import './font_Icon/iconfont.css';
 import { checkAnRun, zg, userID, logout } from '../common';
 import { User } from 'zego-express-engine-webrtc/sdk/common/zego.entity';
 
+function hanleRoomExtraInfoList(roomID: string, roomExtraInfoList: any[]) {
+    console.warn('hanleRoomExtraInfoList', roomID, roomExtraInfoList);
+}
 let msgCount = 0;
 let localUserList: User[] = [];
 $(async () => {
@@ -70,11 +73,13 @@ $(async () => {
         });
         $('#memberList').html(userListHtml);
     });
-    // zg.on('roomExtraInfoUpdate', (roomID, type, data) => {
-    //     console.warn(`roomExtraInfoUpdate: room ${roomID} `, type, data);
-    //     $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + type + ' | ' + data);
-    //     $('#showAlert').click();
+
+    // zg.on('roomExtraInfoUpdate', (roomID, list) => {
+    //     console.warn(`roomExtraInfoUpdate: room ${roomID} `, list);
+    //     // $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + type + ' | ' + data);
+    //     // $('#showAlert').click();
     // });
+    zg.on('roomExtraInfoUpdate', hanleRoomExtraInfoList);
     $('.chatBox').hide();
 
     //打开/关闭聊天框
@@ -154,15 +159,15 @@ $(async () => {
         }
     });
 
-    // $('#ReliableMessage').click(async () => {
-    //     const roomId: string = $('#roomId').val() as string;
-    //     const result = await zg.setRoomExtraInfo(roomId, '2', 'ReliableMessage test');
-    //     if (result.errorCode === 0) {
-    //         console.warn('setRoomExtraInfo suc');
-    //     } else {
-    //         console.error('setRoomExtraInfo err', result.errorCode);
-    //     }
-    // });
+    $('#ReliableMessage').click(async () => {
+        const roomId: string = $('#roomId').val() as string;
+        const result = await zg.setRoomExtraInfo(roomId, '2', 'ReliableMessage test');
+        if (result.errorCode === 0) {
+            console.warn('setRoomExtraInfo suc');
+        } else {
+            console.error('setRoomExtraInfo err', result.errorCode);
+        }
+    });
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {
         localUserList = [];
