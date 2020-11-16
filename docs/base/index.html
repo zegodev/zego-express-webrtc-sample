@@ -127,11 +127,12 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="tcpOnly"><strong class="text-gray-dark">是否tcp</strong></label>
+              <label class="input-group-text" for="tcpOnly"><strong class="text-gray-dark">推拉流策略</strong></label>
             </div>
             <select class="custom-select" id="tcpOnly" style="width: 50%">
-              <option value="1">开</option>
-              <option value="0">关</option>
+              <option value="0">auto</option>
+              <option value="1">只走tcp</option>
+              <option value="2">只走udp</option>
             </select>
           </div>
         </div>

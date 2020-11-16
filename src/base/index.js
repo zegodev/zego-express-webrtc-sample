@@ -159,9 +159,14 @@ $(async () => {
         $(this).toggleClass('disabled');
     })
     $('#tcpOnly').change((e) => {
-        const tcpOnly = e.target.value === '1' ? true : false;
-        console.warn('tcporudp: ', e.target.value === '1' ? 'tcp' : 'udp');
-        zg.zegoWebRTC.setTurnOverTcpOnly(tcpOnly);
+        // console.error(e.target.value);
+        const tcpOnly = e.target.value;
+        console.warn('tcporudp: ', e.target.value === '0' ? 'auto' : e.target.value === '1' ? 'tcp' : 'udp');
+        if (tcpOnly === '1') {
+            zg.zegoWebRTC.setTurnOverTcpOnly(true);
+        } else if(tcpOnly === '2') {
+            zg.zegoWebRTC.setTurnOverTcpOnly(false);
+        }
     })
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {

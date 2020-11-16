@@ -44,10 +44,11 @@ $(async () => {
             console.error(error);
         }
     });
+
+    $('#inputFile').change(function() {
+        const video = this.files[0];
+        const url = URL.createObjectURL(video);
+        $('#externerVideo')[0].src = url;
+    })
     
 });
-function getVideo(ele) {
-    const video = ele.files[0];
-    const url = URL.createObjectURL(video);
-    $('#externerVideo')[0].src = url;
-}
