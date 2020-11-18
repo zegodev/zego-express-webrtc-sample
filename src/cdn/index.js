@@ -332,6 +332,17 @@ $(async () => {
                 flvPlayer = null;
             }
         }
+        $('#video-container').html('');
+        if (typeof cdnFlvPlayer !== 'undefined') {
+            if (cdnFlvPlayer != null) {
+                cdnFlvPlayer.pause();
+                cdnFlvPlayer.unload();
+                cdnFlvPlayer.detachMediaElement();
+                cdnFlvPlayer.destroy();
+                cdnFlvPlayer = null;
+            }
+        }
+        $('#cdn-container').html('');
 
         logout();
         isLogin = false;
