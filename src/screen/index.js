@@ -120,7 +120,9 @@ $(async () => {
                 screen: true,
                 videoQuality: 4,
                 width: $('#screenWidth').val() * 1,
-                height:  $('#screenHeight').val() * 1
+                height:  $('#screenHeight').val() * 1,
+                bitrate: $('#screenBitRate').val() * 1,
+                frameRate: $('#screenFrameRate').val() * 1
             });
             screenStreamVideoTrack = screendStream.getVideoTracks()[0];
             console.log('cameraStreamVideoTrack', cameraStreamVideoTrack);
@@ -235,8 +237,8 @@ $(async () => {
                     //@ts-ignore
                     audio: $('#isScreenAudio').val() == 'yes' ? true : false,
                     videoQuality: 4,
-                    bitRate: 1500,
-                    frameRate: 15,
+                    bitrate: $('#screenBitRate').val() * 1,
+                    frameRate: $('#screenFrameRate').val() * 1,
                     width: $('#screenWidth').val() * 1 || screen.width,
                     height:  $('#screenHeight').val() * 1 || screen.height
                 },
