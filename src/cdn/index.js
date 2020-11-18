@@ -21,7 +21,7 @@ let cdnFlvPlayer = null;
 const ua = navigator.userAgent.toLowerCase();
 let isAndWechat = false;
 let videoElement;
-const cdnVideoElement = document.getElementById('cdn');
+let cdnVideoElement;
 let isLogin = false;
 let playType = 'all';
 
@@ -209,7 +209,7 @@ $(async () => {
             console.log(extraData);
             if (extraData.state === 'add') {
                 playType = extraData.publishType;
-                ($('#cdnPlay')[0]).disabled = false;
+                // ($('#cdnPlay')[0]).disabled = false;
             } else if (extraData.state === 'delete') {
                 if (typeof cdnFlvPlayer !== 'undefined') {
                     if (cdnFlvPlayer != null) {
@@ -221,6 +221,7 @@ $(async () => {
                     }
                 }
                 ($('#cdnPlay')[0]).disabled = true;
+                $('#cdn-container').html('');
             }
         }
     });
@@ -233,8 +234,8 @@ $(async () => {
         if (result.errorCode == 0) {
             console.warn('add push target success');
             updateCdnStatus('add');
-            // ($('#cdnDelPush')[0]).disabled = false;
-            // ($('#cdnPlay')[0]).disabled = false;
+            ($('#cdnDelPush')[0]).disabled = false;
+            ($('#cdnPlay')[0]).disabled = false;
         } else {
             console.warn('add push target fail ' + result.errorCode);
         }
@@ -267,6 +268,14 @@ $(async () => {
         //     cdnVideoElement.load();
         //     cdnVideoElement.muted = false;
         // } else
+        $('#cdn-container').append(`
+            <video id="cdn" autoplay muted preload="auto"
+            x-webkit-airplay="true"
+            x5-video-player-type="h5-page"
+            webkit-playsinline="true"
+            playsinline></video>`
+        )
+        cdnVideoElement = document.getElementById('cdn')
         let hasVideo = true;
         let hasAudio = true;
         playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
