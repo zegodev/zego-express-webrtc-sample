@@ -107,8 +107,8 @@
                         <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
                         <button type="button" id="playCDN" class="btn btn-secondary btn-sm clickPlay">点击播放</button>
                         <button type="button" id="cdnAddPush" class="btn btn-primary btn-sm addCdn">增加转推cdn</button>
-                        <button type="button" id="cdnDelPush" class="btn btn-primary btn-sm removeCdn">删除转推cdn</button>
-                        <button type="button" id="cdnPlay" class="btn btn-primary btn-sm cdnPlay">播放cdn</button>
+                        <button type="button" id="cdnDelPush" class="btn btn-primary btn-sm removeCdn" disabled>删除转推cdn</button>
+                        <button type="button" id="cdnPlay" class="btn btn-primary btn-sm cdnPlay" disabled>播放cdn</button>
                     </div>
                 </div>
 
@@ -123,12 +123,15 @@
                     </div>
                     <div class="col-sm remoteCDNVideo">
                         <label class="text-white" style="display: block; position: absolute; z-index: 999;">test</label>
-                        <video id="cdn" autoplay muted preload="auto"
+                        <div id="cdn-container">
+
+                        </div>
+                        <!-- <video id="cdn" autoplay muted preload="auto"
                         x-webkit-airplay="true"
                         x5-video-player-type="h5-page"
                         webkit-playsinline="true"
                         playsinline></video>
-                      </div>
+                      </div> -->
                   </div>
             </div>
         </div>

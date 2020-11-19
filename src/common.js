@@ -194,6 +194,7 @@ function initSDK() {
         if (result.state == 'PLAYING') {
             console.info(' play  success ' + result.streamID);
             const browser = getBrowser();
+            console.warn('browser', browser);
             if (browser === 'Safari') {
                 const videos = $('.remoteVideo video');
                 for (let i = 0; i < videos.length; i++) {
@@ -272,14 +273,14 @@ function initSDK() {
 
     zg.on('playQualityUpdate', async (streamID, streamQuality) => {
         console.log(
-            `play#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
+            `play#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate} audioFPS: ${streamQuality.audio.audioFPS}`, 
         );
         console.log(`play#${streamID}`, streamQuality);
     });
 
     zg.on('publishQualityUpdate', async (streamID, streamQuality) => {
         console.log(
-            `publish#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate}`,
+            `publish#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate} audioFPS: ${streamQuality.audio.audioFPS}`,
         );
         console.log(`publish#${streamID}`, streamQuality);
     });

@@ -21,7 +21,7 @@ let cdnFlvPlayer = null;
 const ua = navigator.userAgent.toLowerCase();
 let isAndWechat = false;
 let videoElement;
-const cdnVideoElement = document.getElementById('cdn');
+let cdnVideoElement;
 let isLogin = false;
 let playType = 'all';
 
@@ -144,17 +144,17 @@ function playStream(streamID, cdnUrl) {
     }
 }
 
-async function updateCdnStatus(state) {
-    const extra = { state, publishType };
-    playType = publishType;
-    const result = await zg.setRoomExtraInfo($('#roomId').val(), 'cdn', JSON.stringify(extra));
-    console.warn('result', result);
-    if (result.errorCode === 0) {
-        console.warn('updateCdnStatus suc');
-    } else {
-        console.error('updateCdnStatus err', result.errorCode);
-    }
-}
+// async function updateCdnStatus(state) {
+//     const extra = { state, publishType };
+//     playType = publishType;
+//     const result = await zg.setRoomExtraInfo($('#roomId').val(), 'cdn', JSON.stringify(extra));
+//     console.warn('result', result);
+//     if (result.errorCode === 0) {
+//         console.warn('updateCdnStatus suc');
+//     } else {
+//         console.error('updateCdnStatus err', result.errorCode);
+//     }
+// }
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
@@ -201,29 +201,30 @@ $(async () => {
         }
     });
 
-    zg.on('roomExtraInfoUpdate', (roomID, roomExtraInfoList) => {
-        console.warn(`roomExtraInfoUpdate: room ${roomID} `, roomExtraInfoList);
-        const extraInfo = roomExtraInfoList[0];
-        if (extraInfo.key === 'cdn') {
-            const extraData = JSON.parse(extraInfo.value);
-            console.log(extraData);
-            if (extraData.state === 'add') {
-                playType = extraData.publishType;
-                ($('#cdnPlay')[0]).disabled = false;
-            } else if (extraData.state === 'delete') {
-                if (typeof cdnFlvPlayer !== 'undefined') {
-                    if (cdnFlvPlayer != null) {
-                        cdnFlvPlayer.pause();
-                        cdnFlvPlayer.unload();
-                        cdnFlvPlayer.detachMediaElement();
-                        cdnFlvPlayer.destroy();
-                        cdnFlvPlayer = null;
-                    }
-                }
-                ($('#cdnPlay')[0]).disabled = true;
-            }
-        }
-    });
+    // zg.on('roomExtraInfoUpdate', (roomID, roomExtraInfoList) => {
+    //     console.warn(`roomExtraInfoUpdate: room ${roomID} `, roomExtraInfoList);
+    //     const extraInfo = roomExtraInfoList[0];
+    //     if (extraInfo.key === 'cdn') {
+    //         const extraData = JSON.parse(extraInfo.value);
+    //         console.log(extraData);
+    //         if (extraData.state === 'add') {
+    //             playType = extraData.publishType;
+    //             // ($('#cdnPlay')[0]).disabled = false;
+    //         } else if (extraData.state === 'delete') {
+    //             if (typeof cdnFlvPlayer !== 'undefined') {
+    //                 if (cdnFlvPlayer != null) {
+    //                     cdnFlvPlayer.pause();
+    //                     cdnFlvPlayer.unload();
+    //                     cdnFlvPlayer.detachMediaElement();
+    //                     cdnFlvPlayer.destroy();
+    //                     cdnFlvPlayer = null;
+    //                 }
+    //             }
+    //             ($('#cdnPlay')[0]).disabled = true;
+    //             $('#cdn-container').html('');
+    //         }
+    //     }
+    // });
     $('#cdnAddPush').click(async () => {
         const result = await zg.addPublishCdnUrl(
             publishStreamId,
@@ -232,9 +233,9 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('add push target success');
-            updateCdnStatus('add');
-            // ($('#cdnDelPush')[0]).disabled = false;
-            // ($('#cdnPlay')[0]).disabled = false;
+            // updateCdnStatus('add');
+            ($('#cdnDelPush')[0]).disabled = false;
+            ($('#cdnPlay')[0]).disabled = false;
         } else {
             console.warn('add push target fail ' + result.errorCode);
         }
@@ -248,7 +249,7 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('del push target success');
-            updateCdnStatus('delete');
+            // updateCdnStatus('delete');
             ($('#cdnDelPush')[0]).disabled = true;
             ($('#cdnPlay')[0]).disabled = true;
         } else {
@@ -267,6 +268,14 @@ $(async () => {
         //     cdnVideoElement.load();
         //     cdnVideoElement.muted = false;
         // } else
+        $('#cdn-container').append(`
+            <video id="cdn" autoplay muted preload="auto"
+            x-webkit-airplay="true"
+            x5-video-player-type="h5-page"
+            webkit-playsinline="true"
+            playsinline></video>`
+        )
+        cdnVideoElement = document.getElementById('cdn')
         let hasVideo = true;
         let hasAudio = true;
         playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
@@ -323,6 +332,20 @@ $(async () => {
                 flvPlayer = null;
             }
         }
+        $('#video-container').html('');
+        if (typeof cdnFlvPlayer !== 'undefined') {
+            if (cdnFlvPlayer != null) {
+                cdnFlvPlayer.pause();
+                cdnFlvPlayer.unload();
+                cdnFlvPlayer.detachMediaElement();
+                cdnFlvPlayer.destroy();
+                cdnFlvPlayer = null;
+            }
+        }
+        $('#cdn-container').html('');
+
+        ($('#cdnDelPush')[0]).disabled = true;
+        ($('#cdnPlay')[0]).disabled = true;
 
         logout();
         isLogin = false;

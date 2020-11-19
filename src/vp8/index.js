@@ -19,6 +19,7 @@ let useLocalStreamList = [];
 let isPreviewed = false;
 let localStream;
 let videoCodec = 'H264';
+let supportVideoCodec;
 
 ({ appID, server, cgiToken } = getCgi(appID, server, cgiToken));
 if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
@@ -36,6 +37,7 @@ async function checkAnRun() {
 
     console.warn('checkSystemRequirements ', result);
     videoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
+    supportVideoCodec = result.videoCodec.VP8 ? 'VP8' : result.videoCodec.H264 ? 'H264' : undefined;
     $('#videoCodeType option:eq(0)').val(videoCodec ? videoCodec : '');
     !result.videoCodec.H264 && $('#videoCodeType option:eq(1)').attr('disabled', 'disabled');
     !result.videoCodec.VP8 && $('#videoCodeType option:eq(2)').attr('disabled', 'disabled');
@@ -58,8 +60,11 @@ async function start() {
     initSDK();
 
     $('#createRoom').click(async () => {
+        console.warn('videoCodec', $('#videoCodec').val())
         if ($('#videoCodec').val()) {
             videoCodec = $('#videoCodec').val();
+        } else {
+            videoCodec = supportVideoCodec;
         }
         const extraInfo = JSON.stringify({
             currentVideoCode: videoCodec,
@@ -72,6 +77,8 @@ async function start() {
     $('#openRoom').click(async () => {
         if ($('#videoCodec').val()) {
             videoCodec = $('#videoCodec').val();
+        } else {
+            videoCodec = supportVideoCodec;
         }
         await enterRoom();
     });

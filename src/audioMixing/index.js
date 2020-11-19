@@ -74,9 +74,9 @@ $(async () => {
         audioEffectList.forEach(effect => {
             zg.zegoWebRTC.preloadEffect(effect.effectId, effect.path, () => {
                 console.warn('preload success');
-                //@ts-ignore
+                
                 $('#playEffect')[0].disabled = false;
-                //@ts-ignore
+                
                 $('#unloadEffect')[0].disabled = false;
             });
         });
@@ -90,21 +90,21 @@ $(async () => {
             },
             () => {
                 isMixingAudio = true;
-                //@ts-ignore
+                
                 $('#pauseEffect')[0].disabled = false;
-                //@ts-ignore
+                
                 $('#resumeEffect')[0].disabled = false;
-                //@ts-ignore
+                
                 $('#stopEffect')[0].disabled = false;
                 console.warn('start play');
             },
             () => {
                 isMixingAudio = false;
-                //@ts-ignore
+                
                 $('#pauseEffect')[0].disabled = true;
-                //@ts-ignore
+                
                 $('#resumeEffect')[0].disabled = true;
-                //@ts-ignore
+                
                 $('#stopEffect')[0].disabled = true;
                 console.warn('play end');
             },
@@ -121,11 +121,11 @@ $(async () => {
 
     $('#stopEffect').click(() => {
         zg.zegoWebRTC.stopEffect(publishStreamId);
-        //@ts-ignore
+        
         $('#pauseEffect')[0].disabled = true;
-        //@ts-ignore
+        
         $('#resumeEffect')[0].disabled = true;
-        //@ts-ignore
+        
         $('#stopEffect')[0].disabled = true;
     });
 
@@ -137,9 +137,9 @@ $(async () => {
 
         if (num === audioEffectList.length) {
             console.warn('all unload success');
-            //@ts-ignore
+            
             $('#playEffect')[0].disabled = true;
-            //@ts-ignore
+            
             $('#unloadEffect')[0].disabled = true;
         }
     });
