@@ -144,17 +144,17 @@ function playStream(streamID, cdnUrl) {
     }
 }
 
-async function updateCdnStatus(state) {
-    const extra = { state, publishType };
-    playType = publishType;
-    const result = await zg.setRoomExtraInfo($('#roomId').val(), 'cdn', JSON.stringify(extra));
-    console.warn('result', result);
-    if (result.errorCode === 0) {
-        console.warn('updateCdnStatus suc');
-    } else {
-        console.error('updateCdnStatus err', result.errorCode);
-    }
-}
+// async function updateCdnStatus(state) {
+//     const extra = { state, publishType };
+//     playType = publishType;
+//     const result = await zg.setRoomExtraInfo($('#roomId').val(), 'cdn', JSON.stringify(extra));
+//     console.warn('result', result);
+//     if (result.errorCode === 0) {
+//         console.warn('updateCdnStatus suc');
+//     } else {
+//         console.error('updateCdnStatus err', result.errorCode);
+//     }
+// }
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
@@ -201,30 +201,30 @@ $(async () => {
         }
     });
 
-    zg.on('roomExtraInfoUpdate', (roomID, roomExtraInfoList) => {
-        console.warn(`roomExtraInfoUpdate: room ${roomID} `, roomExtraInfoList);
-        const extraInfo = roomExtraInfoList[0];
-        if (extraInfo.key === 'cdn') {
-            const extraData = JSON.parse(extraInfo.value);
-            console.log(extraData);
-            if (extraData.state === 'add') {
-                playType = extraData.publishType;
-                // ($('#cdnPlay')[0]).disabled = false;
-            } else if (extraData.state === 'delete') {
-                if (typeof cdnFlvPlayer !== 'undefined') {
-                    if (cdnFlvPlayer != null) {
-                        cdnFlvPlayer.pause();
-                        cdnFlvPlayer.unload();
-                        cdnFlvPlayer.detachMediaElement();
-                        cdnFlvPlayer.destroy();
-                        cdnFlvPlayer = null;
-                    }
-                }
-                ($('#cdnPlay')[0]).disabled = true;
-                $('#cdn-container').html('');
-            }
-        }
-    });
+    // zg.on('roomExtraInfoUpdate', (roomID, roomExtraInfoList) => {
+    //     console.warn(`roomExtraInfoUpdate: room ${roomID} `, roomExtraInfoList);
+    //     const extraInfo = roomExtraInfoList[0];
+    //     if (extraInfo.key === 'cdn') {
+    //         const extraData = JSON.parse(extraInfo.value);
+    //         console.log(extraData);
+    //         if (extraData.state === 'add') {
+    //             playType = extraData.publishType;
+    //             // ($('#cdnPlay')[0]).disabled = false;
+    //         } else if (extraData.state === 'delete') {
+    //             if (typeof cdnFlvPlayer !== 'undefined') {
+    //                 if (cdnFlvPlayer != null) {
+    //                     cdnFlvPlayer.pause();
+    //                     cdnFlvPlayer.unload();
+    //                     cdnFlvPlayer.detachMediaElement();
+    //                     cdnFlvPlayer.destroy();
+    //                     cdnFlvPlayer = null;
+    //                 }
+    //             }
+    //             ($('#cdnPlay')[0]).disabled = true;
+    //             $('#cdn-container').html('');
+    //         }
+    //     }
+    // });
     $('#cdnAddPush').click(async () => {
         const result = await zg.addPublishCdnUrl(
             publishStreamId,
@@ -233,7 +233,7 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('add push target success');
-            updateCdnStatus('add');
+            // updateCdnStatus('add');
             ($('#cdnDelPush')[0]).disabled = false;
             ($('#cdnPlay')[0]).disabled = false;
         } else {
@@ -249,7 +249,7 @@ $(async () => {
         );
         if (result.errorCode == 0) {
             console.warn('del push target success');
-            updateCdnStatus('delete');
+            // updateCdnStatus('delete');
             ($('#cdnDelPush')[0]).disabled = true;
             ($('#cdnPlay')[0]).disabled = true;
         } else {
@@ -343,6 +343,9 @@ $(async () => {
             }
         }
         $('#cdn-container').html('');
+
+        ($('#cdnDelPush')[0]).disabled = true;
+        ($('#cdnPlay')[0]).disabled = true;
 
         logout();
         isLogin = false;
