@@ -71,11 +71,11 @@ $(async () => {
     if (videoQuality == 4) {
       $("#width").val() && (constraints.width = parseInt($("#width").val())),
         $("#height").val() &&
-          (constraints.height = parseInt($("#height").val())),
+        (constraints.height = parseInt($("#height").val())),
         $("#frameRate").val() &&
-          (constraints.frameRate = parseInt($("#frameRate").val())),
+        (constraints.frameRate = parseInt($("#frameRate").val())),
         $("#bitrate").val() &&
-          (constraints.bitrate = parseInt($("#bitrate").val()));
+        (constraints.bitrate = parseInt($("#bitrate").val()));
     }
     $("#noiseSuppression").val() === "1"
       ? (constraints.ANS = true)
@@ -198,68 +198,69 @@ $(async () => {
   //     } else if(tcpOnly === '2') {
   //         zg.zegoWebRTC.setTurnOverTcpOnly(false);
   //     }
-});
-zg.off("roomStreamUpdate");
-zg.on("roomStreamUpdate", async (roomID, updateType, streamList) => {
-  console.log("roomStreamUpdate roomID ", roomID, streamList);
-  if (updateType == "ADD") {
-    for (let i = 0; i < streamList.length; i++) {
-      console.info(streamList[i].streamID + " was added");
-      useLocalStreamList.push(streamList[i]);
-      let remoteStream;
+  zg.off("roomStreamUpdate");
+  zg.on("roomStreamUpdate", async (roomID, updateType, streamList) => {
+    console.log("roomStreamUpdate roomID ", roomID, streamList);
+    if (updateType == "ADD") {
+      for (let i = 0; i < streamList.length; i++) {
+        console.info(streamList[i].streamID + " was added");
+        useLocalStreamList.push(streamList[i]);
+        let remoteStream;
 
-      const handlePlaySuccess = () => {
-        let video;
-        const bro = getBrowser();
-        if (bro == "Safari" && playOption.video === false) {
-          $(".remoteVideo").append(
-            $("<audio autoplay muted playsinline controls></audio>")
-          );
-          video = $(".remoteVideo audio:last")[0];
-          console.warn("audio", video, remoteStream);
-        } else {
-          $(".remoteVideo").append(
-            $("<video autoplay muted playsinline controls></video>")
-          );
-          video = $(".remoteVideo video:last")[0];
-          console.warn("video", video, remoteStream);
-        }
-
-        video.srcObject = remoteStream;
-        video.muted = false;
-      };
-
-      try {
-        zg.startPlayingStream(streamList[i].streamID, playOption).then(
-          (stream) => {
-            remoteStream = stream;
-            handlePlaySuccess();
-          }
-        );
-      } catch (error) {
-        console.error(error);
-        break;
-      }
-    }
-  } else if (updateType == "DELETE") {
-    for (let k = 0; k < useLocalStreamList.length; k++) {
-      for (let j = 0; j < streamList.length; j++) {
-        if (useLocalStreamList[k].streamID === streamList[j].streamID) {
-          try {
-            zg.stopPlayingStream(useLocalStreamList[k].streamID);
-          } catch (error) {
-            console.error(error);
+        const handlePlaySuccess = () => {
+          let video;
+          const bro = getBrowser();
+          if (bro == "Safari" && playOption.video === false) {
+            $(".remoteVideo").append(
+              $("<audio autoplay muted playsinline controls></audio>")
+            );
+            video = $(".remoteVideo audio:last")[0];
+            console.warn("audio", video, remoteStream);
+          } else {
+            $(".remoteVideo").append(
+              $("<video autoplay muted playsinline controls></video>")
+            );
+            video = $(".remoteVideo video:last")[0];
+            console.warn("video", video, remoteStream);
           }
 
-          console.info(useLocalStreamList[k].streamID + "was devared");
+          video.srcObject = remoteStream;
+          video.muted = false;
+        };
 
-          useLocalStreamList.splice(k, 1);
-
-          $(".remoteVideo video:eq(" + k + ")").remove();
-          $("#memberList option:eq(" + k + ")").remove();
+        try {
+          zg.startPlayingStream(streamList[i].streamID, playOption).then(
+            (stream) => {
+              remoteStream = stream;
+              handlePlaySuccess();
+            }
+          );
+        } catch (error) {
+          console.error(error);
           break;
         }
       }
+    } else if (updateType == "DELETE") {
+      for (let k = 0; k < useLocalStreamList.length; k++) {
+        for (let j = 0; j < streamList.length; j++) {
+          if (useLocalStreamList[k].streamID === streamList[j].streamID) {
+            try {
+              zg.stopPlayingStream(useLocalStreamList[k].streamID);
+            } catch (error) {
+              console.error(error);
+            }
+
+            console.info(useLocalStreamList[k].streamID + "was devared");
+
+            useLocalStreamList.splice(k, 1);
+
+            $(".remoteVideo video:eq(" + k + ")").remove();
+            $("#memberList option:eq(" + k + ")").remove();
+            break;
+          }
+        }
+      }
     }
-  }
+  });
+
 });
