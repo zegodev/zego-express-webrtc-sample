@@ -174,7 +174,6 @@ $(async () => {
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
-                useLocalStreamList.push(streamList[i]);
                 let remoteStream;
 
                 const handlePlaySuccess = () => {
@@ -197,6 +196,7 @@ $(async () => {
                 try {
                     zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
                         remoteStream = stream;
+                        useLocalStreamList.push(streamList[i]);
                         handlePlaySuccess();
                     });
                 } catch (error) {
@@ -216,7 +216,7 @@ $(async () => {
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
-                        useLocalStreamList.splice(k, 1);
+                        useLocalStreamList.splice(k--, 1);
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
                         // $('#memberList option:eq(' + k + ')').remove();

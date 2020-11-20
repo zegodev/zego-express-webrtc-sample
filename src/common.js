@@ -230,21 +230,21 @@ function initSDK() {
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
-                useLocalStreamList.push(streamList[i]);
                 let remoteStream;
 
                 try {
                     remoteStream = await zg.startPlayingStream(streamList[i].streamID);
+                    useLocalStreamList.push(streamList[i]);
+                    $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
+                    const video = $('.remoteVideo video:last')[0];
+                    console.warn('video', video, remoteStream);
+                    video.srcObject = remoteStream;
+                    video.muted = false;
                 } catch (error) {
                     console.error(error);
                     break;
                 }
-
-                $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                const video = $('.remoteVideo video:last')[0];
-                console.warn('video', video, remoteStream);
-                video.srcObject = remoteStream;
-                video.muted = false;
+                
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
@@ -258,7 +258,7 @@ function initSDK() {
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
-                        useLocalStreamList.splice(k, 1);
+                        useLocalStreamList.splice(k--, 1);
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
                         // $('#memberList option:eq(' + k + ')').remove();
