@@ -16,7 +16,7 @@ $(async () => {
                     });
                     useLocalStreamList.push(streamList[i]);
 
-                    $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
+                    $('.remoteVideo').append($(`<audio id=${streamList[i].streamID} autoplay muted playsinline controls></audio>`));
                     const audio = $('.remoteVideo audio:last')[0];
                     console.warn('audio', audio, remoteStream);
                     audio.srcObject = remoteStream;
@@ -39,10 +39,9 @@ $(async () => {
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
-                        useLocalStreamList.splice(k--, 1);
 
                         $('.remoteVideo audio:eq(' + k + ')').remove();
-                        // $('#memberList option:eq(' + k + ')').remove();
+                        useLocalStreamList.splice(k--, 1);
 
                         break;
                     }

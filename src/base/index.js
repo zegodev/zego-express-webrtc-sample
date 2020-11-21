@@ -170,21 +170,21 @@ $(async () => {
     })
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
-        console.log('roomStreamUpdate roomID ', roomID, streamList);
+        console.log('roomStreamUpdate 2 roomID ', roomID, streamList);
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
                 let remoteStream;
 
-                const handlePlaySuccess = () => {
+                const handlePlaySuccess = (streamItem) => {
                     let video;
                     const bro = getBrowser();
                     if (bro == 'Safari' && playOption.video === false) {
-                        $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
+                        $('.remoteVideo').append($(`<audio id=${streamItem.streamID} autoplay muted playsinline controls></audio>`));
                         video = $('.remoteVideo audio:last')[0] ;
                         console.warn('audio', video, remoteStream);
                     } else {
-                        $('.remoteVideo').append($('<video autoplay muted playsinline controls></video>'));
+                        $('.remoteVideo').append($(`<video id=${streamItem.streamID} autoplay muted playsinline controls></video>`));
                         video = $('.remoteVideo video:last')[0];
                         console.warn('video', video, remoteStream);
                     }
@@ -197,7 +197,7 @@ $(async () => {
                     zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
                         remoteStream = stream;
                         useLocalStreamList.push(streamList[i]);
-                        handlePlaySuccess();
+                        handlePlaySuccess(streamList[i]);
                     });
                 } catch (error) {
                     console.error(error);
@@ -216,10 +216,9 @@ $(async () => {
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
-                        useLocalStreamList.splice(k--, 1);
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
-                        // $('#memberList option:eq(' + k + ')').remove();
+                        useLocalStreamList.splice(k--, 1);
                         break;
                     }
                 }
