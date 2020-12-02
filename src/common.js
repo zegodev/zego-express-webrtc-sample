@@ -232,18 +232,17 @@ function initSDK() {
                 console.info(streamList[i].streamID + ' was added');
                 let remoteStream;
 
-                try {
-                    remoteStream = await zg.startPlayingStream(streamList[i].streamID);
+                zg.startPlayingStream(streamList[i].streamID).then(stream => {
+                    remoteStream = stream;
                     useLocalStreamList.push(streamList[i]);
                     $('.remoteVideo').append($(`<video id=${streamList[i].streamID} autoplay muted playsinline controls></video>`));
                     const video = $('.remoteVideo video:last')[0];
                     console.warn('video', video, remoteStream);
                     video.srcObject = remoteStream;
                     video.muted = false;
-                } catch (error) {
-                    console.error(error);
-                    break;
-                }
+                }).catch(err => {
+                    console.error('err', err);
+                });
                 
             }
         } else if (updateType == 'DELETE') {

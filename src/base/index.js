@@ -193,16 +193,15 @@ $(async () => {
                     video.muted = false;
                 };
 
-                try {
+
                     zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
                         remoteStream = stream;
                         useLocalStreamList.push(streamList[i]);
                         handlePlaySuccess(streamList[i]);
-                    });
-                } catch (error) {
-                    console.error(error);
-                    break;
-                }
+                    }).catch (error => {
+                        console.error(error);
+
+                    })
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
