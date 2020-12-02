@@ -146,18 +146,18 @@ $(async () => {
         })
     })
 
-    $('#mutePlayStreamVideo').click(() => {
-        useLocalStreamList.forEach(item => {
-            zg.zegoWebRTC.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));
-        })
-        $(this).toggleClass('disabled');
-    })
-    $('#mutePlayStreamAudio').click(() => {
-        useLocalStreamList.forEach(item => {
-            zg.zegoWebRTC.mutePlayStreamAudio(item.streamID, !$(this).hasClass('disabled'));
-        })
-        $(this).toggleClass('disabled');
-    })
+    // $('#mutePlayStreamVideo').click(() => {
+    //     useLocalStreamList.forEach(item => {
+    //         zg.zegoWebRTC.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));
+    //     })
+    //     $(this).toggleClass('disabled');
+    // })
+    // $('#mutePlayStreamAudio').click(() => {
+    //     useLocalStreamList.forEach(item => {
+    //         zg.zegoWebRTC.mutePlayStreamAudio(item.streamID, !$(this).hasClass('disabled'));
+    //     })
+    //     $(this).toggleClass('disabled');
+    // })
     $('#tcpOnly').change((e) => {
         // console.error(e.target.value);
         const tcpOnly = e.target.value;
@@ -180,11 +180,11 @@ $(async () => {
                     let video;
                     const bro = getBrowser();
                     if (bro == 'Safari' && playOption.video === false) {
-                        $('.remoteVideo').append($(`<audio id=${streamItem.streamID} autoplay muted playsinline controls></audio>`));
+                        $('.remoteVideo').append($(`<audio id=${streamItem.streamID} autoplay muted playsinline></audio>`));
                         video = $('.remoteVideo audio:last')[0] ;
                         console.warn('audio', video, remoteStream);
                     } else {
-                        $('.remoteVideo').append($(`<video id=${streamItem.streamID} autoplay muted playsinline controls></video>`));
+                        $('.remoteVideo').append($(`<video id=${streamItem.streamID} autoplay muted playsinline></video>`));
                         video = $('.remoteVideo video:last')[0];
                         console.warn('video', video, remoteStream);
                     }

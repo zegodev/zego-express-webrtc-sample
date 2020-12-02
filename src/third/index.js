@@ -8,10 +8,11 @@ $(async () => {
         let loginSuc = false;
         const channelCount = parseInt($('#channelCount').val());
         $('#externerVideo')[0].play();
-
+        const realStream = $('#externerVideo')[0].captureStream();
+        realStream.removeTrack(realStream.getAudioTracks()[0]);
         const constraints = {
-            source: $('#externerVideo')[0],
-            channelCount: channelCount,
+            source: realStream,
+            // channelCount: channelCount,
         }
         $('#audioBitrate').val() && (constraints.audioBitrate = parseInt($('#audioBitrate').val()));
 
