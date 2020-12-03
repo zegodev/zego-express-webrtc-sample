@@ -43,8 +43,8 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 // eslint-disable-next-line prefer-const
 zg = new ZegoExpressEngine(appID, server);
 
-// @ts-ignore
 window.zg = zg;
+window.useLocalStreamList = useLocalStreamList;
 
 async function checkAnRun(checkScreen) {
     console.log('sdk version is', zg.getVersion());
@@ -228,25 +228,24 @@ function initSDK() {
         console.warn(`streamExtraInfoUpdate: room ${roomID},  `, JSON.stringify(streamList));
     });
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
-        console.log('roomStreamUpdate roomID ', roomID, streamList);
+        console.log('roomStreamUpdate 1 roomID ', roomID, streamList);
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
-                useLocalStreamList.push(streamList[i]);
                 let remoteStream;
 
-                try {
-                    remoteStream = await zg.startPlayingStream(streamList[i].streamID);
-                } catch (error) {
-                    console.error(error);
-                    break;
-                }
-
-                $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                const video = $('.remoteVideo video:last')[0];
-                console.warn('video', video, remoteStream);
-                video.srcObject = remoteStream;
-                video.muted = false;
+                zg.startPlayingStream(streamList[i].streamID).then(stream => {
+                    remoteStream = stream;
+                    useLocalStreamList.push(streamList[i]);
+                    $('.remoteVideo').append($(`<video id=${streamList[i].streamID} autoplay muted playsinline controls></video>`));
+                    const video = $('.remoteVideo video:last')[0];
+                    console.warn('video', video, remoteStream);
+                    video.srcObject = remoteStream;
+                    video.muted = false;
+                }).catch(err => {
+                    console.error('err', err);
+                });
+                
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
@@ -260,10 +259,9 @@ function initSDK() {
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
-                        useLocalStreamList.splice(k, 1);
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
-                        // $('#memberList option:eq(' + k + ')').remove();
+                        useLocalStreamList.splice(k--, 1);
                         break;
                     }
                 }

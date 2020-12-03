@@ -278,8 +278,8 @@ $(async () => {
         cdnVideoElement = document.getElementById('cdn')
         let hasVideo = true;
         let hasAudio = true;
-        playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
-        playType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
+        publishType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+        publishType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
         if (flvjs.isSupported()) {
             //若支持flv.js
             if (cdnFlvPlayer != null) {
