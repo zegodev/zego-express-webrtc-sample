@@ -23,7 +23,7 @@ $(async () => {
                     audio.muted = false;
                 } catch (error) {
                     console.error(error);
-                    break;
+                    continue;
                 }
 
             }
