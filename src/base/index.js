@@ -193,11 +193,11 @@ $(async () => {
                     let video;
                     const bro = getBrowser();
                     if (bro == 'Safari' && playOption.video === false) {
-                        $('.remoteVideo').append($(`<audio id=${streamItem.streamID} autoplay muted playsinline></audio>`));
+                        $('.remoteVideo').append($(`<audio id=${streamItem.streamID} autoplay muted playsinline controls></audio>`));
                         video = $('.remoteVideo audio:last')[0] ;
                         console.warn('audio', video, remoteStream);
                     } else {
-                        $('.remoteVideo').append($(`<video id=${streamItem.streamID} autoplay muted playsinline></video>`));
+                        $('.remoteVideo').append($(`<video id=${streamItem.streamID} autoplay muted playsinline controls></video>`));
                         video = $('.remoteVideo video:last')[0];
                         console.warn('video', video, remoteStream);
                     }
