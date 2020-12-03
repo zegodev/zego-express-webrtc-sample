@@ -168,6 +168,19 @@ $(async () => {
             zg.zegoWebRTC.setTurnOverTcpOnly(false);
         }
     })
+    $('#playVideo').click(() => {
+        const videos = $('.remoteVideo video');
+        // console.error('videos', videos);
+        for(let i = 0; i < videos.length; i++) {
+            if (videos[i].paused) {
+                videos[i].play().then(res => {
+                    console.warn('id ', videos[i].id, res)
+                }).catch(err => {
+                    console.error('id ', videos[i].id, err)
+                });
+            }
+        }
+    })
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
         console.log('roomStreamUpdate 2 roomID ', roomID, streamList);
