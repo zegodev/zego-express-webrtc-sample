@@ -205,6 +205,16 @@ $(async () => {
 
                     video.srcObject = remoteStream;
                     video.muted = false;
+
+                    setTimeout(() => {
+                        if (video.paused) {
+                            video.play().then(res => {
+                                console.warn('id ', video.id, res)
+                            }).catch(err => {
+                                console.error('id ', video.id, err)
+                            });
+                        }
+                    }, 500)
                 };
 
                 zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {

@@ -242,6 +242,16 @@ function initSDK() {
                     console.warn('video', video, remoteStream);
                     video.srcObject = remoteStream;
                     video.muted = false;
+
+                    setTimeout(() => {
+                        if (video.paused) {
+                            video.play().then(res => {
+                                console.warn('id ', video.id, res)
+                            }).catch(err => {
+                                console.error('id ', video.id, err)
+                            });
+                        }
+                    }, 500)
                 }).catch(err => {
                     console.error('err', err);
                 });
