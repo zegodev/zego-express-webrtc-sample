@@ -187,6 +187,7 @@ $(async () => {
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
+                useLocalStreamList.push(streamList[i]);
                 let remoteStream;
 
                 const handlePlaySuccess = (streamItem) => {
@@ -206,31 +207,30 @@ $(async () => {
                     video.muted = false;
                 };
 
+                zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
+                    remoteStream = stream;
+                    handlePlaySuccess(streamList[i]);
+                }).catch (error => {
+                    console.error(error);
 
-                    zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
-                        remoteStream = stream;
-                        useLocalStreamList.push(streamList[i]);
-                        handlePlaySuccess(streamList[i]);
-                    }).catch (error => {
-                        console.error(error);
-
-                    })
+                })
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
                 for (let j = 0; j < streamList.length; j++) {
                     if (useLocalStreamList[k].streamID === streamList[j].streamID) {
+
                         try {
                             zg.stopPlayingStream(useLocalStreamList[k].streamID);
                         } catch (error) {
                             console.error(error);
                         }
 
-                        console.info(useLocalStreamList[k].streamID + 'was devared');
+                        console.info(useLocalStreamList[k].streamID + ' was devared');
 
-
-                        $('.remoteVideo video:eq(' + k + ')').remove();
-                        useLocalStreamList.splice(k--, 1);
+                        $(`.remoteVideo video#${useLocalStreamList[k].streamID}`).remove();
+                        useLocalStreamList.splice(k, 1);
+                        k = k - 1;
                         break;
                     }
                 }

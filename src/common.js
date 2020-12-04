@@ -44,7 +44,7 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 zg = new ZegoExpressEngine(appID, server);
 
 window.zg = zg;
-window.useLocalStreamList = useLocalStreamList;
+// window.useLocalStreamList = useLocalStreamList;
 
 async function checkAnRun(checkScreen) {
     console.log('sdk version is', zg.getVersion());
@@ -232,11 +232,11 @@ function initSDK() {
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
+                useLocalStreamList.push(streamList[i]);
                 let remoteStream;
 
                 zg.startPlayingStream(streamList[i].streamID).then(stream => {
                     remoteStream = stream;
-                    useLocalStreamList.push(streamList[i]);
                     $('.remoteVideo').append($(`<video id=${streamList[i].streamID} autoplay muted playsinline controls></video>`));
                     const video = $('.remoteVideo video:last')[0];
                     console.warn('video', video, remoteStream);
@@ -260,8 +260,9 @@ function initSDK() {
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
 
-                        $('.remoteVideo video:eq(' + k + ')').remove();
-                        useLocalStreamList.splice(k--, 1);
+                        $(`.remoteVideo video#${useLocalStreamList[k].streamID}`).remove();
+                        useLocalStreamList.splice(k, 1);
+                        k = k -1;
                         break;
                     }
                 }
@@ -371,6 +372,7 @@ async function logout() {
     // 清空页面
     // Clear page
     useLocalStreamList = [];
+    // window.useLocalStreamList = [];
     $('.remoteVideo').html('');
     $('#memberList').html('');
 

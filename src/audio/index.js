@@ -8,13 +8,14 @@ $(async () => {
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
+                useLocalStreamList.push(streamList[i]);
+
                 let remoteStream;
 
                 try {
                     remoteStream = await zg.startPlayingStream(streamList[i].streamID, {
                         video: false,
                     });
-                    useLocalStreamList.push(streamList[i]);
 
                     $('.remoteVideo').append($(`<audio id=${streamList[i].streamID} autoplay muted playsinline controls></audio>`));
                     const audio = $('.remoteVideo audio:last')[0];
@@ -40,8 +41,9 @@ $(async () => {
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
 
-                        $('.remoteVideo audio:eq(' + k + ')').remove();
-                        useLocalStreamList.splice(k--, 1);
+                        $(`.remoteVideo audio#${useLocalStreamList[k].streamID}`).remove();
+                        useLocalStreamList.splice(k, 1);
+                        k = k - 1;
 
                         break;
                     }
