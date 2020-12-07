@@ -251,7 +251,7 @@ function initSDK() {
                                 console.error('id ', video.id, err)
                             });
                         }
-                    }, 500)
+                    }, 1000)
                 }).catch(err => {
                     console.error('err', err);
                 });

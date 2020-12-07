@@ -214,7 +214,7 @@ $(async () => {
                                 console.error('id ', video.id, err)
                             });
                         }
-                    }, 500)
+                    }, 1000)
                 };
 
                 zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
