@@ -355,6 +355,7 @@ async function enterRoom() {
 
     loginRoom = true;
 
+    console.error('remoteVideo')
     $('.remoteVideo').html('');
 
     return true;
