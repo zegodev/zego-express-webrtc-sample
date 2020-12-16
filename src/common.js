@@ -89,7 +89,7 @@ async function start() {
     });
 
     zg.setDebugVerbose(false);
-    zg.setSoundLevelDelegate(true, 1000);
+    zg.setSoundLevelDelegate(true, 5000);
 
     $('#createRoom').click(async () => {
         let loginSuc = false;
