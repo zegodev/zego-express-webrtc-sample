@@ -351,6 +351,11 @@ async function enterRoom() {
         alert('roomId is empty');
         return false;
     }
+
+    for (let i = 0; i < useLocalStreamList.length; i++) {
+        useLocalStreamList[i].streamID && zg.stopPlayingStream(useLocalStreamList[i].streamID);
+    }
+    
     await login(roomId);
 
     loginRoom = true;
