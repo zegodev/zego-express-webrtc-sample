@@ -360,7 +360,7 @@ async function enterRoom() {
 
     loginRoom = true;
 
-    console.error('remoteVideo')
+    console.warn('remoteVideo')
     $('.remoteVideo').html('');
 
     return true;
