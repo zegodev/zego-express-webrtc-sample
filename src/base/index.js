@@ -146,18 +146,18 @@ $(async () => {
         })
     })
 
-    // $('#mutePlayStreamVideo').click(function() {
-    //     useLocalStreamList.forEach(item => {
-    //         zg.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));
-    //     })
-    //     $(this).toggleClass('disabled');
-    // })
-    // $('#mutePlayStreamAudio').click(function() {
-    //     useLocalStreamList.forEach(item => {
-    //         zg.mutePlayStreamAudio(item.streamID, !$(this).hasClass('disabled'));
-    //     })
-    //     $(this).toggleClass('disabled');
-    // })
+    $('#mutePlayStreamVideo').click(function() {
+        useLocalStreamList.forEach(item => {
+            zg.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));
+        })
+        $(this).toggleClass('disabled');
+    })
+    $('#mutePlayStreamAudio').click(function() {
+        useLocalStreamList.forEach(item => {
+            zg.mutePlayStreamAudio(item.streamID, !$(this).hasClass('disabled'));
+        })
+        $(this).toggleClass('disabled');
+    })
     $('#tcpOnly').change((e) => {
         // console.error(e.target.value);
         const tcpOnly = e.target.value;
