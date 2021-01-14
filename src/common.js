@@ -91,7 +91,7 @@ async function start() {
     });
 
     zg.setDebugVerbose(false);
-    zg.setSoundLevelDelegate(true, 1000);
+    zg.setSoundLevelDelegate(true, 3000);
 
     $('#createRoom').click(async () => {
         let loginSuc = false;
@@ -345,10 +345,16 @@ async function enterRoom() {
         alert('roomId is empty');
         return false;
     }
+
+    for (let i = 0; i < useLocalStreamList.length; i++) {
+        useLocalStreamList[i].streamID && zg.stopPlayingStream(useLocalStreamList[i].streamID);
+    }
+
     await login(roomId);
 
     loginRoom = true;
 
+    console.warn('remoteVideo')
     $('.remoteVideo').html('');
 
     return true;
@@ -376,6 +382,7 @@ async function logout() {
     // 清空页面
     // Clear page
     useLocalStreamList = [];
+    // window.useLocalStreamList = [];
     $('.remoteVideo').html('');
     $('#memberList').html('');
 
