@@ -3,28 +3,29 @@ import { checkAnRun, enterRoom, publish, zg, useLocalStreamList } from '../commo
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
-    zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
-        console.log('roomStreamUpdate roomID ', roomID, streamList);
+    zg.on('roomStreamUpdate', async (roomID, updateType, streamList, extendedData) => {
+        console.log('roomStreamUpdate roomID ', roomID, streamList, extendedData);
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
-                useLocalStreamList.push(streamList[i]);
                 let remoteStream;
 
                 try {
                     remoteStream = await zg.startPlayingStream(streamList[i].streamID, {
                         video: false,
                     });
+                    useLocalStreamList.push(streamList[i]);
+
+                    $('.remoteVideo').append($(`<audio id=${streamList[i].streamID} autoplay muted playsinline controls></audio>`));
+                    const audio = $('.remoteVideo audio:last')[0];
+                    console.warn('audio', audio, remoteStream);
+                    audio.srcObject = remoteStream;
+                    audio.muted = false;
                 } catch (error) {
                     console.error(error);
-                    break;
+                    continue;
                 }
 
-                $('.remoteVideo').append($('<audio autoplay muted playsinline controls></audio>'));
-                const audio = $('.remoteVideo audio:last')[0];
-                console.warn('audio', audio, remoteStream);
-                audio.srcObject = remoteStream;
-                audio.muted = false;
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
@@ -38,10 +39,9 @@ $(async () => {
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
-                        useLocalStreamList.splice(k, 1);
 
                         $('.remoteVideo audio:eq(' + k + ')').remove();
-                        // $('#memberList option:eq(' + k + ')').remove();
+                        useLocalStreamList.splice(k--, 1);
 
                         break;
                     }

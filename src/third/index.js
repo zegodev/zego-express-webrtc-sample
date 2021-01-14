@@ -30,14 +30,19 @@ $(async () => {
     $('#externalCaptureA').click(async () => {
         let loginSuc = false;
         const channelCount = parseInt($('#channelCount').val());
+
+        const constraints = {
+          source: $('#externerAudio')[0],
+          channelCount: channelCount,
+        }
+
+        $('#audioBitrate').val() && (constraints.audioBitrate = parseInt($('#audioBitrate').val()));
+
         try {
             loginSuc = await enterRoom();
             if (loginSuc) {
                 push({
-                    custom: {
-                        source: $('#externerAudio')[0],
-                        channelCount: channelCount,
-                    },
+                    custom: constraints
                 });
             }
         } catch (error) {
@@ -50,5 +55,5 @@ $(async () => {
         const url = URL.createObjectURL(video);
         $('#externerVideo')[0].src = url;
     })
-    
+
 });

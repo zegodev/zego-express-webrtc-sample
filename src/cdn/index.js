@@ -158,8 +158,8 @@ function playStream(streamID, cdnUrl) {
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
-    zg.on('roomStreamUpdate', (roomID, updateType, streamList) => {
-        console.log('roomStreamUpdate roomID ', roomID, streamList);
+    zg.on('roomStreamUpdate', (roomID, updateType, streamList, extendedData) => {
+        console.log('roomStreamUpdate roomID ', roomID, streamList, extendedData);
         // console.log('l', zg.stateCenter.streamList);
         if (updateType == 'ADD') {
             $('#video-container').append(`
@@ -278,8 +278,8 @@ $(async () => {
         cdnVideoElement = document.getElementById('cdn')
         let hasVideo = true;
         let hasAudio = true;
-        playType === 'Video' ? (hasAudio = false) : (hasAudio = true);
-        playType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
+        publishType === 'Video' ? (hasAudio = false) : (hasAudio = true);
+        publishType === 'Audio' ? (hasVideo = false) : (hasVideo = true);
         if (flvjs.isSupported()) {
             //若支持flv.js
             if (cdnFlvPlayer != null) {

@@ -7,9 +7,9 @@ import { getCgi } from './content';
 import { getBrowser } from './assets/utils';
 
 new VConsole();
-const userID = 'sample' + new Date().getTime();
 const userName = 'sampleUser' + new Date().getTime();
 const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
+let userID = 'sample' + new Date().getTime();
 let publishStreamId = 'webrtc' + new Date().getTime();
 let zg;
 let appID = 1739272706; // 请从官网控制台获取对应的appID
@@ -29,7 +29,9 @@ let publishType;
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
 
-({ appID, server, cgiToken } = getCgi(appID, server, cgiToken));
+({ appID, server, cgiToken, userID } = getCgi(appID, server, cgiToken));
+if (userID == "") userID = 'sample' + new Date().getTime();
+
 if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
     $.get(cgiToken, rsp => {
         cgiToken = rsp.data;
@@ -43,8 +45,8 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 // eslint-disable-next-line prefer-const
 zg = new ZegoExpressEngine(appID, server);
 
-// @ts-ignore
 window.zg = zg;
+window.useLocalStreamList = useLocalStreamList;
 
 async function checkAnRun(checkScreen) {
     console.log('sdk version is', zg.getVersion());
@@ -227,26 +229,28 @@ function initSDK() {
     zg.on('streamExtraInfoUpdate', (roomID, streamList) => {
         console.warn(`streamExtraInfoUpdate: room ${roomID},  `, JSON.stringify(streamList));
     });
-    zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
-        console.log('roomStreamUpdate roomID ', roomID, streamList);
+    zg.on('roomStreamUpdate', async (roomID, updateType, streamList, extendedData) => {
+        console.log('roomStreamUpdate 1 roomID ', roomID, streamList, extendedData);
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
-                useLocalStreamList.push(streamList[i]);
                 let remoteStream;
+                let playOption;
 
-                try {
-                    remoteStream = await zg.startPlayingStream(streamList[i].streamID);
-                } catch (error) {
-                    console.error(error);
-                    break;
-                }
+                if($("#videoCodec").val()) playOption.videoCodec = $("#videoCodec").val();
 
-                $('.remoteVideo').append($('<video  autoplay muted playsinline controls></video>'));
-                const video = $('.remoteVideo video:last')[0];
-                console.warn('video', video, remoteStream);
-                video.srcObject = remoteStream;
-                video.muted = false;
+                zg.startPlayingStream(streamList[i].streamID,playOption).then(stream => {
+                    remoteStream = stream;
+                    useLocalStreamList.push(streamList[i]);
+                    $('.remoteVideo').append($(`<video id=${streamList[i].streamID} autoplay muted playsinline controls></video>`));
+                    const video = $('.remoteVideo video:last')[0];
+                    console.warn('video', video, remoteStream);
+                    video.srcObject = remoteStream;
+                    video.muted = false;
+                }).catch(err => {
+                    console.error('err', err);
+                });
+
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
@@ -260,10 +264,9 @@ function initSDK() {
 
                         console.info(useLocalStreamList[k].streamID + 'was devared');
 
-                        useLocalStreamList.splice(k, 1);
 
                         $('.remoteVideo video:eq(' + k + ')').remove();
-                        // $('#memberList option:eq(' + k + ')').remove();
+                        useLocalStreamList.splice(k--, 1);
                         break;
                     }
                 }
@@ -273,7 +276,7 @@ function initSDK() {
 
     zg.on('playQualityUpdate', async (streamID, streamQuality) => {
         console.log(
-            `play#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate} audioFPS: ${streamQuality.audio.audioFPS}`, 
+            `play#${streamID} videoFPS: ${streamQuality.video.videoFPS} videoBitrate: ${streamQuality.video.videoBitrate} audioBitrate: ${streamQuality.audio.audioBitrate} audioFPS: ${streamQuality.audio.audioFPS}`,
         );
         console.log(`play#${streamID}`, streamQuality);
     });
@@ -415,6 +418,7 @@ async function push(constraints, publishOption, isNew) {
         isPreviewed = true;
         $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
         isNew && (publishStreamId = 'webrtc' + new Date().getTime());
+        if($("#videoCodec").val()) publishOption.videoCodec = $("#videoCodec").val();
         const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
         console.log('publish stream' + publishStreamId, result);
     } catch (err) {
