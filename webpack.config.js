@@ -59,6 +59,9 @@ module.exports = {
     output: {
         filename: '[name]/[name].bundle.js',
         path: path.resolve(__dirname, 'docs'),
+        libraryTarget: "umd",
+        umdNamedDefine: true,
+        globalObject: "typeof self !== 'undefined' ? self : this"
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
@@ -138,5 +141,6 @@ module.exports = {
         port: 9092,
         host: internalIp.v4.sync(),
         https: true,
+        open: true,
     },
 };

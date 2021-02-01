@@ -41,16 +41,14 @@ $(async () => {
         'IMRecvBarrageMessage',
         (_roomID, chatData) => {
             console.log('IMRecvBarrageMessage roomID ', _roomID, chatData);
-            $('#exampleModalLabel').text('IMRecvBarrageMessage | ' + JSON.stringify(chatData) + ' | ' + _roomID);
-            $('#showAlert').click();
+            $('#toastBody').text(`IMRecvBarrageMessage from ${chatData[0].fromUser.userID} message: ${chatData[0].message}`);
+            $('#toast')[0].className = "toast fade show"
         },
     );
     zg.on('IMRecvCustomCommand', (_roomID, fromUser, command) => {
         console.log('IMRecvCustomCommand roomID ', _roomID, ' ', fromUser.userID, ' send ', command);
-        $('#exampleModalLabel').text(
-            'IMRecvCustomCommand roomID ' + _roomID + ' ' + fromUser.userID + ' send ' + command,
-        );
-        $('#showAlert').click();
+        $('#toastBody').text( 'IMRecvCustomCommand from' + ' ' + fromUser.userID + ' send ' + command);
+        $('#toast')[0].className = "toast fade show"
     });
     zg.off('roomUserUpdate');
     zg.on('roomUserUpdate', (roomID, updateType, userList) => {
@@ -73,8 +71,8 @@ $(async () => {
     });
     zg.on('roomExtraInfoUpdate', (roomID, extraInfoList) => {
         console.warn(`roomExtraInfo: room ${roomID} `, extraInfoList);
-        $('#exampleModalLabel').text('roomExtraInfoUpdate | ' + extraInfoList[0].key + ' | ' + extraInfoList[0].value);
-        $('#showAlert').click();
+        $('#toastBody').text(`${extraInfoList[0].key} ${extraInfoList[0].value}`)
+        $('#toast')[0].className = "toast fade show"
     });
     $('.chatBox').hide();
 
@@ -179,7 +177,7 @@ $(async () => {
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {
         localUserList = [];
-
+        $('#toast')[0].className = "toast fade hide"
         logout();
     });
 });

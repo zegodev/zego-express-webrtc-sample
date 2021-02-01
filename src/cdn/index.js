@@ -158,8 +158,8 @@ function playStream(streamID, cdnUrl) {
 $(async () => {
     await checkAnRun();
     zg.off('roomStreamUpdate');
-    zg.on('roomStreamUpdate', (roomID, updateType, streamList) => {
-        console.log('roomStreamUpdate roomID ', roomID, streamList);
+    zg.on('roomStreamUpdate', (roomID, updateType, streamList, extendedData) => {
+        console.log('roomStreamUpdate roomID ', roomID, streamList, extendedData);
         // console.log('l', zg.stateCenter.streamList);
         if (updateType == 'ADD') {
             $('#video-container').append(`

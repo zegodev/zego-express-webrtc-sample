@@ -29,6 +29,7 @@ export function getCgi(appId, serverUrl, cgi) {
     let appID = appId;
     let server = serverUrl;
     let cgiToken = cgi;
+    let userID = "";
     if (location.search) {
         const arrConfig = location.search.substr(1).split('&');
 
@@ -55,9 +56,13 @@ export function getCgi(appId, serverUrl, cgi) {
             if (key == 'cgi_token') {
               cgiToken = decodeURIComponent(value);
             }
+
+            if (key == 'user_id') {
+              userID = value;
+            }
         });
     }
-    return { appID, server, cgiToken };
+    return { appID, server, cgiToken, userID };
     // 测试用代码 end
     // Test code end
 }

@@ -2,8 +2,8 @@
 import VConsole from 'vconsole';
 import '../assets/bootstrap.min';
 import '../assets/bootstrap.min.css';
-import { ZegoExpressEngine } from 'zego-express-engine-webrtc'; 
-import { getCgi } from '../content'; 
+import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
+import { getCgi } from '../content';
 
 new VConsole();
 const userID = 'sample' + new Date().getTime();
@@ -138,7 +138,7 @@ function initSDK() {
         }
     });
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList) => {
-        console.log(`roomStreamUpdate roomID: ${roomID}`);
+        console.log(`roomStreamUpdate roomID: ${roomID} `);
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');

@@ -66,7 +66,7 @@ $(async () => {
         $('#autoGainControl').val() === '1' ? (constraints.AGC = true) : (constraints.AGC = false);
         $('#echoCancellation').val() === '1' ? (constraints.AEC = true) : (constraints.AEC = false);
         $('#audioBitrate').val() && (constraints.audioBitrate = parseInt($('#audioBitrate').val()));
-        
+
         constraints.videoQuality = parseInt(videoQuality);
         console.warn('constraints', constraints);
         try {
@@ -92,19 +92,6 @@ $(async () => {
     });
     $('#openRoom').unbind('click');
     $('#openRoom').click(async () => {
-        playOption = {};
-        const _selectMode = $('#playMode option:selected').val();
-        console.warn('playMode', _selectMode, playOption);
-        if (_selectMode) {
-            if (_selectMode == 'all') {
-                playOption.video = true;
-                playOption.audio = true;
-            } else if (_selectMode == 'video') {
-                playOption.audio = false;
-            } else if (_selectMode == 'audio') {
-                playOption.video = false;
-            }
-        }
         await enterRoom();
     });
     $('#extraInfo').click(() => {
@@ -146,15 +133,15 @@ $(async () => {
         })
     })
 
-    // $('#mutePlayStreamVideo').click(function() {
+    // $('#mutePlayStreamVideo').click(() => {
     //     useLocalStreamList.forEach(item => {
-    //         zg.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));
+    //         zg.zegoWebRTC.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));
     //     })
     //     $(this).toggleClass('disabled');
     // })
-    // $('#mutePlayStreamAudio').click(function() {
+    // $('#mutePlayStreamAudio').click(() => {
     //     useLocalStreamList.forEach(item => {
-    //         zg.mutePlayStreamAudio(item.streamID, !$(this).hasClass('disabled'));
+    //         zg.zegoWebRTC.mutePlayStreamAudio(item.streamID, !$(this).hasClass('disabled'));
     //     })
     //     $(this).toggleClass('disabled');
     // })
@@ -183,11 +170,10 @@ $(async () => {
     })
     zg.off('roomStreamUpdate');
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList, extendedData) => {
-        console.warn('roomStreamUpdate 2 roomID ', roomID, streamList, extendedData);
+        console.log('roomStreamUpdate 2 roomID ', roomID, streamList, extendedData);
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
-                useLocalStreamList.push(streamList[i]);
                 let remoteStream;
 
                 const handlePlaySuccess = (streamItem) => {
@@ -205,42 +191,48 @@ $(async () => {
 
                     video.srcObject = remoteStream;
                     video.muted = false;
-
-                    setTimeout(() => {
-                        if (video.paused) {
-                            video.play().then(res => {
-                                console.warn('id ', video.id, res)
-                            }).catch(err => {
-                                console.error('id ', video.id, err)
-                            });
-                        }
-                    }, 1000)
                 };
 
-                zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
-                    remoteStream = stream;
-                    handlePlaySuccess(streamList[i]);
-                }).catch (error => {
-                    console.error(error);
+                    playOption = {};
+                    const _selectMode = $('#playMode option:selected').val();
+                    console.warn('playMode', _selectMode, playOption);
+                    if (_selectMode) {
+                        if (_selectMode == 'all') {
+                            playOption.video = true;
+                            playOption.audio = true;
+                        } else if (_selectMode == 'video') {
+                            playOption.audio = false;
+                        } else if (_selectMode == 'audio') {
+                            playOption.video = false;
+                        }
+                    }
 
-                })
+                    if($("#videoCodec").val()) playOption.videoCodec = $("#videoCodec").val();
+
+                    zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
+                        remoteStream = stream;
+                        useLocalStreamList.push(streamList[i]);
+                        handlePlaySuccess(streamList[i]);
+                    }).catch (error => {
+                        console.error(error);
+
+                    })
             }
         } else if (updateType == 'DELETE') {
             for (let k = 0; k < useLocalStreamList.length; k++) {
                 for (let j = 0; j < streamList.length; j++) {
                     if (useLocalStreamList[k].streamID === streamList[j].streamID) {
-
                         try {
                             zg.stopPlayingStream(useLocalStreamList[k].streamID);
                         } catch (error) {
                             console.error(error);
                         }
 
-                        console.info(useLocalStreamList[k].streamID + ' was devared');
+                        console.info(useLocalStreamList[k].streamID + 'was devared');
 
-                        $(`.remoteVideo video#${useLocalStreamList[k].streamID}`).remove();
-                        useLocalStreamList.splice(k, 1);
-                        k = k - 1;
+
+                        $('.remoteVideo video:eq(' + k + ')').remove();
+                        useLocalStreamList.splice(k--, 1);
                         break;
                     }
                 }
