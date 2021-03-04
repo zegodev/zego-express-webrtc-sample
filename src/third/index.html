@@ -89,12 +89,31 @@
                 aria-describedby="emailHelp" placeholder="音频码率" value="">
             </div>
           </div>
+          <div class="col-sm">
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="audioBitrate"><strong class="text-gray-dark">推流格式</strong></label>
+              </div>
+              <input type="email" class="form-control d-inline" id="videoCodeType"
+                aria-describedby="emailHelp" placeholder="推流格式" value="">
+            </div>
+          </div>
+          <!-- <div class="col-sm">
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <label class="input-group-text" for="audioBitrate"><strong class="text-gray-dark">替换MP4</strong></label>
+              </div>
+              <input type="email" class="form-control d-inline" id="videoUrl"
+                aria-describedby="emailHelp" placeholder="MP4视频连接" value="">
+            </div>
+          </div>      -->
         </div>
         <div class="row">
             <div class="col-sm">
                 <button type="button" id="externalCaptureV" class="btn btn-primary btn-sm pushThird">推第三方视频</button>
                 <button type="button" id="externalCaptureA" class="btn btn-primary btn-sm ">推第三方音频</button>
                 <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoomPlay">进入房间（不推流）</button>
+                <button type="button" id="changeUrl" class="btn btn-primary btn-sm">替换视频</button>
                 <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
                 <input type="file" class="" accept="video/*" id="inputFile" />
             </div>

@@ -335,6 +335,10 @@ async function login(roomId) {
             app_id: appID,
             id_name: userID,
         });
+        token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', {
+            app_id: appID,
+            id_name: userID,
+        }); 
     }
     return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true });
 }
@@ -362,6 +366,9 @@ async function enterRoom() {
 
 async function logout() {
     console.info('leave room  and close stream');
+    if(previewVideo.srcObject){
+        previewVideo.srcObject = null;
+    }
 
     // 停止推流
     // stop publishing
@@ -421,6 +428,18 @@ async function publish(constraints, isNew) {
 async function push(constraints, publishOption, isNew) {
     try {
         localStream = await zg.createStream(constraints);
+        // var AudioContext = window.AudioContext || window.webkitAudioContext; // 兼容性
+        // let localTrack= localStream.getAudioTracks()[0];
+        // let audioContext = new AudioContext();// 创建Audio上下文
+        // let mediaStreamSource = audioContext.createMediaStreamSource(localStream);
+        // let destination = audioContext.createMediaStreamDestination();
+        // let gainNode = audioContext.createGain();
+        // mediaStreamSource.connect(gainNode); 
+        // gainNode.connect(destination); 
+        // gainNode.gain.value=3;
+        // let audioTrack = destination.stream.getAudioTracks()[0];
+        // localStream.removeTrack(localTrack);
+        // localStream.addTrack(audioTrack);
         previewVideo.srcObject = localStream;
         isPreviewed = true;
         $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
