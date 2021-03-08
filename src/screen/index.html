@@ -6,19 +6,35 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <style>
-    .bg-f2{
+    .btn {
+      margin: 5px 5px;
+    }
+
+    .bg-f2 {
       background-color: #f8f9fa;
     }
-    video{
+
+    video {
       width: 320px;
       height: auto;
-        }
-    .videoRow{
-        margin-top: 30px;
     }
-    #previewLabel{
+
+    .videoRow {
+      margin-top: 30px;
+    }
+
+    #previewLabel {
       display: block;
       position: absolute;
+    }
+
+    .rangeInput {
+      border: none;
+      border-bottom: 1px solid #000;
+      outline: none;
+      width: 59px;
+      padding-left: 5px;
+      font-weight: 500;
     }
   </style>
   <title class="screenSharing">屏幕共享</title>
@@ -37,7 +53,8 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="audioList"><strong class="text-gray-dark audioDevices">音频设备</strong></label>
+              <label class="input-group-text" for="audioList"><strong
+                  class="text-gray-dark audioDevices">音频设备</strong></label>
             </div>
             <select class="custom-select" id="audioList" style="width: 50%; max-width: 200px;">
             </select>
@@ -47,7 +64,8 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="videoList"><strong class="text-gray-dark videoDevices">视频设备</strong></label>
+              <label class="input-group-text" for="videoList"><strong
+                  class="text-gray-dark videoDevices">视频设备</strong></label>
             </div>
             <select class="custom-select" id="videoList" style="width: 50%; max-width: 200px;">
             </select>
@@ -57,7 +75,8 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="screenList"><strong class="text-gray-dark shareScreen">共享屏幕</strong></label>
+              <label class="input-group-text" for="screenList"><strong
+                  class="text-gray-dark shareScreen">共享屏幕</strong></label>
             </div>
             <select class="custom-select" id="screenList" style="width: 50%; max-width: 200px;">
             </select>
@@ -67,7 +86,8 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="screenList"><strong class="text-gray-dark isScreenAudio">是否共享音频</strong></label>
+              <label class="input-group-text" for="screenList"><strong
+                  class="text-gray-dark isScreenAudio">是否共享音频</strong></label>
             </div>
             <select class="custom-select" id="isScreenAudio" style="width: 50%; max-width: 200px;">
               <option value="yes" class="yes">是</option>
@@ -83,8 +103,8 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="roomId"><strong class="text-gray-dark roomid">房间号</strong></label>
             </div>
-            <input type="email" class="form-control d-inline" id="roomId" style="width: 60%; max-width: 200px;" aria-describedby="emailHelp"
-              placeholder="please enter room ID">
+            <input type="email" class="form-control d-inline" id="roomId" style="width: 60%; max-width: 200px;"
+              aria-describedby="emailHelp" placeholder="please enter room ID" value="123213123">
           </div>
         </div>
 
@@ -93,18 +113,19 @@
             <div class="input-group-prepend">
               <label class="input-group-text" for="screenWidth"><strong class="text-gray-dark width">宽</strong></label>
             </div>
-            <input type="email" class="form-control d-inline" id="screenWidth" style="width: 60%; max-width: 200px;" aria-describedby="emailHelp"
-              placeholder="please enter screen width">
+            <input type="email" class="form-control d-inline" id="screenWidth" style="width: 60%; max-width: 200px;"
+              aria-describedby="emailHelp" placeholder="please enter screen width">
           </div>
         </div>
 
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="screenHeight"><strong class="text-gray-dark height">高</strong></label>
+              <label class="input-group-text" for="screenHeight"><strong
+                  class="text-gray-dark height">高</strong></label>
             </div>
-            <input type="email" class="form-control d-inline" id="screenHeight" style="width: 60%; max-width: 200px;" aria-describedby="emailHelp"
-              placeholder="please enter screen height">
+            <input type="email" class="form-control d-inline" id="screenHeight" style="width: 60%; max-width: 200px;"
+              aria-describedby="emailHelp" placeholder="please enter screen height">
           </div>
         </div>
         <!-- <div class="col-sm">
@@ -124,7 +145,8 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="screenFrameRate"><strong class="text-gray-dark height">共享帧率</strong></label>
+              <label class="input-group-text" for="screenFrameRate"><strong
+                  class="text-gray-dark height">共享帧率</strong></label>
             </div>
             <select class="custom-select" id="screenFrameRate">
               <option value="5">5</option>
@@ -151,12 +173,13 @@
         </div>
       </div>
 
-      
+
       <div class="row">
         <div class="col-sm">
           <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
           <button type="button" id="openRoom" class=" btn btn-primary btn-sm enterRoomPlay">进入房间</button>
           <button type="button" id="screenShot" class="btn btn-primary btn-sm screenSharingContent">捕捉屏幕</button>
+          <button type="button" id="rangeScreenShare" class="btn btn-primary btn-sm">区域屏幕共享</button>
           <button type="button" id="stopScreenShot" class="btn btn-primary btn-sm stopScreenSharing">停止捕捉</button>
           <button type="button" id="enterRoom" class="btn btn-primary btn-sm">进房预览</button>
           <button type="button" id="publish" class="btn btn-primary btn-sm">推流</button>
@@ -177,7 +200,9 @@
           <div class="previewScreenVideo">
 
           </div>
-          <video id="customVideo" crossOrigin="anonymous" muted playsinline autoplay controls src="https://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/big_buck_bunny.mp4" loop></video>
+          <video id="rangeShareVideo" autoplay muted playsinline></video>
+          <video id="customVideo" crossOrigin="anonymous" muted playsinline autoplay controls
+            src="https://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/big_buck_bunny.mp4" loop></video>
           <video id="testVideo" autoplay muted playsinline></video>
         </div>
 
@@ -185,8 +210,49 @@
           <!--<video  autoplay muted playsinline></video>-->
         </div>
       </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel">自定义共享区域</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form>
+                <div class="form-group">
+                  <label for="videoXRange">起始点横坐标：</label>
+                  <input type="number" id="videoXInput" class="rangeInput" value="0">
+                  <input type="range" class="form-control-range" id="videoXRange" value="0">
+                </div>
+                <div class="form-group">
+                  <label for="videoYRange">起始点纵坐标: </label>
+                  <input type="number" id="videoYInput" class="rangeInput" value="0">
+                  <input type="range" class="form-control-range" id="videoYRange" value="0">
+                </div>
+                <div class="form-group">
+                  <label for="videoWidthRange">共享区域的宽度：</label>
+                  <input type="number" id="videoWidthInput" class="rangeInput">
+                  <input type="range" class="form-control-range" id="videoWidthRange" value="20">
+                </div>
+                <div class="form-group">
+                  <label for="videoHeightRange">共享区域的高度：</label>
+                  <input type="number" id="videoHeightInput" class="rangeInput">
+                  <input type="range" class="form-control-range" id="videoHeightRange" value="20">
+                </div>
+                <button type="button" id="modalSubmit" class="btn btn-primary">确认</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
 </body>
+
 </html>

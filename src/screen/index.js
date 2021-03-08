@@ -32,6 +32,19 @@ $(async () => {
     let externalStreamVideoTrack;
     let externalStreamAudioTrack;
     let previewed = false;
+    let shareVideoStream = null;
+    let globalCanvas = null;
+    let canvasMedia = null;
+    let timer = null;
+    let positionXInvideo = 0;
+    let positionYInvideo = 0;
+    let viodeWidth = 400;
+    let videoHeight = 400;
+    let isFirstRange = true;
+    let globalPreviewStream = null;
+    let rangePreviewStream = null;
+    let clientWidth = $('#screenWidth').val() * 1 || screen.width
+    let clientHeight = $('#screenHeight').val() * 1 || screen.height
     const publishStreamID = 'web-' + new Date().getTime();
 
     const browser = getBrowser();
@@ -67,6 +80,106 @@ $(async () => {
             externalStreamAudioTrack = null;
         }
     }
+
+    const rangeShare = async () => {
+        // const screenStream = await zg.createStream({ screen: true });
+        const video = $('.previewScreenVideo video:last')[0];
+        // video['srcObject'] = shareVideoStream;
+
+        const canvas = document.createElement('canvas');
+        canvas.setAttribute('id', 'rangeShareCanvas')
+  
+        const stream = video.captureStream();
+        globalCanvas = canvas
+        video.oncanplay = function() {
+          canvas.width = viodeWidth;
+          canvas.height = videoHeight;
+        };
+  
+        // canvs 绘制
+        const media = canvas.captureStream(25); // 实时视频捕获的画布
+        const track = media.getVideoTracks()[0];
+        // pullV.srcObject = media
+        // videoStream = stream
+        canvasMedia = media
+        // canvasTrack = track
+
+        const rangeShareVideo = $('#rangeShareVideo')[0]
+        console.log(rangeShareVideo);
+        rangeShareVideo.srcObject = canvasMedia
+  
+        const ctx = canvas.getContext('2d');
+        
+        videoDrawInCanvas(ctx, video, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
+        let q = track.stop;
+        track.stop = () => {
+          q.call(track);
+          videoDrawInCanvas(ctx, video, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
+          video.remove();
+          canvas.width = 0;
+          canvas.remove();
+          video = canvas = null;
+        };
+        if (stream instanceof MediaStream && stream.getAudioTracks().length) {
+          let micro = stream.getAudioTracks()[0];
+          media.addTrack(micro);
+        }
+    }
+
+    const videoDrawInCanvas = (
+        ctx,
+        video,
+        canvas,
+        videoX,
+        videoY,
+        videoWidth,
+        videoHeight,
+        videoWidthInCanvas = videoWidth,
+        videoHeightInCanvas = videoHeight,
+        canvasX = 0,
+        canvasY = 0
+      ) => {
+        ctx.drawImage(video, videoX, videoY, videoWidth, videoHeight , canvasX, canvasY, videoWidthInCanvas, videoHeightInCanvas);
+        timer = setTimeout(() => {
+            videoDrawInCanvas(ctx, video, canvas, videoX, videoY, videoWidth, videoHeight);
+        }, 60);
+    };
+
+    const changeRange = () => {
+        const video = $('.previewScreenVideo video:last')[0];
+        const canvas = globalCanvas
+        const ctx = canvas.getContext('2d');
+  
+        clearTimeout(timer)
+        canvas.width = viodeWidth
+        canvas.height = videoHeight
+        videoDrawInCanvas(ctx, video, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
+    }
+
+    const getRealInputValue = (k, type, range, input) => {
+        const len = type === 'width' ? clientWidth : clientHeight
+        const res = k * len / 100
+        input && input.val(res)
+        if(range && res < 50 && (range.value = 50 * 100 / len)) {
+            input.val(50)
+            viodeWidth = 50
+            return 50
+        }
+        
+        return  res
+    }
+
+    const getRefletRangeValue = (k, type, input, position = false) => {
+        const len = type === 'width' ? clientWidth : clientHeight
+        if(!position) {
+            input.value < 50 && (input.value = 50) 
+            input.value > len && (input.value = len) 
+        } else {
+            input.value < 0 && (input.value = 0)
+        }
+        return k >= 50 ? k > len ? len : k: 50
+    }
+
     // 点击系统停止共享
     zg.on('screenSharingEnded', (stream)=> {
         console.warn('screen sharing end',videoType );
@@ -249,6 +362,7 @@ $(async () => {
             );
             const video = $('.previewScreenVideo video:last')[0];
             console.warn('video', video, screenStream);
+            shareVideoStream = screenStream;
             video.srcObject = screenStream;
 
             const publisRes= zg.startPublishingStream(screenStreamId, screenStream);
@@ -264,6 +378,33 @@ $(async () => {
             console.error('screenShot', e);
         }
     });
+    $("#rangeScreenShare").click(async () => {
+        if(!shareVideoStream) return alert('请先开启屏幕共享')
+        if(isFirstRange) {
+            $("#videoWidthInput").val(0.2 * clientWidth)
+            $("#videoHeightInput").val(0.2 * clientHeight)
+        }
+        $('#staticBackdrop').modal()
+    });
+    $("#modalSubmit").click(async () => {
+        if(isFirstRange) {
+            rangeShare()
+            changeRange()
+            isFirstRange = false
+        } else {
+            changeRange()
+        }
+        $('#staticBackdrop').modal('hide')
+        if(!rangePreviewStream) {
+            try {
+                rangePreviewStream = await zg.createStream({custom: {source: canvasMedia}})
+            } catch(err) {
+                console.log(err);
+            }
+        }
+        globalPreviewStream = previewStream
+        previewStream = rangePreviewStream
+    })
 
     $('#stopScreenShot').click(() => {
         const _stopScreenStreamId = $('#screenList').val();
@@ -272,6 +413,44 @@ $(async () => {
         if (!_stopScreenStream) return;
         stopScreenShot(_stopScreenStream);
     });
+
+    $("#videoXRange").on('input', (e) => {
+        const val = getRealInputValue(e.target.value, 'width')
+        $("#videoXInput").val(val)
+        positionXInvideo = val
+    })
+    $("#videoYRange").on('input', (e) => {
+        const val = getRealInputValue(e.target.value, 'height')
+        $("#videoYInput").val(val)
+        positionYInvideo = val
+    })
+    $("#videoWidthRange").on('input', (e) => {
+        viodeWidth = getRealInputValue(e.target.value, 'width', e.target, $("#videoWidthInput"))
+    })
+    $("#videoHeightRange").on('input', (e) => {
+        videoHeight = getRealInputValue(e.target.value, 'height', e.target, $("#videoHeightInput"))
+    })
+
+    $("#videoXInput").on('input', (e) => {
+        $("#videoXRange").val(e.target.value * 100 / clientWidth)
+        positionXInvideo = getRefletRangeValue(e.target.value, 'width', e.target, true)
+
+    })
+    $("#videoYInput").on('input', (e) => {
+        $("#videoYRange").val(e.target.value * 100 / clientHeight)
+        positionXInvideo = getRefletRangeValue(e.target.value, 'height', e.target, true)
+
+    })
+    $("#videoWidthInput").on('input', (e) => {
+        $("#videoWidthRange").val(e.target.value * 100 / clientWidth)
+        viodeWidth = getRefletRangeValue(e.target.value, 'width', e.target)
+
+    })
+    $("#videoHeightInput").on('input', (e) => {
+        $("#videoHeightRange").val(e.target.value * 100 / clientHeight)
+        videoHeight = getRefletRangeValue(e.target.value, 'height', e.target)
+    })
+    
 
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {
