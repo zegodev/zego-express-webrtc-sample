@@ -15,7 +15,7 @@
     }
 
     video {
-      width: 320px;
+      width: 500px;
       height: auto;
     }
 
@@ -35,6 +35,15 @@
       width: 59px;
       padding-left: 5px;
       font-weight: 500;
+    }
+
+    .box {
+      background: #007bff;
+      width: 0px;
+      height: 0px;
+      position: absolute;
+      opacity: 0.3;
+      cursor: move;
     }
   </style>
   <title class="screenSharing">屏幕共享</title>
@@ -223,6 +232,8 @@
               </button>
             </div>
             <div class="modal-body">
+              <div>可通过按住shfit + 鼠标拖拽选择区域(以页面上显示的屏幕共享的那个视频为基准) </div>
+              <div style="margin-bottom: 8px;">选择后双击选中区域确认选择</div>
               <form>
                 <div class="form-group">
                   <label for="videoXRange">起始点横坐标：</label>
