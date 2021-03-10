@@ -32,6 +32,8 @@ $(async () => {
     let externalStreamVideoTrack;
     let externalStreamAudioTrack;
     let previewed = false;
+    let useImageCapture = false; // 是否使用 mageCapture 作为渲染源
+    let imageCapture = null; // ImageCapture 实例对象
     let shareVideoStream = null;  // 屏幕共享的媒体流
     let globalCanvas = null; // 创建出来的Canvas对象, 由于没有插入到dom上，所以需要保存
     let canvasMedia = null; // 裁剪后的视频流
@@ -41,7 +43,6 @@ $(async () => {
     let viodeWidth = 400; // 要裁剪的视频的区域的宽度
     let videoHeight = 400; // 要裁剪的视频的区域的高度
     let isRangeShare = false; // 是不是以及开起了屏幕共享
-    let isFirstRange = true; // 是不是开起了屏幕共享
     let globalPreviewStream = null;
     let rangePreviewStream = null;
     let clientWidth = $('#screenWidth').val() * 1 || screen.width
@@ -93,45 +94,47 @@ $(async () => {
     const rangeShare = async () => {
         isRangeShare = true
         // const screenStream = await zg.createStream({ screen: true });
-        const video = $('.previewScreenVideo video:last')[0];
-        // video['srcObject'] = shareVideoStream;
-
+        let source = null
         const canvas = document.createElement('canvas');
+        const video = $('.previewScreenVideo video:last')[0];
+        if(!useImageCapture) {
+            video.oncanplay = function() {
+                canvas.width = viodeWidth;
+                canvas.height = videoHeight;
+            };
+            source = video
+        } else {
+            imageCapture = new ImageCapture(shareVideoStream.getVideoTracks()[0])
+            source = await imageCapture.grabFrame()
+            // video.remove()
+        }
   
-        const stream = video.captureStream();
         globalCanvas = canvas
-        video.oncanplay = function() {
-          canvas.width = viodeWidth;
-          canvas.height = videoHeight;
-        };
   
         // canvs 绘制
         const media = canvas.captureStream(25); // 实时视频捕获的画布
         const track = media.getVideoTracks()[0];
-        // pullV.srcObject = media
-        // videoStream = stream
         canvasMedia = media
-        // canvasTrack = track
 
         const rangeShareVideo = $('#rangeShareVideo')[0]
-        console.log(rangeShareVideo);
         rangeShareVideo.srcObject = canvasMedia
   
         const ctx = canvas.getContext('2d');
         
-        videoDrawInCanvas(ctx, video, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
+        videoDrawInCanvas(ctx, source, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
         let q = track.stop;
         track.stop = () => {
           q.call(track);
-          videoDrawInCanvas(ctx, video, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
-          video.remove();
+          videoDrawInCanvas(ctx, source, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
+          video && video.remove() && (video = null)
           canvas.width = 0;
           canvas.remove();
-          video = canvas = null;
+          canvas = null;
         };
-        if (stream instanceof MediaStream && stream.getAudioTracks().length) {
-          let micro = stream.getAudioTracks()[0]; // 如果有音频轨则加上音频轨
-          media.addTrack(micro);
+
+        if(shareVideoStream.getAudioTracks().length) {
+            let micro = shareVideoStream.getVideoTracks()[0]
+            media.addTrack(micro);
         }
     }
 
@@ -151,7 +154,7 @@ $(async () => {
      */
     const videoDrawInCanvas = (
         ctx,
-        video,
+        source,
         canvas,
         videoX,
         videoY,
@@ -162,21 +165,34 @@ $(async () => {
         canvasX = 0,
         canvasY = 0
       ) => {
-        ctx.drawImage(video, videoX, videoY, videoWidth, videoHeight , canvasX, canvasY, videoWidthInCanvas, videoHeightInCanvas);
-        timer = setTimeout(() => {
-            videoDrawInCanvas(ctx, video, canvas, videoX, videoY, videoWidth, videoHeight);
+        ctx.drawImage(source, videoX, videoY, videoWidth, videoHeight , canvasX, canvasY, videoWidthInCanvas, videoHeightInCanvas);
+        timer = setTimeout(async () => {
+            if(useImageCapture) {
+                source = await imageCapture.grabFrame()
+            }
+            videoDrawInCanvas(ctx, source, canvas, videoX, videoY, videoWidth, videoHeight);
         }, 60);
     };
 
-    const changeRange = () => {
-        const video = $('.previewScreenVideo video:last')[0];
-        const canvas = globalCanvas
+    const changeRange = async () => {
+        let source = null
+        const canvas = globalCanvas;
         const ctx = canvas.getContext('2d');
   
         clearTimeout(timer)
         canvas.width = viodeWidth
         canvas.height = videoHeight
-        videoDrawInCanvas(ctx, video, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
+        if(!useImageCapture) {
+            const video = $('.previewScreenVideo video:last')[0];
+            source = video
+        } else {
+            if(!imageCapture) rangeShare()
+            imageCapture.grabFrame().then(res => {
+                videoDrawInCanvas(ctx, res, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
+            })
+            return
+        }
+        videoDrawInCanvas(ctx, source, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
     }
 
     const getRealInputValue = (k, type, range, input) => {
@@ -460,24 +476,24 @@ $(async () => {
         }
     });
     $("#rangeScreenShare").click(async () => {
-        // if(!shareVideoStream) return alert('请先开启屏幕共享')
-        if(isFirstRange) {
+        if(!shareVideoStream) return alert('请先开启屏幕共享')
+        if(!globalCanvas) {
             $("#videoWidthInput").val(0.2 * clientWidth)
             $("#videoHeightInput").val(0.2 * clientHeight)
         }
         $('#staticBackdrop').modal()
     });
     $("#modalSubmit").click(async () => {
-        if(isFirstRange) {
+        if(!globalCanvas) {
             rangeShare()
-            changeRange()
-            isFirstRange = false
         } else {
             changeRange()
         }
-        isRangeShare = true
         $('#staticBackdrop').modal('hide')
         changePreview()
+    })
+    $("#exampleCheck1").change((e) => {
+        useImageCapture = e.target.checked
     })
 
     $('#stopScreenShot').click(() => {
