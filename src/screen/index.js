@@ -10,6 +10,7 @@ import {
     publishType
 } from '../common';
 import { getBrowser } from '../assets/utils';
+import rangeShareFunction from './rangeShare'
 
 $(async () => {
     await checkAnRun(true);
@@ -33,20 +34,18 @@ $(async () => {
     let externalStreamAudioTrack;
     let previewed = false;
     let useImageCapture = false; // 是否使用 mageCapture 作为渲染源
-    let imageCapture = null; // ImageCapture 实例对象
     let shareVideoStream = null;  // 屏幕共享的媒体流
     let globalCanvas = null; // 创建出来的Canvas对象, 由于没有插入到dom上，所以需要保存
     let canvasMedia = null; // 裁剪后的视频流
-    let timer = null; // 在canvas 绘制video的定时器
     let positionXInvideo = 0;  // 原视频的矩形（裁剪）选择框的左上角 X 轴坐标。
     let positionYInvideo = 0; // 原视频的矩形（裁剪）选择框的左上角 Y 轴坐标。
     let viodeWidth = 400; // 要裁剪的视频的区域的宽度
     let videoHeight = 400; // 要裁剪的视频的区域的高度
-    let isRangeShare = false; // 是不是以及开起了屏幕共享
     let globalPreviewStream = null;
     let rangePreviewStream = null;
     let clientWidth = $('#screenWidth').val() * 1 || screen.width
     let clientHeight = $('#screenHeight').val() * 1 || screen.height
+    let changeRangeGlobal = null
     // startX, startY 为鼠标点击时初始坐标
      // diffX, diffY 为鼠标初始坐标与 box 左上角坐标之差，用于拖动
     let startX, startY, diffX, diffY;
@@ -72,6 +71,17 @@ $(async () => {
         console.log(`screenStreamList `, screenStreamList);
     };
 
+    const stopRangeScreen = () => {
+        shareVideoStream = null
+        const video = $('#rangeShareVideo')[0]
+        video && video.remove() && (video = null)
+        globalCanvas.width = 0;
+        globalCanvas.remove();
+        globalCanvas = null
+        canvasMedia = null
+        changeRangeGlobal = null
+    }
+
     const stopScreen = () => {
         if (screendStream) {
             zg.destroyStream(screendStream);
@@ -89,110 +99,6 @@ $(async () => {
             externalStreamAudioTrack && externalStreamAudioTrack.stop();
             externalStreamAudioTrack = null;
         }
-    }
-
-    const rangeShare = async () => {
-        isRangeShare = true
-        // const screenStream = await zg.createStream({ screen: true });
-        let source = null
-        const canvas = document.createElement('canvas');
-        const video = $('.previewScreenVideo video:last')[0];
-        if(!useImageCapture) {
-            video.oncanplay = function() {
-                canvas.width = viodeWidth;
-                canvas.height = videoHeight;
-            };
-            source = video
-        } else {
-            imageCapture = new ImageCapture(shareVideoStream.getVideoTracks()[0])
-            source = await imageCapture.grabFrame()
-            // video.remove()
-        }
-  
-        globalCanvas = canvas
-  
-        // canvs 绘制
-        const media = canvas.captureStream(25); // 实时视频捕获的画布
-        const track = media.getVideoTracks()[0];
-        canvasMedia = media
-
-        const rangeShareVideo = $('#rangeShareVideo')[0]
-        rangeShareVideo.srcObject = canvasMedia
-  
-        const ctx = canvas.getContext('2d');
-        
-        videoDrawInCanvas(ctx, source, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
-        let q = track.stop;
-        track.stop = () => {
-          q.call(track);
-          videoDrawInCanvas(ctx, source, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
-          video && video.remove() && (video = null)
-          canvas.width = 0;
-          canvas.remove();
-          canvas = null;
-        };
-
-        if(shareVideoStream.getAudioTracks().length) {
-            let micro = shareVideoStream.getVideoTracks()[0]
-            media.addTrack(micro);
-        }
-    }
-
-    /**
-     * 把video的画在cavans上
-     * @param {*} ctx canvas的绘图上下文 context
-     * @param {*} video 要绘制的到 canvas 上的 video Dom 对象
-     * @param {*} canvas canvas 对象
-     * @param {*} videoX 原视频的矩形（裁剪）选择框的左上角 X 轴坐标。
-     * @param {*} videoY 原视频的矩形（裁剪）选择框的左上角 Y 轴坐标。
-     * @param {*} videoWidth 要裁剪的视频的区域的宽度
-     * @param {*} videoHeight 要裁剪的视频的区域的高度
-     * @param {*} videoWidthInCanvas 视频在canvas上的渲染宽度
-     * @param {*} videoHeightInCanvas 视频在canvas上的渲染高度
-     * @param {*} canvasX 视频的左上角在目标canvas上 X 轴坐标。
-     * @param {*} canvasY 视频的左上角在目标canvas上 Y 轴坐标
-     */
-    const videoDrawInCanvas = (
-        ctx,
-        source,
-        canvas,
-        videoX,
-        videoY,
-        videoWidth,
-        videoHeight,
-        videoWidthInCanvas = videoWidth,
-        videoHeightInCanvas = videoHeight,
-        canvasX = 0,
-        canvasY = 0
-      ) => {
-        ctx.drawImage(source, videoX, videoY, videoWidth, videoHeight , canvasX, canvasY, videoWidthInCanvas, videoHeightInCanvas);
-        timer = setTimeout(async () => {
-            if(useImageCapture) {
-                source = await imageCapture.grabFrame()
-            }
-            videoDrawInCanvas(ctx, source, canvas, videoX, videoY, videoWidth, videoHeight);
-        }, 60);
-    };
-
-    const changeRange = async () => {
-        let source = null
-        const canvas = globalCanvas;
-        const ctx = canvas.getContext('2d');
-  
-        clearTimeout(timer)
-        canvas.width = viodeWidth
-        canvas.height = videoHeight
-        if(!useImageCapture) {
-            const video = $('.previewScreenVideo video:last')[0];
-            source = video
-        } else {
-            if(!imageCapture) rangeShare()
-            imageCapture.grabFrame().then(res => {
-                videoDrawInCanvas(ctx, res, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
-            })
-            return
-        }
-        videoDrawInCanvas(ctx, source, canvas, positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
     }
 
     const getRealInputValue = (k, type, range, input) => {
@@ -257,10 +163,12 @@ $(async () => {
         viodeWidth = parseInt(width * clientWidth / video.width)
         videoHeight = parseInt(height * clientHeight / video.height)
 
-        if(isRangeShare) {
-            changeRange()
+        if(viodeWidth < 0 || videoHeight < 0 || positionXInvideo > clientWidth || positionYInvideo > clientHeight) return
+
+        if(globalCanvas) {
+            changeRangeGlobal(positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
         } else {
-            rangeShare()
+            getRangeShare(positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
         }
         changePreview()
     }
@@ -275,6 +183,17 @@ $(async () => {
         }
         globalPreviewStream = previewStream
         previewStream = rangePreviewStream
+    }
+
+    const getRangeShare = (sx, sy, sWidth, sHeight) => {
+        const video = $('.previewScreenVideo video:last')[0];
+        const canvas = document.createElement('canvas');
+        globalCanvas = canvas
+        const { canvasMedidaStream, changeRange } = rangeShareFunction(canvas, shareVideoStream, useImageCapture ? null : video)
+        canvasMedia = canvasMedidaStream
+        changeRangeGlobal = changeRange
+        $('#rangeShareVideo')[0].srcObject = canvasMedia
+        changeRangeGlobal(sx, sy, sWidth, sHeight)
     }
 
     // 点击系统停止共享
@@ -485,9 +404,9 @@ $(async () => {
     });
     $("#modalSubmit").click(async () => {
         if(!globalCanvas) {
-            rangeShare()
+            getRangeShare(positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
         } else {
-            changeRange()
+            changeRangeGlobal(positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
         }
         $('#staticBackdrop').modal('hide')
         changePreview()
@@ -562,6 +481,7 @@ $(async () => {
             cameraStreamAudioTrack.stop();
             cameraStreamAudioTrack = null;
         }
+        stopRangeScreen()
         logout();
     });
 
