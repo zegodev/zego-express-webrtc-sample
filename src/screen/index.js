@@ -43,8 +43,8 @@ $(async () => {
     let videoHeight = 400; // 要裁剪的视频的区域的高度
     let globalPreviewStream = null;
     let rangePreviewStream = null;
-    let clientWidth = $('#screenWidth').val() * 1 || screen.width
-    let clientHeight = $('#screenHeight').val() * 1 || screen.height
+    let clientWidth = 0;
+    let clientHeight = 0;
     let changeRangeGlobal = null
     // startX, startY 为鼠标点击时初始坐标
      // diffX, diffY 为鼠标初始坐标与 box 左上角坐标之差，用于拖动
@@ -69,14 +69,21 @@ $(async () => {
         $(`#${screenStream.streamId}`).remove();
         screenStreamList = screenStreamList.filter(item => item !== screenStream);
         console.log(`screenStreamList `, screenStreamList);
+
+        if(rangePreviewStream) {
+            zg.stopPublishingStream(publishStreamID);
+            stopRangeScreen();
+            zg.destroyStream(rangePreviewStream);
+            rangePreviewStream = null
+        }
     };
 
     const stopRangeScreen = () => {
         shareVideoStream = null
-        const video = $('#rangeShareVideo')[0]
-        video && video.remove() && (video = null)
-        globalCanvas.width = 0;
-        globalCanvas.remove();
+        let video = $('#rangeShareVideo')[0]
+        video && video.remove()
+        globalCanvas && globalCanvas.remove();
+        video = null
         globalCanvas = null
         canvasMedia = null
         changeRangeGlobal = null
@@ -128,6 +135,13 @@ $(async () => {
     const setSelectedValue = () => {
         const videoDom = $('.previewScreenVideo video:last')[0];
         if(!videoDom) return alert('需要开启屏幕共享才有效')
+        if(!globalCanvas) {
+            let video = $('.previewScreenVideo video:last')[0];
+            const settings = video.srcObject.getVideoTracks()[0].getSettings()
+            !$('#screenWidth').val() && (clientWidth =  settings.width)
+            !$('#screenHeight').val() && (clientHeight = settings.height)
+            console.log(settings.width, settings.height);
+        }
         const boxDom = $('#before_box')[0]
         const video = videoDom.getBoundingClientRect()
         const box = boxDom.getBoundingClientRect()
@@ -136,34 +150,44 @@ $(async () => {
 
         if(video.left > box.left) {
             left = 0;
-            width =  box.width - video.left + box.left
+            if(box.left + box.width > video.left + video.width) {
+                width = video.width
+            } else {
+                width = box.left + box.width - video.left
+            }
         } else {
             left = box.left - video.left;
-            width = box.width
+            if(box.left + box.width > video.left + video.width) {
+                width = video.left + video.width - box.left
+            } else {
+                width = box.width
+            }
         }
 
         if(video.top > box.top) {
             top = 0;
-            height = box.height - video.top + box.top 
+            if(box.top + box.height > video.top + video.height) {
+                height = box.height      
+            } else {
+                height = box.top + box.height - video.top
+            }
         } else {
             top = box.top - video.top;
-            height = box.height
-        }
-
-        if(width + left > video.width) {
-            width = video.width
-        }
-
-        if(height + top > video.height) {
-            height = video.height
+            if(box.top + box.height > video.top + video.height) {
+                height = video.top + video.height - box.top
+            } else {
+                height = box.height
+            }
         }
 
         positionXInvideo = parseInt(left * clientWidth / video.width)
         positionYInvideo = parseInt(top * clientHeight / video.height)
         viodeWidth = parseInt(width * clientWidth / video.width)
         videoHeight = parseInt(height * clientHeight / video.height)
+        
+        console.log('ngchikin', positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
 
-        if(viodeWidth < 0 || videoHeight < 0 || positionXInvideo > clientWidth || positionYInvideo > clientHeight) return
+        if(viodeWidth < 0 || videoHeight < 0) return
 
         if(globalCanvas) {
             changeRangeGlobal(positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
@@ -186,13 +210,21 @@ $(async () => {
     }
 
     const getRangeShare = (sx, sy, sWidth, sHeight) => {
-        const video = $('.previewScreenVideo video:last')[0];
+        let video = $('.previewScreenVideo video:last')[0];
         const canvas = document.createElement('canvas');
         globalCanvas = canvas
         const { canvasMedidaStream, changeRange } = rangeShareFunction(canvas, shareVideoStream, useImageCapture ? null : video)
         canvasMedia = canvasMedidaStream
         changeRangeGlobal = changeRange
-        $('#rangeShareVideo')[0].srcObject = canvasMedia
+        let shareVideo = $('#rangeShareVideo')[0]
+            
+        if(!shareVideo) {
+            shareVideo = $(`<video id="rangeShareVideo" autoplay muted playsinline></video>`)
+
+            $("#customVideo").before(shareVideo)
+            shareVideo = shareVideo[0]
+        }
+        shareVideo.srcObject = canvasMedia
         changeRangeGlobal(sx, sy, sWidth, sHeight)
     }
 
@@ -376,6 +408,7 @@ $(async () => {
             $('.previewScreenVideo').append(
                 $(`<video id="${screenStreamId}" autoplay muted playsinline></video>`),
             );
+
             const video = $('.previewScreenVideo video:last')[0];
             console.warn('video', video, screenStream);
             shareVideoStream = screenStream;
@@ -397,12 +430,23 @@ $(async () => {
     $("#rangeScreenShare").click(async () => {
         if(!shareVideoStream) return alert('请先开启屏幕共享')
         if(!globalCanvas) {
+            let video = $('.previewScreenVideo video:last')[0];
+            const settings = video.srcObject.getVideoTracks()[0].getSettings()
+            !$('#screenWidth').val() && (clientWidth =  settings.width)
+            !$('#screenHeight').val() && (clientHeight = settings.height)
+            console.log(settings.width, settings.height);
             $("#videoWidthInput").val(0.2 * clientWidth)
             $("#videoHeightInput").val(0.2 * clientHeight)
         }
         $('#staticBackdrop').modal()
     });
     $("#modalSubmit").click(async () => {
+        if(positionXInvideo + viodeWidth > clientWidth) {
+            viodeWidth = clientWidth - positionXInvideo
+        }
+        if(positionYInvideo + videoHeight > clientHeight) {
+            videoHeight = clientHeight - positionYInvideo
+        }
         if(!globalCanvas) {
             getRangeShare(positionXInvideo, positionYInvideo, viodeWidth, videoHeight)
         } else {

@@ -1,4 +1,4 @@
-import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout, publish, publishStreamId } from '../common';
+import { checkAnRun, zg, useLocalStreamList, enterRoom, previewVideo, logout, publish, publishStreamId, l3 } from '../common';
 import { getBrowser } from '../assets/utils';
 
 let playOption = {};
@@ -208,6 +208,7 @@ $(async () => {
                     }
 
                     if($("#videoCodec").val()) playOption.videoCodec = $("#videoCodec").val();
+                    if(l3 == true) playOption.resourceMode = 2;
 
                     zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
                         remoteStream = stream;

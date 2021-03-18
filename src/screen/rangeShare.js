@@ -9,8 +9,8 @@ export default function (canvas, mediaStream, video) {  // 不传 video 就是�
   } 
 
   if (mediaStream.getAudioTracks().length) {
-    let micro = mediaStream.getVideoTracks()[0];
-    media.addTrack(micro);
+    let micro = mediaStream.getAudioTracks()[0];
+    canvasMedidaStream.addTrack(micro);
     console.log('addTrack audio');
   }
 
