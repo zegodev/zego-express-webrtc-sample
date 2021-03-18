@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://zegodev.github.io/webrtcDemo-js/assets/bootstrap.css">
+  <title>webrtc测试</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    h4 {
+      font-weight: 200
+    }
+
+    .row {
+      margin-bottom: 20px;
+    }
+
+    .row .row {
+      margin-top: 10px;
+      margin-bottom: 0;
+    }
+
+    [class*="col-"] {
+      color: #fff;
+      padding-top: 15px;
+      padding-bottom: 15px;
+      background-color: #eee;
+      background-color: #347ef6;
+      border: 1px solid #ddd;
+      border: 1px solid rgba(86, 61, 124, .2);
+      text-align: center;
+      font-size: 30px;
+    }
+
+    hr {
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+
+    [v-cloak] {
+      display: none;
+    }
+
+    .panel-new {
+      margin-bottom: 10px;
+      border-color: #fff;
+    }
+
+    .jumbotron-new {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      padding-top: 10px
+    }
+
+    .jumbotron-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <div class="container">
+
+      <div class="jumbotron jumbotron-new">
+        <div class="jumbotron-title">
+          <h2 style="display:inline-block"><img src="https://www.zego.im/favicon.ico?t=201706023" alt=""
+              style="margin-right:10px">webrtc测试</h2>
+          <a class="btn btn-success btn-lg" href="#" role="button" @click="startTest"
+            style="background-color:#347ef6">开始测试</a>
+        </div>
+        <p class="lead">此网站用于测试浏览器是否支持webrtc</p>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>webRTC <span v-cloak>{{state.webrtcState}}</span></h4>
+        </div>
+        <div class="panel-body" v-cloak v-if="state.webrtcState == '检测完成'">
+          <div v-if="webRTC" class="alert alert-success">当前浏览器支持webrtc！！！</div>
+          <div v-else class="alert alert-danger">当前浏览器暂不支持webrtc！！！</div>
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>获取设备 <span v-cloak>{{state.webrtcState}}</span></h4>
+        </div>
+        <div class="panel-body" v-cloak v-if="state.webrtcState == '检测完成'">
+          <div v-if="capture" class="alert alert-success">当前浏览器支持获取设备！！！</div>
+          <div v-else class="alert alert-danger">当前浏览器不支持获取设备！！！</div>
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>H264编码 <span v-cloak>{{state.webrtcState}}</span></h4>
+        </div>
+        <div class="panel-body" v-cloak v-if="state.webrtcState == '检测完成'">
+          <div v-if="H264State" class="alert alert-success">当前浏览器支持H264编码！！！</div>
+          <div v-else class="alert alert-danger">当前浏览器不支持H264编码！！！</div>
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>VP8编码 <span v-cloak>{{state.webrtcState}}</span></h4>
+        </div>
+        <div class="panel-body" v-cloak v-if="state.webrtcState == '检测完成'">
+          <div v-if="VP8State" class="alert alert-success">当前浏览器支持VP8编码！！！</div>
+          <div v-else class="alert alert-danger">当前浏览器暂不支持VP8编码！！！</div>
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>音频输入 <span v-cloak>{{state.audioinputState}}</span></h4>
+        </div>
+        <div class="panel-body" v-cloak v-if="state.audioinputState == '检测完成'">
+          <div v-if="isAudioInput">
+            <div class="alert alert-success">检测到音频输入设备！！！</div>
+            {{audioinputInfos}}
+            <div class="progress" v-if="isSound">
+              <div class="progress-bar" role="progressbar" :aria-valuenow="sounder" aria-valuemin="0"
+                aria-valuemax="100" :style="{width: sounder*4 + '%'}">
+              </div>
+            </div>
+          </div>
+          <div v-else class="alert alert-danger">未检测到音频输入设备！！！</div>
+
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>音频输出 <span v-cloak>{{state.audiooutputState}}</span></h4>
+        </div>
+        <div class="panel-body">
+          <audio controls id="test">
+            <source src="http://zego-public.oss-cn-shanghai.aliyuncs.com/sdk-doc/assets/bike.mp3">
+          </audio>
+          <p v-cloak>
+            {{audiooutputInfos}}
+          </p>
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>视频输入 <span v-cloak>{{state.videoinputState}}</span></h4>
+        </div>
+        <div class="panel-body" v-cloak v-if="state.videoinputState == '检测完成'">
+          <div v-if="isVideoInput">
+            <div class="alert alert-success">检测到视频输入设备！！！</div>
+            {{videoinputInfos}}
+          </div>
+          <div v-else class="alert alert-danger">未检测到视频输入设备！！！</div>
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>分辨率检测 <span v-cloak>{{state.resolutionState}}</span></h4>
+        </div>
+        <div class="panel-body" v-cloak v-if="state.resolutionState === '检测完成'">
+          <p v-for="(item, idx) in resolutionList" :key="idx">
+            {{item.width}} X {{item.height}}: {{item.resolutionState}}
+          </p>
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <video muted autoplay playsinlne id="checkvideo" style="display:none"></video>
+        <div class="panel-heading" style="background-color:#347ef6">
+          <h4>连通性检测 <span v-cloak>{{state.connectivityState}}</span></h4>
+        </div>
+        <input type="text" id="roomId" value="123" hidden>
+        <div class="panel-body" v-cloak v-if="state.connectivityState === '检测完成'">
+          <div v-if="isConnectivity" class="alert alert-success">连通性检测成功！！！</div>
+          <div v-else class="alert alert-danger">连通性检测失败！！！</div>
+        </div>
+      </div>
+
+    </div> <!-- /container -->
+
+  </div>
+  <script src="https://zegodev.github.io/webrtcDemo-js/assets/vue.min.js"></script>
+</body>
+
+</html>
