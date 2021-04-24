@@ -46,7 +46,7 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 // Test code end
 
 let browser = {
-    versions:function(){
+    versions: function () {
         var u = navigator.userAgent, app = navigator.appVersion;
         return {
             trident: u.indexOf('Trident') > -1, //IE内核
@@ -56,20 +56,20 @@ let browser = {
             mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
             ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
             android: u.indexOf('Android') > -1 || u.indexOf('Adr') > -1, //android终端
-            iPhone: u.indexOf('iPhone') > -1 , //是否为iPhone或者QQHD浏览器
+            iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
             iPad: u.indexOf('iPad') > -1, //是否iPad
             webApp: u.indexOf('Safari') == -1, //是否web应用程序，没有头部与底部
             weixin: u.indexOf('MicroMessenger') > -1, //是否微信 （2015-01-22新增）
             qq: u.match(/\sQQ/i) == " qq" //是否QQ
         };
     }(),
-    language:(navigator.browserLanguage || navigator.language).toLowerCase()
+    language: (navigator.browserLanguage || navigator.language).toLowerCase()
 }
 
 // eslint-disable-next-line prefer-const
 zg = new ZegoExpressEngine(appID, server);
 
-zg.zegoWebRTC.rtcModules.streamCenter.isPeer = isPeer == true? true: false;
+zg.zegoWebRTC.rtcModules.streamCenter.isPeer = isPeer == true ? true : false;
 window.zg = zg;
 window.useLocalStreamList = useLocalStreamList;
 
@@ -263,10 +263,10 @@ function initSDK() {
                 let remoteStream;
                 let playOption;
 
-                if($("#videoCodec").val()) playOption.videoCodec = $("#videoCodec").val();
-                if(l3 == true) playOption.resourceMode = 2;
+                if ($("#videoCodec").val()) playOption.videoCodec = $("#videoCodec").val();
+                // if(l3 == true) playOption.resourceMode = 2;
 
-                zg.startPlayingStream(streamList[i].streamID,playOption).then(stream => {
+                zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
                     remoteStream = stream;
                     useLocalStreamList.push(streamList[i]);
                     let videoTemp = $(`<video id=${streamList[i].streamID} autoplay muted playsinline controls></video>`)
@@ -414,7 +414,7 @@ async function enterRoom() {
 
 async function logout() {
     console.info('leave room  and close stream');
-    if(previewVideo.srcObject){
+    if (previewVideo.srcObject) {
         previewVideo.srcObject = null;
     }
 
@@ -492,7 +492,7 @@ async function push(constraints, publishOption, isNew) {
         isPreviewed = true;
         $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
         isNew && (publishStreamId = 'webrtc' + new Date().getTime());
-        if($("#videoCodec").val()) publishOption.videoCodec = $("#videoCodec").val();
+        if ($("#videoCodec").val()) publishOption.videoCodec = $("#videoCodec").val();
         const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
         console.log('publish stream' + publishStreamId, result);
     } catch (err) {
