@@ -133,6 +133,15 @@ $(async () => {
         })
     })
 
+    $('#startCheckSystem').click(async () => {
+        const select = document.querySelector("#checkType");
+        const value = select.options[select.selectedIndex].value;
+        const res = await zg.checkSystemRequirements(value);
+        console.log(JSON.stringify(res));
+        const resultDiv = document.querySelector("#checkResult");
+        resultDiv.innerHTML = value + ": " + JSON.stringify(res);
+    })
+
     // $('#mutePlayStreamVideo').click(() => {
     //     useLocalStreamList.forEach(item => {
     //         zg.zegoWebRTC.mutePlayStreamVideo(item.streamID, !$(this).hasClass('disabled'));

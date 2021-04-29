@@ -68,7 +68,7 @@ export function getCgi(appId, serverUrl, cgi) {
             }
 
             if (key == 'isPeer') {
-              isPeer = decodeURIComponent(value) == 'true' ? true : false;
+              isPeer = decodeURIComponent(value) == 'false' ? false : true;
             }
         });
     }

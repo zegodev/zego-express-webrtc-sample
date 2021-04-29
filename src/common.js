@@ -69,7 +69,6 @@ let browser = {
 // eslint-disable-next-line prefer-const
 zg = new ZegoExpressEngine(appID, server);
 
-zg.zegoWebRTC.rtcModules.streamCenter.isPeer = isPeer == true? true: false;
 window.zg = zg;
 window.useLocalStreamList = useLocalStreamList;
 

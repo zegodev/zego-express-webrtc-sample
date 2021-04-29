@@ -16,6 +16,8 @@ const en = {
     thirdVideoContent: 'Supports pushing and pulling third-party audio and video',
     message: 'Real time message',
     messageContent: 'real time message',
+    tokenRole: 'token role',
+    tokenRoleContent: 'token role',
     cdn: 'CDN',
     cdnContent:
         'Pull the stream through the CDN, this function needs to apply to the configuration to use before it can also be used to transfer to other CDN',
@@ -87,6 +89,8 @@ const zh = {
     thirdVideoContent: '支持推拉第三方的音视频',
     message: '实时消息',
     messageContent: '实时消息功能',
+    tokenRole: 'token 鉴权',
+    tokenRoleContent: 'token 鉴权',
     cdn: 'CDN',
     cdnContent: '通过CDN拉取流,该功能需向即构申请配置方可使用，也支持转推到其他CDN',
     clickPlay: '点击播放',
