@@ -382,10 +382,6 @@ async function login(roomId) {
             app_id: appID,
             id_name: userID,
         });
-        token = await $.get('https://wsliveroom-alpha.zego.im:8282/token', {
-            app_id: appID,
-            id_name: userID,
-        });
     }
     return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true });
 }

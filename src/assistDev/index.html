@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <style>
+    .bg-f2 {
+      background-color: #f8f9fa;
+    }
+
+    video {
+      width: 320px;
+      height: auto;
+    }
+
+    .videoRow {
+      margin-top: 30px;
+    }
+
+    #previewLabel {
+      display: block;
+      position: absolute;
+    }
+    .remoteVideo video {
+      width: 160px;
+      height: 160px;
+    }
+    button.btn {
+      width: 160px;
+    }
+  </style>
+  <title class="assistDevPageTitle">推拉流基础功能</title>
+</head>
+
+<body class="bg-f2">
+  <div class="container">
+
+    <div class="my-3 p-3 bg-white rounded box-shadow small">
+
+      <h6 class="border-bottom border-gray pb-2 mb-0 assistDevPageTitle">基础推拉流</h6>
+
+      <div class="row" style="margin-top:1%">
+
+        <div class="col-sm" style="display: none;">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="playMode"><strong
+                  class="text-gray-dark playMode">拉流模式</strong></label>
+            </div>
+            <select class="custom-select" id="playMode" style="width: 50%;  max-width: 400px">
+              <option value="auto" class="auto">默认</option>
+              <option value="all" class="all">拉音视频</option>
+              <option value="video" class="onlyVideo">只拉视频</option>
+              <option value="audio" class="onlyAudio">只拉音频</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row" style="margin-bottom: 24px">
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-0">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="appId"><strong class="text-gray-dark ">AppID</strong></label>
+            </div>
+            <input type="text" class="form-control d-inline" id="appId" style="width: 75%; max-width: 400px"
+              aria-describedby="emailHelp" placeholder="please enter AppID">
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-0">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="roomId"><strong class="text-gray-dark ">RoomID</strong></label>
+            </div>
+            <input type="text" class="form-control d-inline" id="roomId" style="width: 75%; max-width: 400px"
+              value="0002" aria-describedby="emailHelp" placeholder="please enter RoomID">
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-0">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="streamId"><strong class="text-gray-dark ">StreamID</strong></label>
+            </div>
+            <input type="text" class="form-control d-inline" id="streamId" style="width: 75%; max-width: 400px"
+              aria-describedby="emailHelp" placeholder="please enter streamId">
+          </div>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <button type="button" id="openRoom" class="btn btn-primary btn-sm ">Login Room</button>
+          <button type="button" id="publish" class="btn btn-primary btn-sm ">Start Publishing</button>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 6px">
+        <div class="col-sm">
+          <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm ">Logout Room</button>
+          <button type="button" id="stopPublish" class="btn btn-secondary btn-sm ">Stop Publishing</button>
+        </div>
+      </div>
+
+      <div class="row videoRow">
+        <div class="col-sm" style="border: 1px solid #dfdfdf">
+          <h5 class="sound d-none"><span class="soundText">当前音量：</span> <span id="soundLevel">0</span></h5>
+          <label id="previewLabel" class="text-white"></label>
+          <video id="previewVideo" autoplay muted playsinline></video>
+        </div>
+        <div class="col-sm remoteVideo" style="border: 1px solid #dfdfdf">
+          <!-- <video  autoplay muted playsinline></video> -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+</body>
+
+</html>
