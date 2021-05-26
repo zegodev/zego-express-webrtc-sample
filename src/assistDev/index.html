@@ -23,6 +23,10 @@
       display: block;
       position: absolute;
     }
+    .remoteVideo video {
+      width: 160px;
+      height: 160px;
+    }
   </style>
   <title class="assistDevPageTitle">推拉流基础功能</title>
 </head>
@@ -36,7 +40,7 @@
 
       <div class="row" style="margin-top:1%">
 
-        <div class="col-sm"  style="display: none;">
+        <div class="col-sm" style="display: none;">
           <div class="input-group input-group-sm mb-3">
             <div class="input-group-prepend">
               <label class="input-group-text" for="playMode"><strong
@@ -57,34 +61,43 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-0">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="appId"><strong class="text-gray-dark appid">AppID</strong></label>
+              <label class="input-group-text" for="appId"><strong class="text-gray-dark ">AppID</strong></label>
             </div>
-            <input type="text" class="form-control d-inline" id="appId" style="width: 75%; max-width: 400px" value="1739272706"
+            <input type="text" class="form-control d-inline" id="appId" style="width: 75%; max-width: 400px"
               aria-describedby="emailHelp" placeholder="please enter AppID">
           </div>
         </div>
         <div class="col-sm">
           <div class="input-group input-group-sm mb-0">
             <div class="input-group-prepend">
-              <label class="input-group-text" for="roomId"><strong class="text-gray-dark roomid">房间号</strong></label>
+              <label class="input-group-text" for="roomId"><strong class="text-gray-dark ">RoomID</strong></label>
             </div>
             <input type="text" class="form-control d-inline" id="roomId" style="width: 75%; max-width: 400px"
-              aria-describedby="emailHelp" placeholder="please enter roomID">
+              value="0002" aria-describedby="emailHelp" placeholder="please enter RoomID">
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-0">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="streamId"><strong class="text-gray-dark ">StreamID</strong></label>
+            </div>
+            <input type="text" class="form-control d-inline" id="streamId" style="width: 75%; max-width: 400px"
+              aria-describedby="emailHelp" placeholder="please enter streamId">
           </div>
         </div>
 
       </div>
       <div class="row">
         <div class="col-sm">
-          <button type="button" id="openRoom" class="btn btn-primary btn-sm enterRoom">进入房间</button>
-          <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出房间</button>
-          <button type="button" id="publish" class="btn btn-primary btn-sm startPublish">开始推流</button>
-          <button type="button" id="stopPublish" class="btn btn-primary btn-sm stopPublish">停止推流</button>
+          <button type="button" id="openRoom" class="btn btn-primary btn-sm ">Login Room</button>
+          <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm ">Logout Room</button>
+          <button type="button" id="publish" class="btn btn-primary btn-sm ">Start Publishing</button>
+          <button type="button" id="5QQWeb6" class="btn btn-secondary btn-sm ">Stop Publishing</button>
         </div>
       </div>
 
       <div class="row videoRow">
-        <div class="col-sm"  style="border: 1px solid #dfdfdf">
+        <div class="col-sm" style="border: 1px solid #dfdfdf">
           <h5 class="sound d-none"><span class="soundText">当前音量：</span> <span id="soundLevel">0</span></h5>
           <label id="previewLabel" class="text-white"></label>
           <video id="previewVideo" autoplay muted playsinline></video>

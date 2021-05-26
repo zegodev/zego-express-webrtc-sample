@@ -70,8 +70,8 @@ const en = {
     userlist: 'staff',
     barrage: 'barrage',
     customMessage: 'custom message',
-    videoCodeType: 'video coding',
-    assistDevPageTitle: 'Assist Development',
+    videoCodeType: 'debugging example',
+    assistDevPageTitle: 'Debugging Example',
     enterRoom: 'enter room',
     startPublish: 'strat publish',
     stopPublish: 'stop publish'
@@ -125,7 +125,7 @@ const zh = {
     detectContent: '用于测试页面是否支持webrtc，检测所支持分辨率及连通性检测',
     token: 'token检测',
     tokenContent: '检测token是否与后台生成的相同',
-    assistDev: '开发调试',
+    assistDev: '调试示例',
     assistDevContent: '用于接入SDK的开发阶段进行辅助调试',
     audioDevices: '音频设备',
     videoDevices: '视频设备',
@@ -148,7 +148,7 @@ const zh = {
     barrage: '弹幕消息',
     customMessage: '发送自定义消息',
     videoCodeType: '视频编码',
-    assistDevPageTitle: '辅助开发调试',
+    assistDevPageTitle: '调试示例',
     enterRoom: '进入房间',
     startPublish: '开始推流',
     stopPublish: '停止推流'

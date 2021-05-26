@@ -14,7 +14,7 @@ let playOption = {};
 // --test begin
 let previewStream;
 let published = false;
-const publishStreamID = 'web-' + new Date().getTime();
+$('#streamId').val('web-' + new Date().getTime())
 let isLogin = false;
 // ---test end
 
@@ -37,9 +37,9 @@ $(async () => {
         previewVideo.srcObject = previewStream;
         isPreviewed = true;
         previewVideo.controls = true;
-        const result = zg.startPublishingStream(publishStreamID, previewStream ? previewStream : previewVideo.srcObject);
+        const result = zg.startPublishingStream($('#streamId').val(), previewStream ? previewStream : previewVideo.srcObject);
         published = true;
-        console.log('publish stream' + publishStreamID, result);
+        console.log('publish stream' + $('#streamId').val(), result);
     });
 
 
@@ -52,7 +52,7 @@ $(async () => {
             previewVideo.srcObject = null;
         }
         if (published) {
-            zg.stopPublishingStream(publishStreamID);
+            zg.stopPublishingStream($('#streamId').val());
             published = false;
         }
 
@@ -68,7 +68,7 @@ $(async () => {
             previewVideo.srcObject = null;
         }
         if (published) {
-            zg.stopPublishingStream(publishStreamID);
+            zg.stopPublishingStream($('#streamId').val());
             published = false;
         }
     });
@@ -181,8 +181,8 @@ async function enterRoom() {
     }
 
     await login(roomId);
-
     isLogin = true;
+    alert('Login Success!')
 
     console.warn('remoteVideo')
     $('.remoteVideo').html('');
