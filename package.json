@@ -27,7 +27,7 @@
     "jquery-i18next": "^1.2.1",
     "md5": "^2.2.1",
     "vconsole": "^3.3.4",
-    "zego-express-engine-webrtc": "^2.6.0"
+    "zego-express-engine-webrtc": "^2.7.0"
   },
   "devDependencies": {
     "@types/bootstrap": "^4.3.1",

@@ -27,6 +27,7 @@ let localStream;
 let publishType;
 let token, userID;
 let isPeer;
+let roomList = [];
 // eslint-disable-next-line prefer-const
 zg = new ZegoExpressEngine(appID, server);
 
@@ -163,7 +164,7 @@ function initSDK() {
                     zg.stopPublishingStream(publishStreamId);
                     zg.destroyStream(localStream);
                     isPreviewed = false;
-                    previewVideo.srcObject = null; 
+                    previewVideo.srcObject = null;
                 }
             }
             // const _msg = stateInfo.error.msg;
@@ -239,7 +240,7 @@ function initSDK() {
 
                     if ($("#videoCodec").val())
                         playOption.videoCodec = $("#videoCodec").val();
-                    
+
 
                     zg.startPlayingStream(streamList[i].streamID, playOption)
                         .then((stream) => {
@@ -356,7 +357,8 @@ function initSDK() {
 
     $("#renewToken").click(() => {
         token = document.querySelector("#tokenRole").value;
-        zg.renewToken(token);
+        const roomID = document.querySelector("#roomId").value;
+        zg.renewToken(token, roomID);
     });
 }
 
@@ -367,17 +369,17 @@ async function enterRoom() {
         return false;
     }
 
-    for (let i = 0; i < useLocalStreamList.length; i++) {
-        useLocalStreamList[i].streamID &&
-            zg.stopPlayingStream(useLocalStreamList[i].streamID);
-    }
+    // for (let i = 0; i < useLocalStreamList.length; i++) {
+    //     useLocalStreamList[i].streamID &&
+    //         zg.stopPlayingStream(useLocalStreamList[i].streamID);
+    // }
 
     await login(roomId);
 
     loginRoom = true;
 
-    console.warn("remoteVideo");
-    $(".remoteVideo").html("");
+    // console.warn("remoteVideo");
+    // $(".remoteVideo").html("");
 
     return true;
 }
@@ -385,7 +387,8 @@ async function enterRoom() {
 async function login(roomId) {
     userID = document.querySelector("#userID").value;
     token = document.querySelector("#tokenRole").value;
-    return await zg.loginRoom(roomId, token, { userID }, { userUpdate: true });
+    await zg.loginRoom(roomId, token, { userID, userName: 'test' + userID}, { userUpdate: true });
+    roomList.push(roomId);
 }
 
 async function publish(constraints, isNew) {
@@ -428,13 +431,15 @@ async function publish(constraints, isNew) {
 }
 async function push(constraints, publishOption, isNew) {
     try {
+        if (!publishOption) publishOption = {};
         localStream = await zg.createStream(constraints);
         previewVideo.srcObject = localStream;
         isPreviewed = true;
         $(".sound").hasClass("d-none") && $(".sound").removeClass("d-none");
-        isNew && (publishStreamId = "webrtc" + new Date().getTime());
+        const publishStreamId = "webrtc" + new Date().getTime();
         if ($("#videoCodec").val())
             publishOption.videoCodec = $("#videoCodec").val();
+        if ($("#roomId").val()) publishOption.roomID = $("#roomId").val();
         const result = zg.startPublishingStream(
             publishStreamId,
             localStream,
@@ -450,40 +455,38 @@ async function push(constraints, publishOption, isNew) {
     }
 }
 async function logout() {
-    console.info("leave room  and close stream");
-    if (previewVideo.srcObject) {
-        previewVideo.srcObject = null;
-    }
+  console.info('leave room  and close stream');
+  const roomId = $('#roomId').val();
+  // 停止拉流
+  // stop playing
+  for (let i = 0; i < useLocalStreamList.length; i++) {
+      useLocalStreamList[i].streamID && zg.stopPlayingStream(useLocalStreamList[i].streamID);
+  }
 
-    // 停止推流
-    // stop publishing
-    if (isPreviewed) {
-        zg.stopPublishingStream(publishStreamId);
-        zg.destroyStream(localStream);
-        isPreviewed = false;
-        previewVideo.srcObject = null;
-        !$(".sound").hasClass("d-none") && $(".sound").addClass("d-none");
-    }
+  // 清空页面
+  // Clear page
+  useLocalStreamList = [];
+  // window.useLocalStreamList = [];
 
-    // 停止拉流
-    // stop playing
-    for (let i = 0; i < useLocalStreamList.length; i++) {
-        useLocalStreamList[i].streamID &&
-            zg.stopPlayingStream(useLocalStreamList[i].streamID);
-    }
+  roomList.splice(roomList.findIndex(room => room == roomId), 1);
 
-    // 清空页面
-    // Clear page
-    useLocalStreamList = [];
-    // window.useLocalStreamList = [];
-    $(".remoteVideo").html("");
-    $("#memberList").html("");
+  if (previewVideo.srcObject && isPreviewed && (!roomId || roomList.length == 0) ) {
+    previewVideo.srcObject = null;
+    zg.stopPublishingStream(publishStreamId);
+    zg.destroyStream(localStream);
+    isPreviewed = false;
+    !$('.sound').hasClass('d-none') && $('.sound').addClass('d-none');
+  }
 
-    //退出登录
-    //logout
-    const roomId = $("#roomId").val();
-    zg.logoutRoom(roomId);
-    loginRoom = false;
+  if (!roomId || roomList.length == 0) {
+    $('.remoteVideo').html('');
+    $('#memberList').html('');
+  }
+
+  //退出登录
+  //logout
+  zg.logoutRoom(roomId);
+  loginRoom = false;
 }
 
 $(async () => {

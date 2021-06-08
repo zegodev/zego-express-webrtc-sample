@@ -27,12 +27,12 @@ let localStream;
 let publishType;
 
 let l3;
-let isPeer;
+let roomList = [];
 
 // 测试用代码，开发者请忽略
 // Test code, developers please ignore
 
-({ appID, server, cgiToken, userID, l3, isPeer } = getCgi(appID, server, cgiToken));
+({ appID, server, cgiToken, userID, l3 } = getCgi(appID, server, cgiToken));
 if (userID == "") userID = 'sample' + new Date().getTime();
 
 if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
@@ -46,7 +46,7 @@ if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
 // Test code end
 
 let browser = {
-    versions: function () {
+    versions:function(){
         var u = navigator.userAgent, app = navigator.appVersion;
         return {
             trident: u.indexOf('Trident') > -1, //IE内核
@@ -56,14 +56,14 @@ let browser = {
             mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
             ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
             android: u.indexOf('Android') > -1 || u.indexOf('Adr') > -1, //android终端
-            iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+            iPhone: u.indexOf('iPhone') > -1 , //是否为iPhone或者QQHD浏览器
             iPad: u.indexOf('iPad') > -1, //是否iPad
             webApp: u.indexOf('Safari') == -1, //是否web应用程序，没有头部与底部
             weixin: u.indexOf('MicroMessenger') > -1, //是否微信 （2015-01-22新增）
             qq: u.match(/\sQQ/i) == " qq" //是否QQ
         };
     }(),
-    language: (navigator.browserLanguage || navigator.language).toLowerCase()
+    language:(navigator.browserLanguage || navigator.language).toLowerCase()
 }
 
 // eslint-disable-next-line prefer-const
@@ -181,7 +181,7 @@ function initSDK() {
     enumDevices();
 
     zg.on('roomStateUpdate', (roomID, state, errorCode, extendedData) => {
-        console.log('roomStateUpdate: ', roomID, state, errorCode, extendedData);
+        console.warn('roomStateUpdate: ', roomID, state, errorCode, extendedData);
     });
     zg.on('roomUserUpdate', (roomID, updateType, userList) => {
         console.warn(
@@ -254,7 +254,7 @@ function initSDK() {
         console.warn(`streamExtraInfoUpdate: room ${roomID},  `, JSON.stringify(streamList));
     });
     zg.on('roomStreamUpdate', async (roomID, updateType, streamList, extendedData) => {
-        console.log('roomStreamUpdate 1 roomID ', roomID, streamList, extendedData);
+        console.warn('roomStreamUpdate 1 roomID ', roomID, streamList, extendedData);
         // let queue = []
         if (updateType == 'ADD') {
             for (let i = 0; i < streamList.length; i++) {
@@ -262,10 +262,10 @@ function initSDK() {
                 let remoteStream;
                 let playOption;
 
-                if ($("#videoCodec").val()) playOption.videoCodec = $("#videoCodec").val();
+                if($("#videoCodec").val()) playOption.videoCodec = $("#videoCodec").val();
                 if(l3 == true) playOption.resourceMode = 2;
 
-                zg.startPlayingStream(streamList[i].streamID, playOption).then(stream => {
+                zg.startPlayingStream(streamList[i].streamID,playOption).then(stream => {
                     remoteStream = stream;
                     useLocalStreamList.push(streamList[i]);
                     let videoTemp = $(`<video id=${streamList[i].streamID} autoplay muted playsinline controls></video>`)
@@ -383,7 +383,10 @@ async function login(roomId) {
             id_name: userID,
         });
     }
-    return await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true });
+    await zg.loginRoom(roomId, token, { userID, userName }, { userUpdate: true });
+    roomList.push(roomId);
+
+    return true;
 }
 
 async function enterRoom() {
@@ -393,36 +396,22 @@ async function enterRoom() {
         return false;
     }
 
-    for (let i = 0; i < useLocalStreamList.length; i++) {
-        useLocalStreamList[i].streamID && zg.stopPlayingStream(useLocalStreamList[i].streamID);
-    }
+    // for (let i = 0; i < useLocalStreamList.length; i++) {
+    //     useLocalStreamList[i].streamID && zg.stopPlayingStream(useLocalStreamList[i].streamID);
+    // }
 
     await login(roomId);
-
     loginRoom = true;
 
-    console.warn('remoteVideo')
-    $('.remoteVideo').html('');
+    // console.warn('remoteVideo')
+    // $('.remoteVideo').html('');
 
     return true;
 }
 
 async function logout() {
     console.info('leave room  and close stream');
-    if (previewVideo.srcObject) {
-        previewVideo.srcObject = null;
-    }
-
-    // 停止推流
-    // stop publishing
-    if (isPreviewed) {
-        zg.stopPublishingStream(publishStreamId);
-        zg.destroyStream(localStream);
-        isPreviewed = false;
-        previewVideo.srcObject = null;
-        !$('.sound').hasClass('d-none') && $('.sound').addClass('d-none');
-    }
-
+    const roomId = $('#roomId').val();
     // 停止拉流
     // stop playing
     for (let i = 0; i < useLocalStreamList.length; i++) {
@@ -433,12 +422,24 @@ async function logout() {
     // Clear page
     useLocalStreamList = [];
     // window.useLocalStreamList = [];
-    $('.remoteVideo').html('');
-    $('#memberList').html('');
+
+    roomList.splice(roomList.findIndex(room => room == roomId), 1);
+
+    if (previewVideo.srcObject && isPreviewed && (!roomId || roomList.length == 0) ) {
+      previewVideo.srcObject = null;
+      zg.stopPublishingStream(publishStreamId);
+      zg.destroyStream(localStream);
+      isPreviewed = false;
+      !$('.sound').hasClass('d-none') && $('.sound').addClass('d-none');
+    }
+
+    if (!roomId || roomList.length == 0) {
+      $('.remoteVideo').html('');
+      $('#memberList').html('');
+    }
 
     //退出登录
     //logout
-    const roomId = $('#roomId').val();
     zg.logoutRoom(roomId);
     loginRoom = false;
 }
@@ -468,8 +469,11 @@ async function publish(constraints, isNew) {
     // console.error('playType', playType);
     push(_constraints, { extraInfo: JSON.stringify({ playType }) }, isNew);
 }
-async function push(constraints, publishOption, isNew) {
+async function push(constraints, publishOption = {}, isNew) {
     try {
+        if(localStream) {
+            zg.destroyStream(localStream)
+        }
         localStream = await zg.createStream(constraints);
         // var AudioContext = window.AudioContext || window.webkitAudioContext; // 兼容性
         // let localTrack= localStream.getAudioTracks()[0];
@@ -487,7 +491,8 @@ async function push(constraints, publishOption, isNew) {
         isPreviewed = true;
         $('.sound').hasClass('d-none') && $('.sound').removeClass('d-none');
         isNew && (publishStreamId = 'webrtc' + new Date().getTime());
-        if ($("#videoCodec").val()) publishOption.videoCodec = $("#videoCodec").val();
+        if($("#videoCodec").val()) publishOption.videoCodec = $("#videoCodec").val();
+        if ($('#roomId').val()) publishOption.roomID = $('#roomId').val();
         const result = zg.startPublishingStream(publishStreamId, localStream, publishOption);
         console.log('publish stream' + publishStreamId, result);
     } catch (err) {
@@ -509,6 +514,31 @@ $('#toggleSpeaker').click(function () {
     $(this).toggleClass('disabled');
 });
 
+$('#enterRoom').click(async () => {
+  let loginSuc = false;
+  try {
+      loginSuc = await enterRoom();
+      if (loginSuc) {
+          if(localStream) {
+              zg.destroyStream(localStream)
+          }
+          localStream = await zg.createStream({
+              camera: {
+                  audioInput: $('#audioList').val() ,
+                  videoInput: $('#videoList').val() ,
+                  video: $('#videoList').val() === '0' ? false : true,
+                  audio: $('#audioList').val() === '0' ? false : true,
+              },
+          });
+          previewVideo.srcObject = localStream;
+          isPreviewed = true;
+          $('#videoList').val() === '0' && (previewVideo.controls = true);
+      }
+  } catch (error) {
+      console.error(error);
+  }
+});
+
 export {
     zg,
     appID,
@@ -525,7 +555,7 @@ export {
     isPreviewed,
     loginRoom,
     publishType,
-    l3
+    l3,
 };
 
 // $(window).on('unload', function() {

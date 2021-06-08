@@ -98,7 +98,7 @@ $(async () => {
     function changeStream(source) {
 
         var version = getChromeVersion();
-        if (version < 88) {
+        if (version != 88) {
             return source
         }
         return zg.createStream({

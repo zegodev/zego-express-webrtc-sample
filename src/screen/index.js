@@ -117,15 +117,15 @@ $(async () => {
             viodeWidth = 50
             return 50
         }
-        
+
         return  res
     }
 
     const getRefletRangeValue = (k, type, input, position = false) => {
         const len = type === 'width' ? clientWidth : clientHeight
         if(!position) {
-            input.value < 50 && (input.value = 50) 
-            input.value > len && (input.value = len) 
+            input.value < 50 && (input.value = 50)
+            input.value > len && (input.value = len)
         } else {
             input.value < 0 && (input.value = 0)
         }
@@ -167,7 +167,7 @@ $(async () => {
         if(video.top > box.top) {
             top = 0;
             if(box.top + box.height > video.top + video.height) {
-                height = box.height      
+                height = box.height
             } else {
                 height = box.top + box.height - video.top
             }
@@ -184,7 +184,7 @@ $(async () => {
         positionYInvideo = parseInt(top * clientHeight / video.height)
         viodeWidth = parseInt(width * clientWidth / video.width)
         videoHeight = parseInt(height * clientHeight / video.height)
-        
+
         console.log('ngchikin', positionXInvideo, positionYInvideo, viodeWidth, videoHeight);
 
         if(viodeWidth < 0 || videoHeight < 0) return
@@ -217,7 +217,7 @@ $(async () => {
         canvasMedia = canvasMedidaStream
         changeRangeGlobal = changeRange
         let shareVideo = $('#rangeShareVideo')[0]
-            
+
         if(!shareVideo) {
             shareVideo = $(`<video id="rangeShareVideo" autoplay muted playsinline></video>`)
 
@@ -240,28 +240,6 @@ $(async () => {
         }
     });
 
-    $('#enterRoom').click(async () => {
-        let loginSuc = false;
-        try {
-            loginSuc = await enterRoom();
-            if (loginSuc) {
-                previewStream = await zg.createStream({
-                    camera: {
-                        audioInput: $('#audioList').val(),
-                        videoInput: $('#videoList').val(),
-                        video: $('#videoList').val() === '0' ? false : true,
-                        audio: $('#audioList').val() === '0' ? false : true,
-                    },
-                });
-                previewVideo.srcObject = previewStream;
-                previewVideo.controls = true;
-                previewed = true;
-                videoType = 'camera';
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    });
     $('#publish').click(() => {
         const result = zg.startPublishingStream(publishStreamID, previewStream);
         console.log('publish stream' + publishStreamID, result);
@@ -503,7 +481,7 @@ $(async () => {
         $("#videoHeightRange").val(e.target.value * 100 / clientHeight)
         videoHeight = getRefletRangeValue(e.target.value, 'height', e.target)
     })
-    
+
 
     $('#leaveRoom').unbind('click');
     $('#leaveRoom').click(function() {
@@ -534,29 +512,29 @@ $(async () => {
           mouseDrag = true;
         }
       };
-    
+
     document.onkeyup = function(e) {
         if (e.key === 'Shift') {
           mouseDrag = false;
         }
       };
-    
+
       // 鼠标按下
     document.onmousedown = function(e) {
         startX = e.pageX;
         startY = e.pageY;
-    
+
         // 如果鼠标在 box 上被按下
         if (e.target.className.match(/box/)) {
           // 允许拖动
           dragging = true;
-    
+
           // 设置当前 box 的 id 为 moving_box
           if (document.getElementById('moving_box') !== null) {
             document.getElementById('moving_box').removeAttribute('id');
           }
           e.target.id = 'moving_box';
-    
+
           // 计算坐标差值
           diffX = startX - e.target.offsetLeft;
           diffY = startY - e.target.offsetTop;
@@ -584,7 +562,7 @@ $(async () => {
           active_box = null;
         }
       };
-    
+
       // 鼠标移动
     document.onmousemove = function(e) {
         // 更新 box 尺寸
@@ -593,7 +571,7 @@ $(async () => {
           ab.style.width = e.pageX - startX + 'px';
           ab.style.height = e.pageY - startY + 'px';
         }
-    
+
         // 移动，更新 box 坐标
         if (document.getElementById('moving_box') !== null && dragging) {
           let mb = document.getElementById('moving_box');
@@ -601,7 +579,7 @@ $(async () => {
           mb.style.left = e.pageX - diffX + 'px';
         }
       };
-    
+
       // 鼠标抬起
     document.onmouseup = function(e) {
         // 禁止拖动
@@ -614,7 +592,7 @@ $(async () => {
             document.body.removeChild(ab);
           }
         }
-    
+
         let mv = document.getElementById('moving_box');
         mv && mv.setAttribute('id', 'before_box') && (mouseDrag = false);
       };
