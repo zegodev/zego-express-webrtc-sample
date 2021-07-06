@@ -8,7 +8,7 @@ import { getBrowser } from './assets/utils';
 
 new VConsole();
 const userName = 'sampleUser' + new Date().getTime();
-const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
+const tokenUrl = 'https://wsliveroom-alpha.zego.im:8282/token';
 let userID = 'sample' + new Date().getTime();
 let publishStreamId = 'webrtc' + new Date().getTime();
 let zg;
@@ -35,7 +35,7 @@ let roomList = [];
 ({ appID, server, cgiToken, userID, l3 } = getCgi(appID, server, cgiToken));
 if (userID == "") userID = 'sample' + new Date().getTime();
 
-if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
+if (cgiToken && tokenUrl == 'https://wsliveroom-alpha.zego.im:8282/token') {
     $.get(cgiToken, rsp => {
         cgiToken = rsp.data;
         console.log(cgiToken);

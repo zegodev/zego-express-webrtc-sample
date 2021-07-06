@@ -7,7 +7,7 @@ import { getCgi } from '../content';
 
 new VConsole();
 const userID = 'sample' + new Date().getTime();
-const tokenUrl = 'https://wsliveroom-demo.zego.im:8282/token';
+const tokenUrl = 'https://wsliveroom-alpha.zego.im:8282/token';
 const publishStreamId = 'webrtc' + new Date().getTime();
 const taskID = 'task-' + new Date().getTime();
 const mixStreamId = 'mix-' + publishStreamId;
@@ -22,7 +22,7 @@ let videoCodec = 'H264';
 let supportVideoCodec;
 
 ({ appID, server, cgiToken } = getCgi(appID, server, cgiToken));
-if (cgiToken && tokenUrl == 'https://wsliveroom-demo.zego.im:8282/token') {
+if (cgiToken && tokenUrl == 'https://wsliveroom-alpha.zego.im:8282/token') {
     $.get(cgiToken, rsp => {
         cgiToken = rsp.data;
         console.log(cgiToken);
