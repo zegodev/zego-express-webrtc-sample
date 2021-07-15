@@ -76,11 +76,7 @@ new Vue({
         .then((result) => {
           this.webRTC = result.webRTC;
           this.capture = result.camera && result.microphone;
-          if (this.isAndroidWexin() && rresult.videoCodec.H264) {
-            this.H264State = false;
-          } else {
-            this.H264State = result.videoCodec.H264;
-          }
+          this.H264State = result.videoCodec.H264;
           this.VP8State = result.videoCodec.VP8;
         })
         .catch((err) => console.log(err));
