@@ -241,7 +241,7 @@ $(async () => {
     });
 
     $('#publish').click(() => {
-        const result = zg.startPublishingStream(publishStreamID, previewStream);
+        const result = zg.startPublishingStream(publishStreamID, previewVideo.srcObject);
         console.log('publish stream' + publishStreamID, result);
     });
     $('#replaceScreenShot').click(async function() {
