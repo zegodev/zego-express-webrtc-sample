@@ -260,7 +260,7 @@ function initSDK() {
             for (let i = 0; i < streamList.length; i++) {
                 console.info(streamList[i].streamID + ' was added');
                 let remoteStream;
-                let playOption;
+                let playOption = {};
 
                 if($("#videoCodec").val()) playOption.videoCodec = $("#videoCodec").val();
                 if(l3 == true) playOption.resourceMode = 2;
