@@ -23,10 +23,12 @@
       display: block;
       position: absolute;
     }
+
     .remoteVideo video {
       width: 160px;
       height: 160px;
     }
+
     button.btn {
       width: 160px;
     }
@@ -73,12 +75,44 @@
         <div class="col-sm">
           <div class="input-group input-group-sm mb-0">
             <div class="input-group-prepend">
+              <label class="input-group-text" for="serverUrl"><strong class="text-gray-dark ">Server</strong></label>
+            </div>
+            <input type="text" class="form-control d-inline" id="serverUrl" style="width: 75%; max-width: 400px"
+              aria-describedby="emailHelp" placeholder="please enter server url">
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom: 24px">
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-0">
+            <div class="input-group-prepend">
               <label class="input-group-text" for="roomId"><strong class="text-gray-dark ">RoomID</strong></label>
             </div>
             <input type="text" class="form-control d-inline" id="roomId" style="width: 75%; max-width: 400px"
-              value="0002" aria-describedby="emailHelp" placeholder="please enter RoomID">
+              value="0001" aria-describedby="emailHelp" placeholder="please enter RoomID">
           </div>
         </div>
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-0">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="userId"><strong class="text-gray-dark ">UserID</strong></label>
+            </div>
+            <input type="text" class="form-control d-inline" id="userId" style="width: 75%; max-width: 400px"
+              aria-describedby="emailHelp" placeholder="please enter userID">
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-0">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="token"><strong class="text-gray-dark ">Token</strong></label>
+            </div>
+            <input type="text" class="form-control d-inline" id="token" style="width: 75%; max-width: 400px"
+              aria-describedby="emailHelp" placeholder="please enter token">
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom: 24px">
         <div class="col-sm">
           <div class="input-group input-group-sm mb-0">
             <div class="input-group-prepend">
@@ -88,8 +122,8 @@
               aria-describedby="emailHelp" placeholder="please enter streamId">
           </div>
         </div>
-
       </div>
+
       <div class="row">
         <div class="col-sm">
           <button type="button" id="openRoom" class="btn btn-primary btn-sm ">Login Room</button>
