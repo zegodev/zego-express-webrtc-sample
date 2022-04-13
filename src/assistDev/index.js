@@ -204,7 +204,12 @@ async function enterRoom() {
     $('.remoteVideo').html('');
 
     return await login(roomId).catch(err => {
-        alert(JSON.stringify(err))
+        const errStr = JSON.stringify(err)
+        if([1102016,1102018].includes(err.code)) {
+            alert("Login failed! Token error!")
+        } else {
+            alert("Login failed! " + errStr)
+        }
         throw err
     });
 }
