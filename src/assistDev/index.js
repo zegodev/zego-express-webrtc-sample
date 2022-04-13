@@ -19,7 +19,9 @@ $('#streamId').val('web-' + new Date().getTime())
 let isLogin = false;
 // ---test end
 
-
+// $("#appId").val(1739272706)
+// $("#serverUrl").val("wss://wssliveroom-test.zego.im/ws")
+// $("#token").val("")
 
 $(async () => {
     await checkAnRun();
@@ -98,6 +100,9 @@ $(async () => {
         appID = Number(currentId);
         resetInstance(appID, currentServer)
         isLogin = await enterRoom();
+        if(isLogin) {
+            alert("Login Success!")
+        }
     });
 
 
@@ -108,6 +113,9 @@ let lastInfo = {
 function resetInstance(appId, server) {
     if (appId !== lastInfo.appId || server !== lastInfo.server) {
         zg && zg.off('roomStreamUpdate');
+        if(zg) {
+            zg.logoutRoom()
+        }
         zg = new ZegoExpressEngine(Number(appId), server)
         zg.on('roomStreamUpdate', async (roomID, updateType, streamList, extendedData) => {
             console.log('roomStreamUpdate 2 roomID ', roomID, streamList, extendedData);
@@ -193,14 +201,12 @@ async function enterRoom() {
         useLocalStreamList[i].streamID && zg.stopPlayingStream(useLocalStreamList[i].streamID);
     }
 
-    await login(roomId);
-    isLogin = true;
-    alert('Login Success!')
-
-    console.warn('remoteVideo')
     $('.remoteVideo').html('');
 
-    return true;
+    return await login(roomId).catch(err => {
+        alert(JSON.stringify(err))
+        throw err
+    });
 }
 
 async function login(roomId) {
