@@ -205,8 +205,10 @@ async function enterRoom() {
 
     return await login(roomId).catch(err => {
         const errStr = JSON.stringify(err)
-        if([1102016,1102018].includes(err.code)) {
-            alert("Login failed! Token error!")
+        if([1102016].includes(err.code)) {
+            alert("Token 错误，请查看您在页面中填写的 UserID、AppID是否与生成 Token 时所用到的一致。\n Token error, please check whether the userid and appid you filled in the page are consistent with those used in generating token.")
+        } else  if(err.code === 1102018) {
+            alert ("Token 过期。 \n Token expire.")
         } else {
             alert("Login failed! " + errStr)
         }
