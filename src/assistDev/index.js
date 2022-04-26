@@ -3,11 +3,10 @@ import { getBrowser } from '../assets/utils';
 import { ZegoExpressEngine } from 'zego-express-engine-webrtc';
 let zg
 let appID
-let server
+let server = "none"
 $('#userId').val('sample' + new Date().getTime())
 const userName = 'sampleUser' + new Date().getTime();
-let serverUrl = 'wss://webliveroom-test.zego.im/ws'; // 请从官网控制台获取对应的server地址，否则可能登录失败
-let useLocalStreamList = [];
+
 let cgiToken = '';
 let isPreviewed = false;
 
@@ -80,16 +79,11 @@ $(async () => {
     $('#openRoom').click(async () => {
         console.log('$(#appId)', $('#appId'));
         const currentId = $('#appId').val()
-        const currentServer = $('#serverUrl').val()
         if (!currentId) {
             alert('AppID is empty')
             return
         } else if (isNaN(Number(currentId))) {
             alert('AppID must be number')
-            return
-        }
-        if (!currentServer) {
-            alert('Server is empty')
             return
         }
 
@@ -98,7 +92,7 @@ $(async () => {
             return
         }
         appID = Number(currentId);
-        resetInstance(appID, currentServer)
+        resetInstance(appID)
         isLogin = await enterRoom();
         if(isLogin) {
             alert("Login Success!")
@@ -110,8 +104,8 @@ $(async () => {
 
 let lastInfo = {
 }
-function resetInstance(appId, server) {
-    if (appId !== lastInfo.appId || server !== lastInfo.server) {
+function resetInstance(appId) {
+    if (appId !== lastInfo.appId) {
         zg && zg.off('roomStreamUpdate');
         if(zg) {
             zg.logoutRoom()
@@ -187,7 +181,6 @@ function resetInstance(appId, server) {
         });
     }
     lastInfo.appId = appId
-    lastInfo.server = server
 }
 
 async function enterRoom() {

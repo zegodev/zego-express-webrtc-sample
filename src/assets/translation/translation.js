@@ -75,7 +75,7 @@ const en = {
     enterRoom: 'enter room',
     startPublish: 'strat publish',
     stopPublish: 'stop publish',
-    tokenDesc: 'Please enter the AppID and Server corresponding to the project in the instant console (Environment Configuration -> Web -> Server) to experience the sample demo.',
+    tokenDesc: 'Please enter the AppID corresponding to the project in the instant console (Environment Configuration -> Web -> AppID) to experience the sample demo.',
     toConsole: 'To ZEGO console'
     
 };
@@ -155,7 +155,7 @@ const zh = {
     enterRoom: '进入房间',
     startPublish: '开始推流',
     stopPublish: '停止推流',
-    tokenDesc: '请输入即构控制台中项目对应的 AppID 及 Server（环境配置 -> Web -> Server），用以体验示例 demo。',
+    tokenDesc: '请输入即构控制台中项目对应的 AppID 和 Token（环境配置 -> Web -> AppID），用以体验示例 demo。',
     toConsole: '点击打开 ZEGO 控制台'
 };
 
