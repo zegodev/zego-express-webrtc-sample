@@ -256,12 +256,15 @@ $(async () => {
         }
         if (!screendStream) {
             screendStream = await zg.createStream({
-                screen: true,
-                videoQuality: 4,
-                width: $('#screenWidth').val() * 1,
-                height:  $('#screenHeight').val() * 1,
-                bitrate: $('#screenBitRate').val() * 1,
-                frameRate: $('#screenFrameRate').val() * 1
+                screen: {  
+                    videoQuality: 4,
+                    width: $('#screenWidth').val() * 1,
+                    height:  $('#screenHeight').val() * 1,
+                    bitrate: $('#screenBitRate').val() * 1,
+                    frameRate: $('#screenFrameRate').val() * 1,
+                    startBitrate: "target",
+                    videoOptimizationMode: "motion"
+                }
             });
             screenStreamVideoTrack = screendStream.getVideoTracks()[0];
             console.log('cameraStreamVideoTrack', cameraStreamVideoTrack);
