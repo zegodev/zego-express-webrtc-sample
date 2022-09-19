@@ -256,7 +256,8 @@ $(async () => {
         }
         if (!screendStream) {
             screendStream = await zg.createStream({
-                screen: {  
+                screen: { 
+                    audio: true,
                     videoQuality: 4,
                     width: $('#screenWidth').val() * 1,
                     height:  $('#screenHeight').val() * 1,
@@ -379,10 +380,12 @@ $(async () => {
                     //@ts-ignore
                     audio: $('#isScreenAudio').val() == 'yes' ? true : false,
                     videoQuality: 4,
+                    width: $('#screenWidth').val() * 1,
+                    height:  $('#screenHeight').val() * 1,
                     bitrate: $('#screenBitRate').val() * 1,
                     frameRate: $('#screenFrameRate').val() * 1,
-                    width: $('#screenWidth').val() * 1 || screen.width,
-                    height:  $('#screenHeight').val() * 1 || screen.height
+                    startBitrate: "target",
+                    videoOptimizationMode: "motion"
                 },
             });
             const screenStreamId = publishStreamId + 'screen' + screenCount++;
