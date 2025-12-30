@@ -112,6 +112,16 @@
 
       <div class="panel panel-primary panel-new">
         <div class="panel-heading" style="background-color:#347ef6">
+          <h4>H265编码 <span v-cloak>{{state.webrtcState}}</span></h4>
+        </div>
+        <div class="panel-body" v-cloak v-if="state.webrtcState == '检测完成'">
+          <div v-if="H265State" class="alert alert-success">当前浏览器支持H265编码！！！</div>
+          <div v-else class="alert alert-danger">当前浏览器不支持H265编码！！！</div>
+        </div>
+      </div>
+
+      <div class="panel panel-primary panel-new">
+        <div class="panel-heading" style="background-color:#347ef6">
           <h4>VP8编码 <span v-cloak>{{state.webrtcState}}</span></h4>
         </div>
         <div class="panel-body" v-cloak v-if="state.webrtcState == '检测完成'">

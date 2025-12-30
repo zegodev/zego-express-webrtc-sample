@@ -15,6 +15,7 @@ new Vue({
     webRTC: false,
     capture: false,
     H264State: false,
+    H265State: false,
     VP8State: false,
     isAudioInput: false,
     isVideoInput: false,
@@ -77,6 +78,7 @@ new Vue({
           this.webRTC = result.webRTC;
           this.capture = result.camera && result.microphone;
           this.H264State = result.videoCodec.H264;
+          this.H265State = result.videoCodec.H265;
           this.VP8State = result.videoCodec.VP8;
         })
         .catch((err) => console.log(err));
