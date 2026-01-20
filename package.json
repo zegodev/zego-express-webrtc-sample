@@ -21,7 +21,7 @@
     "compressing": "^1.5.0",
     "eslint": "^6.5.1",
     "flv.js": "^1.5.0",
-    "http-server": "^0.11.1",
+    "http-server": "^0.11.2",
     "i18next": "^19.4.2",
     "jquery": "^3.4.1",
     "jquery-i18next": "^1.2.1",
